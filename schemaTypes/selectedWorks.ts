@@ -16,9 +16,11 @@ export const selectedWorks = defineType({
       hidden: true,
     }),
     defineField({
-      name: 'media',
+      name: 'sections',
       type: 'array',
-      of: [{ type: 'projectMediaItem' }],
+      of: [{ type: 'selectedWorksSection' }],
+      description:
+        'Each section picks a project, then media for that row. Images must appear on that project’s slides.',
     }),
   ],
 })

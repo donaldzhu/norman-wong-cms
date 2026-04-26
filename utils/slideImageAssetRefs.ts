@@ -11,10 +11,15 @@ export function slideImageAssetRefsFromSlides(slides: unknown): string[] {
     for (const item of media) {
       if (!item || typeof item !== 'object') continue
       const row = item as {
+        _type?: string
         mediaType?: string
         image?: { asset?: { _ref?: string } }
       }
-      if (row.mediaType !== 'image') continue
+      const isSlideImage =
+        row._type === 'imageObject' ||
+        row._type === 'projectSlideMediaImage' ||
+        (row._type === 'projectMediaItem' && row.mediaType === 'image')
+      if (!isSlideImage) continue
       const ref = row.image?.asset?._ref
       if (!ref || seen.has(ref)) continue
       seen.add(ref)

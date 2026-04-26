@@ -1,5 +1,6 @@
 import { defineField, defineType } from 'sanity'
 
+import type { PreviewValue } from '@sanity/types'
 import { italicTextBlock } from './definitions/italicText'
 import { plainTextFromBlocks } from '../utils/common'
 
@@ -10,7 +11,7 @@ export const projectSlide = defineType({
     defineField({
       name: 'media',
       type: 'array',
-      of: [{ type: 'projectMediaItem' }],
+      of: [{ type: 'imageObject' }, { type: 'fileObject' }],
       validation: rule => rule.required().min(1).max(3),
     }),
     defineField({
@@ -38,10 +39,19 @@ export const projectSlide = defineType({
       if (year != null) subtitleParts.push(String(year))
       const count = Array.isArray(media) ? media.length : 0
       if (count > 0) subtitleParts.push(`${count} media`)
+      const first = media?.[0] as
+        | { _type?: string; mediaType?: string; image?: unknown }
+        | undefined
+      const listMedia: PreviewValue['media'] =
+        first?._type === 'imageObject'
+          ? (first.image as PreviewValue['media'])
+          : first?._type === 'projectMediaItem' && first.mediaType === 'image'
+            ? (first.image as PreviewValue['media'])
+            : undefined
       return {
         title: 'Slide',
         subtitle: subtitleParts.length ? subtitleParts.join(' · ') : undefined,
-        media: media?.[0]?.image,
+        media: listMedia,
       }
     },
   },

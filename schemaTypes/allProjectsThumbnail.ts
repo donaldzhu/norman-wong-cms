@@ -5,7 +5,7 @@ import { defineField, defineType } from 'sanity'
 import { mediaAssetSource } from 'sanity-plugin-media'
 import { slideImagesAssetSource } from '../components/slideImagesAssetSource'
 
-/** Same shape as `projectMediaItem`, but image selection is limited to assets used on this document’s slides. */
+/** Image/file thumbnail for All Projects; image assets must already appear on this document’s slides. */
 export const allProjectsThumbnail = defineType({
   name: 'allProjectsThumbnail',
   title: 'Image or file',
