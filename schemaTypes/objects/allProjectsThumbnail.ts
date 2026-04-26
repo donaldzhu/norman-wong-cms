@@ -3,9 +3,8 @@ import * as changeCase from 'change-case'
 import { defineField, defineType } from 'sanity'
 
 import { mediaAssetSource } from 'sanity-plugin-media'
-import { slideImagesAssetSource } from '../components/slideImagesAssetSource'
+import { slideImagesAssetSource } from '../../components/slideImagesAssetSource'
 
-/** Image/file thumbnail for All Projects; image assets must already appear on this document’s slides. */
 export const allProjectsThumbnail = defineType({
   name: 'allProjectsThumbnail',
   title: 'Image or file',
@@ -45,13 +44,12 @@ export const allProjectsThumbnail = defineType({
         hotspot: true,
         sources: [slideImagesAssetSource],
       },
-      hidden: ({ parent }) => parent?.mediaType !== 'image',
+      // hidden: ({ parent }) => parent?.mediaType !== 'image',
       validation: rule =>
         rule.custom((value, context) => {
           const parent = context.parent as { mediaType?: string } | undefined
-          if (parent?.mediaType === 'image' && !value) {
-            return 'Add an image'
-          }
+          if (parent?.mediaType === 'image' && !value) return 'Add an image'
+
           return true
         }),
     }),
@@ -62,7 +60,7 @@ export const allProjectsThumbnail = defineType({
         sources: [mediaAssetSource],
       },
       description: 'Choose a file from Media (e.g. video).',
-      hidden: ({ parent }) => parent?.mediaType !== 'file',
+      // hidden: ({ parent }) => parent?.mediaType !== 'file',
       validation: rule =>
         rule.custom((value, context) => {
           const parent = context.parent as { mediaType?: string } | undefined

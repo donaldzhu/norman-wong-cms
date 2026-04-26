@@ -1,0 +1,7 @@
+export { allProjectsThumbnail } from './allProjectsThumbnail'
+export { contact } from './contact'
+export { fileObject } from './fileObject'
+export { imageObject } from './imageObject'
+export { projectSlide } from './projectSlide'
+export { selectedWorksSection } from './selectedWorksSection'
+export { selectedWorksThumbnail } from './selectedWorksThumbnail'

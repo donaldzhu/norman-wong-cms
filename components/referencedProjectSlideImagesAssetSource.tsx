@@ -11,7 +11,7 @@ import {
   publishedAndDraftIdsFromRef,
   selectedWorksSectionPathFromFieldPath,
 } from '../utils/selectedWorksSectionPath'
-import { slideImageAssetRefsFromSlides } from '../utils/slideImageAssetRefs'
+import { assetRefsFromProject } from '../utils/refs'
 
 type FormBuilderWithFocus = {
   focusPath?: readonly FormPathSegment[]
@@ -55,7 +55,7 @@ function ReferencedProjectSlideImagesPicker(props: AssetSourceComponentProps) {
       .fetch<unknown>(`*[_id in $ids][0].slides`, { ids })
       .then(slides => {
         if (cancelled) return
-        setRefs(slideImageAssetRefsFromSlides(slides))
+        setRefs(assetRefsFromProject(slides))
       })
       .catch(() => {
         if (cancelled) return

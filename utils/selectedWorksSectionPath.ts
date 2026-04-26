@@ -1,13 +1,13 @@
 /** One segment in a Studio form path (string field name or array item key object). */
-export type FormPathSegment = string | {_key: string}
+export type FormPathSegment = string | { _key: string }
 
 /**
  * Returns the form path to the parent `selectedWorksSection` (… `sections` → `{_key}` …)
  * when editing a field under that section’s `thumbnails` array (e.g. image validation).
  */
-export function selectedWorksSectionPathFromFieldPath(
+export const selectedWorksSectionPathFromFieldPath = (
   path: readonly FormPathSegment[],
-): FormPathSegment[] | null {
+): FormPathSegment[] | null => {
   for (let i = 0; i < path.length; i++) {
     if (path[i] === 'thumbnails' && i >= 2) {
       return [...path.slice(0, i)]
@@ -31,7 +31,7 @@ export function getValueAtFormPath(root: unknown, path: readonly FormPathSegment
         item &&
         typeof item === 'object' &&
         '_key' in item &&
-        (item as {_key?: string})._key === key,
+        (item as { _key?: string })._key === key,
     )
     cur = row
   }

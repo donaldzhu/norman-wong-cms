@@ -2,15 +2,15 @@ import * as changeCase from 'change-case'
 import { defineField, defineType } from 'sanity'
 import { mediaAssetSource } from 'sanity-plugin-media'
 
-import { referencedProjectSlideImagesAssetSource } from '../components/referencedProjectSlideImagesAssetSource'
-import { SelectedWorksThumbnailImageInput } from '../components/selectedWorksThumbnailImageInput'
+import { referencedProjectSlideImagesAssetSource } from '../../components/referencedProjectSlideImagesAssetSource'
+import { SelectedWorksThumbnailImageInput } from '../../components/selectedWorksThumbnailImageInput'
 import {
   type FormPathSegment,
   getValueAtFormPath,
   publishedAndDraftIdsFromRef,
   selectedWorksSectionPathFromFieldPath,
-} from '../utils/selectedWorksSectionPath'
-import { slideImageAssetRefsFromSlides } from '../utils/slideImageAssetRefs'
+} from '../../utils/selectedWorksSectionPath'
+import { assetRefsFromProject } from '../../utils/refs'
 
 /** Thumbnail row for Selected Works: no size tier (that exists only on All Projects thumbnails). */
 export const selectedWorksThumbnail = defineType({
@@ -62,7 +62,7 @@ export const selectedWorksThumbnail = defineType({
           const client = context.getClient({ apiVersion: '2024-01-01' })
           const ids = publishedAndDraftIdsFromRef(ref)
           const slides = await client.fetch(`*[_id in $ids][0].slides`, { ids })
-          const allowed = new Set(slideImageAssetRefsFromSlides(slides))
+          const allowed = new Set(assetRefsFromProject(slides))
           if (!allowed.has(image.asset._ref)) {
             return 'This image must appear on the selected project’s slides.'
           }

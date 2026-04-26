@@ -6,9 +6,6 @@ export const selectedWorks = defineType({
   name: 'selectedWorks',
   type: 'document',
   icon: StarIcon,
-  description: 'Featured images and files for the Selected Works page.',
-  // @ts-expect-error
-  __experimental_actions: ['update', 'publish'],
   fields: [
     defineField({
       name: 'title',
@@ -18,9 +15,7 @@ export const selectedWorks = defineType({
     defineField({
       name: 'sections',
       type: 'array',
-      of: [{ type: 'selectedWorksSection' }],
-      description:
-        'Each section picks a project, then media for that row. Images must appear on that project’s slides.',
+      of: [{ type: 'selectedWorksSection' }]
     }),
   ],
 })

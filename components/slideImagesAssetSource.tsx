@@ -1,23 +1,21 @@
-import { ImagesIcon } from '@sanity/icons'
-import createImageUrlBuilder from '@sanity/image-url'
 import { Box, Button, Card, Dialog, Flex, Grid, Text } from '@sanity/ui'
 import { useCallback, useMemo } from 'react'
-import type { AssetSourceComponentProps } from 'sanity'
 import { useClient, useFormValue } from 'sanity'
 
-import { slideImageAssetRefsFromSlides } from '../utils/slideImageAssetRefs'
+import type { AssetSourceComponentProps } from 'sanity'
+import { ImagesIcon } from '@sanity/icons'
+import { assetRefsFromProject } from '../utils/refs'
+import createImageUrlBuilder from '@sanity/image-url'
 
-function SlideImagesAssetPicker(props: AssetSourceComponentProps) {
+const SlideImagesAssetPicker = (props: AssetSourceComponentProps) => {
   const { onSelect, onClose } = props
   const slides = useFormValue(['slides'])
-  const client = useClient({ apiVersion: '2024-01-01' })
+  const client = useClient({ apiVersion: '2026-04-26' })
   const builder = useMemo(() => createImageUrlBuilder(client), [client])
-  const refs = useMemo(() => slideImageAssetRefsFromSlides(slides), [slides])
+  const refs = useMemo(() => assetRefsFromProject(slides), [slides])
 
   const handlePick = useCallback(
-    (ref: string) => {
-      onSelect([{ kind: 'assetDocumentId' as const, value: ref }])
-    },
+    (ref: string) => onSelect([{ kind: 'assetDocumentId' as const, value: ref }]),
     [onSelect],
   )
 

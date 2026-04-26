@@ -1,10 +1,11 @@
 import { defineField, defineType } from 'sanity'
 
 import { ProjectsIcon } from '@sanity/icons'
+import { assetRefsFromProject } from '../utils/refs'
 import { italicTextBlock } from './definitions/italicText'
 import { plainTextFromBlocks } from '../utils/common'
-import { slideImageAssetRefsFromSlides } from '../utils/slideImageAssetRefs'
 
+//TODO
 export const project = defineType({
   name: 'project',
   type: 'document',
@@ -30,7 +31,7 @@ export const project = defineType({
       validation: rule =>
         rule.custom((items, context) => {
           const doc = context.document as { slides?: unknown } | undefined
-          const allowed = new Set(slideImageAssetRefsFromSlides(doc?.slides))
+          const allowed = new Set(assetRefsFromProject(doc?.slides))
           if (!Array.isArray(items)) return true
           for (const item of items) {
             const row = item as {

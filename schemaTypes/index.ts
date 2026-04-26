@@ -1,14 +1,17 @@
 import { allProjects } from './allProjects'
-import { allProjectsThumbnail } from './allProjectsThumbnail'
-import { contact } from './contact'
 import { header } from './header'
 import { info } from './info'
+import {
+  allProjectsThumbnail,
+  contact,
+  fileObject,
+  imageObject,
+  projectSlide,
+  selectedWorksSection,
+  selectedWorksThumbnail,
+} from './objects'
 import { project } from './project'
-import { projectSlide } from './projectSlide'
-import { fileObject, imageObject } from './slideMediaObjects'
 import { selectedWorks } from './selectedWorks'
-import { selectedWorksSection } from './selectedWorksSection'
-import { selectedWorksThumbnail } from './selectedWorksThumbnail'
 
 export const schemaTypes = [
   contact,

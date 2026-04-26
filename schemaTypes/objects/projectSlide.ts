@@ -1,8 +1,8 @@
 import { defineField, defineType } from 'sanity'
 
 import type { PreviewValue } from '@sanity/types'
-import { italicTextBlock } from './definitions/italicText'
-import { plainTextFromBlocks } from '../utils/common'
+import { italicTextBlock } from '../definitions/italicText'
+import { plainTextFromBlocks } from '../../utils/common'
 
 export const projectSlide = defineType({
   name: 'projectSlide',
@@ -37,11 +37,9 @@ export const projectSlide = defineType({
       const desc = plainTextFromBlocks(description)
       if (desc) subtitleParts.push(desc)
       if (year != null) subtitleParts.push(String(year))
-      const count = Array.isArray(media) ? media.length : 0
-      if (count > 0) subtitleParts.push(`${count} media`)
-      const first = media?.[0] as
-        | { _type?: string; mediaType?: string; image?: unknown }
-        | undefined
+      if (Array.isArray(media) && media.length > 0) subtitleParts.push(`${media.length} media`)
+
+      const first: { _type?: string; mediaType?: string; image?: unknown } | undefined = media?.[0]
       const listMedia: PreviewValue['media'] =
         first?._type === 'imageObject'
           ? (first.image as PreviewValue['media'])

@@ -31,7 +31,7 @@ export const selectedWorksSection = defineType({
       const n = Array.isArray(thumbs) ? thumbs.length : 0
       return {
         title: projectId ? `Project …${String(projectId).slice(-6)}` : 'Section',
-        subtitle: n ? `${n} thumbnail row(s)` : 'No thumbnails',
+        subtitle: n ? `${n} thumbnail${n > 1 ? 's' : ''}` : 'No thumbnails',
       }
     },
   },

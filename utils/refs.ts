@@ -1,4 +1,4 @@
-export function slideImageAssetRefsFromSlides(slides: unknown): string[] {
+export const assetRefsFromProject = (slides: unknown): string[] => {
   const refs: string[] = []
   const seen = new Set<string>()
   if (!Array.isArray(slides)) return refs
@@ -10,11 +10,11 @@ export function slideImageAssetRefsFromSlides(slides: unknown): string[] {
 
     for (const item of media) {
       if (!item || typeof item !== 'object') continue
-      const row = item as {
+      const row: {
         _type?: string
         mediaType?: string
         image?: { asset?: { _ref?: string } }
-      }
+      } = item
       const isSlideImage =
         row._type === 'imageObject' ||
         row._type === 'projectSlideMediaImage' ||
