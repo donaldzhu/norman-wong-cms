@@ -3,7 +3,7 @@ import { defineField, defineType } from 'sanity'
 
 import { selectedWorkAsset } from '../../components/selectedWorkAsset'
 import { SelectedWorksImageInput } from '../../components/selectedWorksSectionPathContext'
-import { assetRefsFromProject } from '../../utils/refs'
+import { assetRefsFromProject, muxVideoAssetRefsFromProject } from '../../utils/refs'
 import {
   type FormPathSegment,
   getValueAtFormPath,
@@ -74,9 +74,29 @@ export const selectedWorksThumbnail = defineType({
       type: 'mux.video',
       hidden: ({ parent }) => parent?.mediaType !== 'video',
       validation: Rule =>
-        Rule.custom((value, context) => {
+        Rule.custom(async (value: unknown, context) => {
           const parent = context.parent as { mediaType?: string } | undefined
-          if (parent?.mediaType === 'video' && !value) return 'Add a video'
+          if (parent?.mediaType !== 'video') return true
+          const muxVideo = value as { asset?: { _ref?: string } } | null | undefined
+          if (!muxVideo?.asset?._ref) return 'Add a video'
+          const path = context.path as FormPathSegment[] | undefined
+          const sectionPath = path ? selectedWorksSectionPathFromFieldPath(path) : null
+          if (!sectionPath?.length) return true
+
+          const doc = context.document as Record<string, unknown> | undefined
+          if (!doc) return true
+          const project = getValueAtFormPath(doc, [...sectionPath, 'project']) as
+            | { _ref?: string }
+            | undefined
+          const ref = project?._ref
+          if (!ref) return 'Select a project for this section before adding slide videos.'
+          const client = context.getClient({ apiVersion: '2024-01-01' })
+          const ids = publishedAndDraftIdsFromRef(ref)
+          const slides = await client.fetch(`*[_id in $ids][0].slides`, { ids })
+          const allowed = new Set(muxVideoAssetRefsFromProject(slides))
+          if (!allowed.has(muxVideo.asset._ref)) {
+            return 'This video must appear on the selected project’s slides.'
+          }
           return true
         }),
     }),

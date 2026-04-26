@@ -3,7 +3,7 @@ import * as changeCase from 'change-case'
 import { defineField, defineType } from 'sanity'
 
 import { allProjectsAssetSource } from '../../components/allProjectsAsset'
-import { mediaAssetSource } from 'sanity-plugin-media'
+import { muxVideoAssetRefsFromProject } from '../../utils/refs'
 
 export const allProjectsThumbnail = defineType({
   name: 'allProjectsThumbnail',
@@ -56,14 +56,18 @@ export const allProjectsThumbnail = defineType({
     defineField({
       name: 'video',
       type: 'mux.video',
-      /* options: {
-        sources: [mediaAssetSource],
-      }, */
       hidden: ({ parent }) => parent?.mediaType !== 'video',
       validation: rule =>
-        rule.custom((value, context) => {
+        rule.custom(async (value: unknown, context) => {
           const parent = context.parent as { mediaType?: string } | undefined
-          if (parent?.mediaType === 'video' && !value) return 'Add a video'
+          if (parent?.mediaType !== 'video') return true
+          const mux = value as { asset?: { _ref?: string } } | null | undefined
+          if (!mux?.asset?._ref) return 'Add a video'
+          const doc = context.document as { slides?: unknown } | undefined
+          const allowed = new Set(muxVideoAssetRefsFromProject(doc?.slides))
+          if (!allowed.has(mux.asset._ref)) {
+            return 'This video must appear on this document’s project slides.'
+          }
           return true
         }),
     }),
