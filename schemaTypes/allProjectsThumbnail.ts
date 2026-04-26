@@ -1,13 +1,29 @@
 import * as changeCase from 'change-case'
+
 import { defineField, defineType } from 'sanity'
 
 import { mediaAssetSource } from 'sanity-plugin-media'
+import { slideImagesAssetSource } from '../components/slideImagesAssetSource'
 
-export const projectMediaItem = defineType({
-  name: 'projectMediaItem',
+/** Same shape as `projectMediaItem`, but image selection is limited to assets used on this document’s slides. */
+export const allProjectsThumbnail = defineType({
+  name: 'allProjectsThumbnail',
   title: 'Image or file',
   type: 'object',
   fields: [
+    defineField({
+      name: 'size',
+      type: 'string',
+      initialValue: 'small',
+      options: {
+        layout: 'radio',
+        list: [
+          { title: 'Small', value: 'small' },
+          { title: 'Medium', value: 'medium' },
+          { title: 'Large', value: 'large' },
+        ],
+      },
+    }),
     defineField({
       name: 'mediaType',
       title: 'Type',
@@ -27,7 +43,7 @@ export const projectMediaItem = defineType({
       type: 'image',
       options: {
         hotspot: true,
-        sources: [mediaAssetSource],
+        sources: [slideImagesAssetSource],
       },
       hidden: ({ parent }) => parent?.mediaType !== 'image',
       validation: rule =>
@@ -50,23 +66,23 @@ export const projectMediaItem = defineType({
       validation: rule =>
         rule.custom((value, context) => {
           const parent = context.parent as { mediaType?: string } | undefined
-          if (parent?.mediaType === 'file' && !value) {
-            return 'Add a file'
-          }
+          if (parent?.mediaType === 'file' && !value) return 'Add a file'
           return true
         }),
     }),
+
   ],
   preview: {
     select: {
+      size: 'size',
       mediaType: 'mediaType',
       image: 'image',
     },
-    prepare({ mediaType, image }) {
+    prepare({ size, mediaType, image }) {
       return {
         title: changeCase.capitalCase(mediaType ?? 'image'),
         media: image,
-        subtitle: mediaType === 'file' ? 'File upload' : undefined,
+        subtitle: size ? changeCase.capitalCase(size) : undefined,
       }
     },
   },

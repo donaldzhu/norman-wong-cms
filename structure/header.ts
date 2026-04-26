@@ -1,10 +1,9 @@
-import {ComposeIcon} from '@sanity/icons'
-import type {StructureBuilder} from 'sanity/structure'
+import { ComposeIcon } from '@sanity/icons'
+import type { StructureBuilder } from 'sanity/structure'
 
-export function headerStructure(S: StructureBuilder) {
-  return S.listItem()
+export const headerStructure = (S: StructureBuilder) =>
+  S.listItem()
     .title('Header')
     .icon(ComposeIcon)
     .id('singleton-header')
     .child(S.document().schemaType('header').documentId('header'))
-}

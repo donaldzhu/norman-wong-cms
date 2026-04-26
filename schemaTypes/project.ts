@@ -2,77 +2,66 @@ import { defineField, defineType } from 'sanity'
 
 import { ProjectsIcon } from '@sanity/icons'
 import { italicTextBlock } from './definitions/italicText'
-
-function plainTextFromBlocks(blocks: unknown): string {
-  if (!Array.isArray(blocks)) return ''
-  const parts: string[] = []
-  for (const block of blocks) {
-    if (
-      block &&
-      typeof block === 'object' &&
-      (block as { _type?: string })._type === 'block' &&
-      Array.isArray((block as { children?: unknown }).children)
-    ) {
-      for (const child of (block as { children: { text?: string }[] }).children) {
-        if (child?.text) parts.push(child.text)
-      }
-    }
-  }
-  return parts.join('').trim()
-}
+import { plainTextFromBlocks } from '../utils/common'
+import { slideImageAssetRefsFromSlides } from '../utils/slideImageAssetRefs'
 
 export const project = defineType({
   name: 'project',
-  title: 'Project',
   type: 'document',
   icon: ProjectsIcon,
   fields: [
-    {
-      name: 'title',
-      title: 'Title',
-      type: 'array',
-      of: [italicTextBlock],
-      validation: Rule => Rule.required().max(1)
-    },
     defineField({
-      name: 'description',
-      title: 'Description',
+      name: 'title',
       type: 'array',
       of: [italicTextBlock],
-
+      validation: rule => rule.required().max(1),
     }),
     defineField({
-      name: 'year',
-      title: 'Year',
-      type: 'number',
-      validation: (Rule) => Rule.integer()
+      name: 'slides',
+      title: 'Project slides',
+      type: 'array',
+      of: [{ type: 'projectSlide' }],
+    }),
+    defineField({
+      name: 'allProjectsThumbnails',
+      title: '"All Projects" Thumbnails',
+      type: 'array',
+      of: [{ type: 'allProjectsThumbnail' }],
+      validation: rule =>
+        rule.custom((items, context) => {
+          const doc = context.document as { slides?: unknown } | undefined
+          const allowed = new Set(slideImageAssetRefsFromSlides(doc?.slides))
+          if (!Array.isArray(items)) return true
+          for (const item of items) {
+            const row = item as {
+              mediaType?: string
+              image?: { asset?: { _ref?: string } }
+            }
+            if (row.mediaType !== 'image') continue
+            const ref = row.image?.asset?._ref
+            if (!ref) continue
+            if (!allowed.has(ref)) return 'Listing images must use an asset that appears in Project slides.'
+          }
+          return true
+        }),
     }),
     defineField({
       name: 'hidden',
-      title: 'Hidden',
+      title: 'Hide Project',
       type: 'boolean',
       initialValue: false,
-    }),
-    defineField({
-      name: 'media',
-      title: 'Media',
-      type: 'array',
-      of: [{ type: 'projectMediaItem' }],
-      description: 'Ordered media items for this project.',
     }),
   ],
   preview: {
     select: {
       title: 'title',
-      year: 'year',
-      media: 'media',
+      allProjectsThumbnails: 'allProjectsThumbnails',
     },
-    prepare({ title, year, media }) {
+    prepare({ title, allProjectsThumbnails }) {
       const text = plainTextFromBlocks(title) || 'Untitled'
       return {
         title: text,
-        subtitle: year != null ? String(year) : undefined,
-        media: media?.[0]?.image,
+        media: allProjectsThumbnails?.[0]?.image,
       }
     },
   },
