@@ -1,6 +1,6 @@
 import { ImagesIcon } from '@sanity/icons'
 import createImageUrlBuilder from '@sanity/image-url'
-import { Box, Button, Card, Dialog, Flex, Grid, Spinner, Stack, Text } from '@sanity/ui'
+import { Box, Button, Card, Dialog, Flex, Spinner, Stack, Text } from '@sanity/ui'
 import { useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { AssetSourceComponentProps } from 'sanity'
 import { useClient, useFormBuilder, useGetFormValue } from 'sanity'
@@ -13,11 +13,13 @@ import {
 } from '../utils/selectedWorksSectionPath'
 import { assetRefsFromProject } from '../utils/refs'
 
+import { ReferencedAssetGrid } from './referencedAssetGrid'
+
 type FormBuilderWithFocus = {
   focusPath?: readonly FormPathSegment[]
 }
 
-const ReferencedAssetPicker = (props: AssetSourceComponentProps) => {
+const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
   const { onClose, onSelect } = props
   const client = useClient({ apiVersion: '2024-01-01' })
   const builder = useMemo(() => createImageUrlBuilder(client), [client])
@@ -121,35 +123,7 @@ const ReferencedAssetPicker = (props: AssetSourceComponentProps) => {
         <Text muted size={1}>
           Only images already used on this project’s slides (slide → media → image).
         </Text>
-        <Grid columns={[2, 2, 3, 4]} gap={3}>
-          {refs.map(ref => (
-            <Card
-              key={ref}
-              as="button"
-              type="button"
-              padding={2}
-              radius={2}
-              tone="default"
-              style={{
-                cursor: 'pointer',
-                border: '1px solid var(--card-border-color)',
-                overflow: 'hidden',
-              }}
-              onClick={() => handlePick(ref)}
-            >
-              <img
-                alt=""
-                src={builder
-                  .image({ asset: { _type: 'reference', _ref: ref } })
-                  .width(320)
-                  .height(320)
-                  .fit('max')
-                  .url()}
-                style={{ display: 'block', width: '100%', height: 'auto', verticalAlign: 'top' }}
-              />
-            </Card>
-          ))}
-        </Grid>
+        <ReferencedAssetGrid refs={refs} builder={builder} onPick={handlePick} />
       </Stack>
     )
   }
@@ -171,9 +145,8 @@ const ReferencedAssetPicker = (props: AssetSourceComponentProps) => {
   )
 }
 
-export const referencedAssetSource = {
-  name: 'referenced-asset',
-  title: 'Referenced asset',
-  component: ReferencedAssetPicker,
+export const selectedWorkAsset = {
+  name: 'selected-work-asset',
+  component: SelectedWorkAssetPicker,
   icon: ImagesIcon,
 }

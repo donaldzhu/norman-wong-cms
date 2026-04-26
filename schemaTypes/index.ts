@@ -1,6 +1,3 @@
-import { allProjects } from './allProjects'
-import { header } from './header'
-import { info } from './info'
 import {
   allProjectsThumbnail,
   contact,
@@ -10,6 +7,10 @@ import {
   selectedWorksSection,
   selectedWorksThumbnail,
 } from './objects'
+
+import { allProjects } from './allProjects'
+import { header } from './header'
+import { info } from './info'
 import { project } from './project'
 import { selectedWorks } from './selectedWorks'
 

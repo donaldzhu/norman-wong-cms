@@ -2,8 +2,8 @@ import * as changeCase from 'change-case'
 import { defineField, defineType } from 'sanity'
 import { mediaAssetSource } from 'sanity-plugin-media'
 
-import { referencedAssetSource } from '../../components/referencedAssetSource'
-import { SelectedWorksThumbnailImageInput } from '../../components/referencedAssetContext'
+import { selectedWorkAsset } from '../../components/selectedWorkAsset'
+import { SelectedWorksImageInput } from '../../components/referencedAssetContext'
 import {
   type FormPathSegment,
   getValueAtFormPath,
@@ -36,11 +36,11 @@ export const selectedWorksThumbnail = defineType({
       name: 'image',
       type: 'image',
       components: {
-        input: SelectedWorksThumbnailImageInput,
+        input: SelectedWorksImageInput,
       },
       options: {
         hotspot: true,
-        sources: [referencedAssetSource],
+        sources: [selectedWorkAsset],
       },
       hidden: ({ parent }) => parent?.mediaType !== 'image',
       validation: Rule =>

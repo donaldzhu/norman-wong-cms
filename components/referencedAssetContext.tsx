@@ -14,7 +14,7 @@ export const referencedAssetContext = createContext<
 
 type SanityImageInputProps = ComponentProps<typeof ImageInput>
 
-export function SelectedWorksThumbnailImageInput(props: ObjectInputProps): ReactElement {
+export const SelectedWorksImageInput = (props: ObjectInputProps): ReactElement => {
   const sectionPath = useMemo(
     () => selectedWorksSectionPathFromFieldPath((props.path ?? []) as FormPathSegment[]),
     [props.path],

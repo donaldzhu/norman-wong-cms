@@ -2,8 +2,8 @@ import * as changeCase from 'change-case'
 
 import { defineField, defineType } from 'sanity'
 
+import { allProjectsAssetSource } from '../../components/allProjectsAsset'
 import { mediaAssetSource } from 'sanity-plugin-media'
-import { slideImagesAssetSource } from '../../components/slideImagesAssetSource'
 
 export const allProjectsThumbnail = defineType({
   name: 'allProjectsThumbnail',
@@ -42,7 +42,7 @@ export const allProjectsThumbnail = defineType({
       type: 'image',
       options: {
         hotspot: true,
-        sources: [slideImagesAssetSource],
+        sources: [allProjectsAssetSource],
       },
       hidden: ({ parent }) => parent?.mediaType !== 'image',
       validation: rule =>

@@ -1,13 +1,14 @@
-import { Box, Button, Card, Dialog, Flex, Grid, Text } from '@sanity/ui'
+import { Box, Button, Dialog, Flex, Text } from '@sanity/ui'
 import { useCallback, useMemo } from 'react'
 import { useClient, useFormValue } from 'sanity'
 
 import type { AssetSourceComponentProps } from 'sanity'
 import { ImagesIcon } from '@sanity/icons'
+import { ReferencedAssetGrid } from './referencedAssetGrid'
 import { assetRefsFromProject } from '../utils/refs'
 import createImageUrlBuilder from '@sanity/image-url'
 
-const SlideImagesAssetPicker = (props: AssetSourceComponentProps) => {
+const AllProjectsAssetPicker = (props: AssetSourceComponentProps) => {
   const { onSelect, onClose } = props
   const slides = useFormValue(['slides'])
   const client = useClient({ apiVersion: '2026-04-26' })
@@ -35,35 +36,7 @@ const SlideImagesAssetPicker = (props: AssetSourceComponentProps) => {
             Only those images can be used here.
           </Text>
         ) : (
-          <Grid columns={[2, 2, 3, 4]} gap={3}>
-            {refs.map(ref => (
-              <Card
-                key={ref}
-                as="button"
-                type="button"
-                padding={2}
-                radius={2}
-                tone="default"
-                style={{
-                  cursor: 'pointer',
-                  border: '1px solid var(--card-border-color)',
-                  overflow: 'hidden',
-                }}
-                onClick={() => handlePick(ref)}
-              >
-                <img
-                  alt=""
-                  src={builder
-                    .image({ asset: { _type: 'reference', _ref: ref } })
-                    .width(320)
-                    .height(320)
-                    .fit('max')
-                    .url()}
-                  style={{ display: 'block', width: '100%', height: 'auto', verticalAlign: 'top' }}
-                />
-              </Card>
-            ))}
-          </Grid>
+          <ReferencedAssetGrid refs={refs} builder={builder} onPick={handlePick} />
         )}
         <Flex justify="flex-end" marginTop={4}>
           <Button text="Close" mode="ghost" onClick={onClose} />
@@ -73,9 +46,8 @@ const SlideImagesAssetPicker = (props: AssetSourceComponentProps) => {
   )
 }
 
-export const slideImagesAssetSource = {
-  name: 'slide-images',
-  title: 'Slide images',
-  component: SlideImagesAssetPicker,
+export const allProjectsAssetSource = {
+  name: 'all-projects-assets',
+  component: AllProjectsAssetPicker,
   icon: ImagesIcon,
 }
