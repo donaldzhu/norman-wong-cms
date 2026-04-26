@@ -18,8 +18,6 @@ export const selectedWorksSection = defineType({
       title: 'Thumbnails',
       type: 'array',
       of: [{ type: 'selectedWorksThumbnail' }],
-      description:
-        'Featured media for this project on Selected Works. Images must already appear on that project’s slides.',
     }),
   ],
   preview: {

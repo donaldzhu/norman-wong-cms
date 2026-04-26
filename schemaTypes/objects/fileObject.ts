@@ -16,4 +16,15 @@ export const fileObject = defineType({
       validation: rule => rule.required(),
     }),
   ],
+  preview: {
+    select: {
+      file: 'file',
+    },
+    prepare({ file }) {
+      return {
+        title: 'File',
+        media: file,
+      }
+    },
+  },
 })

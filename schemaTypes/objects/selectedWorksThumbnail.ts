@@ -2,8 +2,8 @@ import * as changeCase from 'change-case'
 import { defineField, defineType } from 'sanity'
 import { mediaAssetSource } from 'sanity-plugin-media'
 
-import { referencedProjectSlideImagesAssetSource } from '../../components/referencedProjectSlideImagesAssetSource'
-import { SelectedWorksThumbnailImageInput } from '../../components/selectedWorksThumbnailImageInput'
+import { referencedAssetSource } from '../../components/referencedAssetSource'
+import { SelectedWorksThumbnailImageInput } from '../../components/referencedAssetContext'
 import {
   type FormPathSegment,
   getValueAtFormPath,
@@ -40,7 +40,7 @@ export const selectedWorksThumbnail = defineType({
       },
       options: {
         hotspot: true,
-        sources: [referencedProjectSlideImagesAssetSource],
+        sources: [referencedAssetSource],
       },
       hidden: ({ parent }) => parent?.mediaType !== 'image',
       validation: Rule =>
@@ -75,7 +75,6 @@ export const selectedWorksThumbnail = defineType({
       options: {
         sources: [mediaAssetSource],
       },
-      description: 'Choose a file from Media (e.g. video).',
       hidden: ({ parent }) => parent?.mediaType !== 'file',
       validation: Rule =>
         Rule.custom((value, context) => {

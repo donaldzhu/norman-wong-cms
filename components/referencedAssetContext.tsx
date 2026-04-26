@@ -8,7 +8,7 @@ import {
 } from '../utils/selectedWorksSectionPath'
 
 /** For slide-image asset UI: resolve parent section without relying on `focusPath` in portals. */
-export const SelectedWorksThumbnailSectionPathContext = createContext<
+export const referencedAssetContext = createContext<
   readonly FormPathSegment[] | null
 >(null)
 
@@ -21,8 +21,8 @@ export function SelectedWorksThumbnailImageInput(props: ObjectInputProps): React
   )
 
   return (
-    <SelectedWorksThumbnailSectionPathContext.Provider value={sectionPath}>
+    <referencedAssetContext.Provider value={sectionPath}>
       <ImageInput {...(props as unknown as SanityImageInputProps)} />
-    </SelectedWorksThumbnailSectionPathContext.Provider>
+    </referencedAssetContext.Provider>
   )
 }

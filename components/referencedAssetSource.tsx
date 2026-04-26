@@ -5,7 +5,7 @@ import { useCallback, useContext, useEffect, useMemo, useState, type ReactNode }
 import type { AssetSourceComponentProps } from 'sanity'
 import { useClient, useFormBuilder, useGetFormValue } from 'sanity'
 
-import { SelectedWorksThumbnailSectionPathContext } from './selectedWorksThumbnailImageInput'
+import { referencedAssetContext } from './referencedAssetContext'
 import {
   type FormPathSegment,
   publishedAndDraftIdsFromRef,
@@ -17,14 +17,14 @@ type FormBuilderWithFocus = {
   focusPath?: readonly FormPathSegment[]
 }
 
-function ReferencedProjectSlideImagesPicker(props: AssetSourceComponentProps) {
+const ReferencedAssetPicker = (props: AssetSourceComponentProps) => {
   const { onClose, onSelect } = props
   const client = useClient({ apiVersion: '2024-01-01' })
   const builder = useMemo(() => createImageUrlBuilder(client), [client])
   const getFormValue = useGetFormValue()
   const formBuilder = useFormBuilder() as FormBuilderWithFocus
   const focusPath = formBuilder.focusPath ?? []
-  const sectionPathFromContext = useContext(SelectedWorksThumbnailSectionPathContext)
+  const sectionPathFromContext = useContext(referencedAssetContext)
 
   const sectionPath = useMemo(() => {
     if (sectionPathFromContext?.length) return sectionPathFromContext
@@ -171,9 +171,9 @@ function ReferencedProjectSlideImagesPicker(props: AssetSourceComponentProps) {
   )
 }
 
-export const referencedProjectSlideImagesAssetSource = {
-  name: 'referenced-project-slide-images',
-  title: 'Slide images (project)',
-  component: ReferencedProjectSlideImagesPicker,
+export const referencedAssetSource = {
+  name: 'referenced-asset',
+  title: 'Referenced asset',
+  component: ReferencedAssetPicker,
   icon: ImagesIcon,
 }

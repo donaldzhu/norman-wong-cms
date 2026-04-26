@@ -44,7 +44,7 @@ export const allProjectsThumbnail = defineType({
         hotspot: true,
         sources: [slideImagesAssetSource],
       },
-      // hidden: ({ parent }) => parent?.mediaType !== 'image',
+      hidden: ({ parent }) => parent?.mediaType !== 'image',
       validation: rule =>
         rule.custom((value, context) => {
           const parent = context.parent as { mediaType?: string } | undefined
@@ -60,7 +60,7 @@ export const allProjectsThumbnail = defineType({
         sources: [mediaAssetSource],
       },
       description: 'Choose a file from Media (e.g. video).',
-      // hidden: ({ parent }) => parent?.mediaType !== 'file',
+      hidden: ({ parent }) => parent?.mediaType !== 'file',
       validation: rule =>
         rule.custom((value, context) => {
           const parent = context.parent as { mediaType?: string } | undefined

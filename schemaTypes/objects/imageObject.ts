@@ -17,4 +17,15 @@ export const imageObject = defineType({
       validation: rule => rule.required(),
     }),
   ],
+  preview: {
+    select: {
+      image: 'image',
+    },
+    prepare({ image }) {
+      return {
+        title: 'Image',
+        media: image,
+      }
+    },
+  },
 })
