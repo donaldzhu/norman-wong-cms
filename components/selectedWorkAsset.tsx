@@ -5,7 +5,7 @@ import { useCallback, useContext, useEffect, useMemo, useState, type ReactNode }
 import type { AssetSourceComponentProps } from 'sanity'
 import { useClient, useFormBuilder, useGetFormValue } from 'sanity'
 
-import { referencedAssetContext } from './referencedAssetContext'
+import { selectedWorksSectionPathContext } from './selectedWorksSectionPathContext'
 import {
   type FormPathSegment,
   publishedAndDraftIdsFromRef,
@@ -26,7 +26,7 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
   const getFormValue = useGetFormValue()
   const formBuilder = useFormBuilder() as FormBuilderWithFocus
   const focusPath = formBuilder.focusPath ?? []
-  const sectionPathFromContext = useContext(referencedAssetContext)
+  const sectionPathFromContext = useContext(selectedWorksSectionPathContext)
 
   const sectionPath = useMemo(() => {
     if (sectionPathFromContext?.length) return sectionPathFromContext

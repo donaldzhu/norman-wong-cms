@@ -1,11 +1,11 @@
 import {
   allProjectsThumbnail,
   contact,
-  fileObject,
   imageObject,
   projectSlide,
   selectedWorksSection,
   selectedWorksThumbnail,
+  videoObject,
 } from './objects'
 
 import { allProjects } from './allProjects'
@@ -17,7 +17,7 @@ import { selectedWorks } from './selectedWorks'
 export const schemaTypes = [
   contact,
   imageObject,
-  fileObject,
+  videoObject,
   allProjectsThumbnail,
   projectSlide,
   project,

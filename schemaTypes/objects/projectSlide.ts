@@ -11,7 +11,7 @@ export const projectSlide = defineType({
     defineField({
       name: 'media',
       type: 'array',
-      of: [{ type: 'imageObject' }, { type: 'fileObject' }],
+      of: [{ type: 'imageObject' }, { type: 'videoObject' }],
       validation: rule => rule.required().min(1).max(3),
     }),
     defineField({

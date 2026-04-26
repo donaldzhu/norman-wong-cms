@@ -7,8 +7,8 @@ import {
   selectedWorksSectionPathFromFieldPath,
 } from '../utils/selectedWorksSectionPath'
 
-/** For slide-image asset UI: resolve parent section without relying on `focusPath` in portals. */
-export const referencedAssetContext = createContext<
+/** Form path to the current Selected Works section — for slide asset UI when `focusPath` is missing in portals. */
+export const selectedWorksSectionPathContext = createContext<
   readonly FormPathSegment[] | null
 >(null)
 
@@ -21,8 +21,8 @@ export const SelectedWorksImageInput = (props: ObjectInputProps): ReactElement =
   )
 
   return (
-    <referencedAssetContext.Provider value={sectionPath}>
+    <selectedWorksSectionPathContext.Provider value={sectionPath}>
       <ImageInput {...(props as unknown as SanityImageInputProps)} />
-    </referencedAssetContext.Provider>
+    </selectedWorksSectionPathContext.Provider>
   )
 }

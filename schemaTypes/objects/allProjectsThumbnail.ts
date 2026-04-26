@@ -32,7 +32,7 @@ export const allProjectsThumbnail = defineType({
         layout: 'radio',
         list: [
           { title: 'Image', value: 'image' },
-          { title: 'File', value: 'file' },
+          { title: 'Video', value: 'video' },
         ],
       },
       validation: rule => rule.required(),
@@ -54,17 +54,16 @@ export const allProjectsThumbnail = defineType({
         }),
     }),
     defineField({
-      name: 'file',
-      type: 'file',
-      options: {
+      name: 'video',
+      type: 'mux.video',
+      /* options: {
         sources: [mediaAssetSource],
-      },
-      description: 'Choose a file from Media (e.g. video).',
-      hidden: ({ parent }) => parent?.mediaType !== 'file',
+      }, */
+      hidden: ({ parent }) => parent?.mediaType !== 'video',
       validation: rule =>
         rule.custom((value, context) => {
           const parent = context.parent as { mediaType?: string } | undefined
-          if (parent?.mediaType === 'file' && !value) return 'Add a file'
+          if (parent?.mediaType === 'video' && !value) return 'Add a video'
           return true
         }),
     }),
@@ -74,12 +73,10 @@ export const allProjectsThumbnail = defineType({
     select: {
       size: 'size',
       mediaType: 'mediaType',
-      image: 'image',
     },
-    prepare({ size, mediaType, image }) {
+    prepare({ size, mediaType }) {
       return {
         title: changeCase.capitalCase(mediaType ?? 'image'),
-        media: image,
         subtitle: size ? changeCase.capitalCase(size) : undefined,
       }
     },

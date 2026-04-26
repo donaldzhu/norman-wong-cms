@@ -1,5 +1,6 @@
 import { defineConfig } from 'sanity'
 import { media } from 'sanity-plugin-media'
+import { muxInput } from 'sanity-plugin-mux-input'
 import { schemaTypes } from './schemaTypes'
 import { structure } from './structure'
 import { structureTool } from 'sanity/structure'
@@ -12,7 +13,7 @@ export default defineConfig({
   projectId: '3vmzcbnr',
   dataset: 'production',
 
-  plugins: [structureTool({ structure }), visionTool(), media()],
+  plugins: [structureTool({ structure }), visionTool(), media(), muxInput()],
 
   schema: {
     types: schemaTypes,

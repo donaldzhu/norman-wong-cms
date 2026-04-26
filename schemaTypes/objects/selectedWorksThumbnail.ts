@@ -1,21 +1,20 @@
 import * as changeCase from 'change-case'
 import { defineField, defineType } from 'sanity'
-import { mediaAssetSource } from 'sanity-plugin-media'
 
 import { selectedWorkAsset } from '../../components/selectedWorkAsset'
-import { SelectedWorksImageInput } from '../../components/referencedAssetContext'
+import { SelectedWorksImageInput } from '../../components/selectedWorksSectionPathContext'
+import { assetRefsFromProject } from '../../utils/refs'
 import {
   type FormPathSegment,
   getValueAtFormPath,
   publishedAndDraftIdsFromRef,
   selectedWorksSectionPathFromFieldPath,
 } from '../../utils/selectedWorksSectionPath'
-import { assetRefsFromProject } from '../../utils/refs'
 
 /** Thumbnail row for Selected Works: no size tier (that exists only on All Projects thumbnails). */
 export const selectedWorksThumbnail = defineType({
   name: 'selectedWorksThumbnail',
-  title: 'Image or file',
+  title: 'Image or video',
   type: 'object',
   fields: [
     defineField({
@@ -27,7 +26,7 @@ export const selectedWorksThumbnail = defineType({
         layout: 'radio',
         list: [
           { title: 'Image', value: 'image' },
-          { title: 'File', value: 'file' },
+          { title: 'Video', value: 'video' },
         ],
       },
       validation: rule => rule.required(),
@@ -69,17 +68,15 @@ export const selectedWorksThumbnail = defineType({
           return true
         }),
     }),
+    //TODO merge with allProjectsThumbnail
     defineField({
-      name: 'file',
-      type: 'file',
-      options: {
-        sources: [mediaAssetSource],
-      },
-      hidden: ({ parent }) => parent?.mediaType !== 'file',
+      name: 'video',
+      type: 'mux.video',
+      hidden: ({ parent }) => parent?.mediaType !== 'video',
       validation: Rule =>
         Rule.custom((value, context) => {
           const parent = context.parent as { mediaType?: string } | undefined
-          if (parent?.mediaType === 'file' && !value) return 'Add a file'
+          if (parent?.mediaType === 'video' && !value) return 'Add a video'
           return true
         }),
     }),
@@ -87,12 +84,10 @@ export const selectedWorksThumbnail = defineType({
   preview: {
     select: {
       mediaType: 'mediaType',
-      image: 'image',
     },
-    prepare({ mediaType, image }) {
+    prepare({ mediaType }) {
       return {
         title: changeCase.capitalCase(mediaType ?? 'image'),
-        media: image,
       }
     },
   },
