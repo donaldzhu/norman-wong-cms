@@ -14,10 +14,22 @@ export const selectedWorksSection = defineType({
       validation: rule => rule.required(),
     }),
     defineField({
-      name: 'thumbnails',
-      title: 'Thumbnails',
+      name: 'desktopThumbnails',
+      title: 'Desktop Thumbnails',
+      description: '10-12 thumbnails for the section',
       type: 'array',
       of: [{ type: 'selectedWorksThumbnail' }],
+      // TODO 10–12
+      validation: rule => rule.min(1).max(12),
+    }),
+    defineField({
+      name: 'mobileThumbnails',
+      title: 'Mobile Thumbnails',
+      description: '4-6 thumbnails for the section',
+      type: 'array',
+      of: [{ type: 'selectedWorksThumbnail' }],
+      // TODO 4–6
+      validation: rule => rule.min(1).max(6)
     }),
   ],
   preview: {

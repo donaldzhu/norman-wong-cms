@@ -38,7 +38,6 @@ export const selectedWorksThumbnail = defineType({
         input: SelectedWorksImageInput,
       },
       options: {
-        hotspot: true,
         sources: [selectedWorkAsset],
       },
       hidden: ({ parent }) => parent?.mediaType !== 'image',

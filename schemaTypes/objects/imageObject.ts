@@ -11,7 +11,6 @@ export const imageObject = defineType({
       name: 'image',
       type: 'image',
       options: {
-        hotspot: true,
         sources: [mediaAssetSource],
       },
       validation: rule => rule.required(),

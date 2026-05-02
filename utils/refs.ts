@@ -10,16 +10,12 @@ export const assetRefsFromProject = (slides: unknown): string[] => {
 
     for (const item of media) {
       if (!item || typeof item !== 'object') continue
-      const row: {
+      const row = item as {
         _type?: string
-        mediaType?: string
+        type?: string
         image?: { asset?: { _ref?: string } }
-      } = item
-      const isSlideImage =
-        row._type === 'imageObject' ||
-        row._type === 'projectSlideMediaImage' ||
-        (row._type === 'projectMediaItem' && row.mediaType === 'image')
-      if (!isSlideImage) continue
+      }
+      if (row._type !== 'projectSlideMedia' || row.type !== 'image') continue
       const ref = row.image?.asset?._ref
       if (!ref || seen.has(ref)) continue
       seen.add(ref)
@@ -30,7 +26,7 @@ export const assetRefsFromProject = (slides: unknown): string[] => {
   return refs
 }
 
-/** `mux.videoAsset` document ids referenced from slide media (`videoObject`, etc.). */
+/** `mux.videoAsset` document ids referenced from slide `projectSlideMedia` rows with `type: 'video'`. */
 export const muxVideoAssetRefsFromProject = (slides: unknown): string[] => {
   const refs: string[] = []
   const seen = new Set<string>()
@@ -43,15 +39,12 @@ export const muxVideoAssetRefsFromProject = (slides: unknown): string[] => {
 
     for (const item of media) {
       if (!item || typeof item !== 'object') continue
-      const row: {
+      const row = item as {
         _type?: string
-        mediaType?: string
+        type?: string
         video?: { asset?: { _ref?: string } }
-      } = item
-      const isSlideVideo =
-        row._type === 'videoObject' ||
-        (row._type === 'projectMediaItem' && row.mediaType === 'video')
-      if (!isSlideVideo) continue
+      }
+      if (row._type !== 'projectSlideMedia' || row.type !== 'video') continue
       const ref = row.video?.asset?._ref
       if (!ref || seen.has(ref)) continue
       seen.add(ref)

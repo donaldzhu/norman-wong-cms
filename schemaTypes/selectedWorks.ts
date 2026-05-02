@@ -17,5 +17,6 @@ export const selectedWorks = defineType({
       type: 'array',
       of: [{ type: 'selectedWorksSection' }]
     }),
+
   ],
 })

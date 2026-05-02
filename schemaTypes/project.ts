@@ -1,7 +1,6 @@
 import { defineField, defineType } from 'sanity'
 
 import { ProjectsIcon } from '@sanity/icons'
-import { assetRefsFromProject } from '../utils/refs'
 import { italicTextBlock } from './definitions/italicText'
 import { plainTextFromBlocks } from '../utils/common'
 
@@ -28,23 +27,7 @@ export const project = defineType({
       title: '"All Projects" Thumbnails',
       type: 'array',
       of: [{ type: 'allProjectsThumbnail' }],
-      validation: rule =>
-        rule.custom((items, context) => {
-          const doc = context.document as { slides?: unknown } | undefined
-          const allowed = new Set(assetRefsFromProject(doc?.slides))
-          if (!Array.isArray(items)) return true
-          for (const item of items) {
-            const row = item as {
-              mediaType?: string
-              image?: { asset?: { _ref?: string } }
-            }
-            if (row.mediaType !== 'image') continue
-            const ref = row.image?.asset?._ref
-            if (!ref) continue
-            if (!allowed.has(ref)) return 'Listing images must use an asset that appears in Project slides.'
-          }
-          return true
-        }),
+      validation: rule => rule.min(1).max(10),
     }),
     defineField({
       name: 'hidden',
