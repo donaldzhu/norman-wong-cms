@@ -1,8 +1,6 @@
 import { defineField, defineType } from 'sanity'
 
 import { ProjectsIcon } from '@sanity/icons'
-import { italicTextBlock } from './definitions/italicText'
-import { plainTextFromBlocks } from '../utils/common'
 
 //TODO
 export const project = defineType({
@@ -12,9 +10,21 @@ export const project = defineType({
   fields: [
     defineField({
       name: 'title',
-      type: 'array',
-      of: [italicTextBlock],
-      validation: rule => rule.required().max(1),
+      type: 'string',
+      validation: rule => rule.required().max(100),
+    }),
+    defineField({
+      name: 'subtitle',
+      type: 'string',
+      validation: rule => rule.max(100),
+    }),
+    defineField({
+      name: 'slug',
+      type: 'slug',
+      options: {
+        source: 'title',
+      },
+      validation: rule => rule.required(),
     }),
     defineField({
       name: 'slides',
@@ -42,9 +52,8 @@ export const project = defineType({
       allProjectsThumbnails: 'allProjectsThumbnails',
     },
     prepare({ title, allProjectsThumbnails }) {
-      const text = plainTextFromBlocks(title) || 'Untitled'
       return {
-        title: text,
+        title,
         media: allProjectsThumbnails?.[0]?.image,
       }
     },

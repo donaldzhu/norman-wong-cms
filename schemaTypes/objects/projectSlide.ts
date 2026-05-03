@@ -16,9 +16,8 @@ export const projectSlide = defineType({
     }),
     defineField({
       name: 'description',
-      type: 'array',
-      of: [italicTextBlock],
-      validation: rule => rule.required().min(1).max(1),
+      type: 'string',
+      validation: rule => rule.max(200),
     }),
     defineField({
       name: 'year',

@@ -2,10 +2,6 @@ import { defineField, defineType } from 'sanity'
 
 import { ProjectsIcon } from '@sanity/icons'
 
-const columnList = new Array(24)
-  .fill(0)
-  .map((_, index) => ({ title: String(index + 1), value: String(index + 1) }))
-
 export const projectSlideMedia = defineType({
   name: 'projectSlideMedia',
   type: 'object',
@@ -36,31 +32,54 @@ export const projectSlideMedia = defineType({
       hidden: ({ parent }) => parent?.type !== 'video'
     }),
     defineField({
-      name: 'startColumn',
-      type: 'string',
-      initialValue: 'auto',
-      options: {
-        layout: 'dropdown',
-        list: [
-          { title: 'auto', value: 'auto' },
-          ...columnList.slice(0, -1),
-        ],
-      },
-      validation: rule => rule.required(),
+      name: 'desktopStart',
+      title: 'Desktop Start Column',
+      type: 'number',
+      initialValue: 11,
+      validation: rule => rule.required().min(1).max(23),
     }),
     defineField({
-      name: 'endColumn',
+      name: 'desktopEnd',
+      title: 'Desktop End Column',
+      type: 'number',
+      initialValue: 14,
+      validation: rule => rule.required().min(2).max(24),
+    }),
+    defineField({
+      name: 'automaticMobileLayout',
+      type: 'boolean',
+      initialValue: true,
+    }),
+    defineField({
+      name: 'mobileOrientation',
       type: 'string',
-      initialValue: 'auto',
+      initialValue: 'row',
       options: {
         layout: 'dropdown',
         list: [
-          { title: 'auto', value: 'auto' },
-          ...columnList.slice(1),
+          { title: 'row', value: 'row' },
+          { title: 'column', value: 'column' },
         ],
       },
-      validation: rule => rule.required(),
+      hidden: ({ parent }) => parent?.automaticMobileLayout,
+    }),
+    defineField({
+      name: 'mobileStart',
+      title: 'Mobile Start Column',
+      type: 'number',
+      initialValue: 11,
+      validation: rule => rule.min(1).max(23), // TODO
+      hidden: ({ parent }) => parent?.automaticMobileLayout,
+    }),
+    defineField({
+      name: 'mobileEnd',
+      title: 'Mobile End Column',
+      type: 'number',
+      initialValue: 14,
+      validation: rule => rule.min(2).max(24),
+      hidden: ({ parent }) => parent?.automaticMobileLayout,
     }),
   ],
+
 
 })
