@@ -1,6 +1,5 @@
 import { defineField, defineType } from 'sanity'
 
-import { SelectedWorksThumbnailRowsInput } from '../components/selectedWorksThumbnailRowsInput'
 import { StarIcon } from '@sanity/icons'
 
 export const selectedWorks = defineType({
@@ -14,23 +13,8 @@ export const selectedWorks = defineType({
       hidden: true,
     }),
     defineField({
-      name: 'desktopThumbnailRows',
-      title: 'Desktop thumbnail rows',
-      type: 'array',
-      of: [{ type: 'selectedWorksThumbnailRow' }],
-      components: {
-        input: SelectedWorksThumbnailRowsInput,
-      },
+      name: 'desktopLayout',
+      type: 'selectedWorksLayout',
     }),
-    defineField({
-      name: 'mobileThumbnailRows',
-      title: 'Mobile thumbnail rows',
-      type: 'array',
-      of: [{ type: 'selectedWorksThumbnailRow' }],
-      components: {
-        input: SelectedWorksThumbnailRowsInput,
-      },
-    }),
-
   ],
 })

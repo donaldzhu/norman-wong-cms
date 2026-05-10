@@ -88,3 +88,12 @@ export const muxVideoAssetRefsFromProject = (slides: unknown): string[] => {
 
   return refs
 }
+
+/** Resolve draft ↔ published id so GROQ can load slides when the reference points at either variant. */
+export function projectDocumentIdsForQuery(projectRef: string): string[] {
+  if (projectRef.startsWith('drafts.')) {
+    const published = projectRef.replace(/^drafts\./, '')
+    return published ? [projectRef, published] : [projectRef]
+  }
+  return [`drafts.${projectRef}`, projectRef]
+}

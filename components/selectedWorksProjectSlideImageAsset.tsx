@@ -1,19 +1,21 @@
 import { ImagesIcon } from '@sanity/icons'
 import createImageUrlBuilder from '@sanity/image-url'
-import { Box, Button, Card, Dialog, Flex, Spinner, Stack, Text } from '@sanity/ui'
+import { Box, Button, Dialog, Flex, Spinner, Stack, Text } from '@sanity/ui'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { AssetSourceComponentProps } from 'sanity'
 import { useClient } from 'sanity'
 
-import { assetRefsFromAllProjectSlideDocs } from '../utils/refs'
+import { assetRefsFromProject, projectDocumentIdsForQuery } from '../utils/refs'
 
 import { ReferencedAssetGrid } from './referencedAssetGrid'
+import { useSelectedWorksProjectRef } from './selectedWorksProjectContext'
 
-/** Stable reference — inline `{ apiVersion }` changes every render and can make `useClient` unstable. */
 const SANITY_CLIENT_OPTIONS = { apiVersion: '2024-01-01' as const }
 
-const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
+const SelectedWorksProjectSlideImagePicker = (props: AssetSourceComponentProps) => {
   const { onClose, onSelect } = props
+  const projectRef = useSelectedWorksProjectRef()
+  const projectId = projectRef?._ref
   const client = useClient(SANITY_CLIENT_OPTIONS)
   const builder = useMemo(() => createImageUrlBuilder(client), [client])
 
@@ -22,18 +24,27 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
   const [fetchError, setFetchError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!projectId) {
+      setRefs([])
+      setLoading(false)
+      setFetchError(null)
+      return
+    }
     let cancelled = false
     setLoading(true)
     setFetchError(null)
     client
-      .fetch<Array<{ slides?: unknown }>>(`*[_type == "project" && defined(slides)]{ slides }`)
-      .then(docs => {
+      .fetch<{ slides?: unknown } | null>(
+        `*[_type == "project" && _id in $ids][0]{ slides }`,
+        { ids: projectDocumentIdsForQuery(projectId) },
+      )
+      .then(doc => {
         if (cancelled) return
-        setRefs(assetRefsFromAllProjectSlideDocs(docs))
+        setRefs(assetRefsFromProject(doc?.slides))
       })
       .catch(() => {
         if (cancelled) return
-        setFetchError('Could not load project slides.')
+        setFetchError('Could not load slides for this project.')
         setRefs([])
       })
       .finally(() => {
@@ -42,7 +53,7 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
     return () => {
       cancelled = true
     }
-  }, [client])
+  }, [client, projectId])
 
   const handlePick = useCallback(
     (ref: string) => {
@@ -52,7 +63,14 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
   )
 
   let body: ReactNode
-  if (loading) {
+  if (!projectId) {
+    body = (
+      <Text muted>
+        Choose a <strong>Project</strong> on this block first. Only slide images from that project can
+        be used here.
+      </Text>
+    )
+  } else if (loading) {
     body = (
       <Flex justify="center" padding={4}>
         <Spinner muted />
@@ -60,19 +78,16 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
     )
   } else if (fetchError) {
     body = (
-      <Card padding={3} radius={2} tone="critical">
-        <Text size={1}>{fetchError}</Text>
-      </Card>
+      <Text size={1} muted>
+        {fetchError}
+      </Text>
     )
   } else if (refs.length === 0) {
     body = (
       <Stack space={3}>
         <Text muted>
-          No qualifying slide images yet. Add at least one <strong>image</strong> to{' '}
-          <strong>Project slides</strong> on a project, then reopen this picker.
-        </Text>
-        <Text muted size={1}>
-          Listed assets are image documents referenced from slide media (any project).
+          No slide images on this project yet. Add images to <strong>Project slides</strong> on that
+          project, then reopen this picker.
         </Text>
       </Stack>
     )
@@ -80,7 +95,7 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
     body = (
       <Stack space={3}>
         <Text muted size={1}>
-          Images already used on any project’s slides (slide → media → image).
+          Images from this project’s slides only.
         </Text>
         <ReferencedAssetGrid refs={refs} builder={builder} onPick={handlePick} />
       </Stack>
@@ -89,11 +104,11 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
 
   return (
     <Dialog
-      header="Slide images (all projects)"
-      id="referenced-all-project-slide-images"
+      header="Slide images (this project)"
+      id="selected-works-project-slide-images"
       onClose={onClose}
       width={4}
-      zOffset={800}
+      zOffset={900}
       open
     >
       <Box padding={4}>{body}</Box>
@@ -104,8 +119,8 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
   )
 }
 
-export const selectedWorkAsset = {
-  name: 'selected-work-asset',
-  component: SelectedWorkAssetPicker,
+export const selectedWorksProjectSlideImageAsset = {
+  name: 'selected-works-project-slide-images',
+  component: SelectedWorksProjectSlideImagePicker,
   icon: ImagesIcon,
 }

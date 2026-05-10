@@ -4,8 +4,9 @@ import {
   imageObject,
   projectSlide,
   projectSlideMedia,
-  selectedWorksThumbnail,
-  selectedWorksThumbnailRow,
+  selectedWorksLayout,
+  selectedWorksProject,
+  selectedWorksProjectMedia,
   videoObject,
 } from './objects'
 
@@ -23,8 +24,9 @@ export const schemaTypes = [
   projectSlide,
   project,
   allProjects,
-  selectedWorksThumbnail,
-  selectedWorksThumbnailRow,
+  selectedWorksLayout,
+  selectedWorksProject,
+  selectedWorksProjectMedia,
   projectSlideMedia,
   selectedWorks,
   info,
