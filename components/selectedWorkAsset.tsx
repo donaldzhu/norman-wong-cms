@@ -1,67 +1,36 @@
 import { ImagesIcon } from '@sanity/icons'
 import createImageUrlBuilder from '@sanity/image-url'
 import { Box, Button, Card, Dialog, Flex, Spinner, Stack, Text } from '@sanity/ui'
-import { useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { AssetSourceComponentProps } from 'sanity'
-import { useClient, useFormBuilder, useGetFormValue } from 'sanity'
+import { useClient } from 'sanity'
 
-import { selectedWorksSectionPathContext } from './selectedWorksSectionPathContext'
-import {
-  type FormPathSegment,
-  publishedAndDraftIdsFromRef,
-  selectedWorksSectionPathFromFieldPath,
-} from '../utils/selectedWorksSectionPath'
-import { assetRefsFromProject } from '../utils/refs'
+import { assetRefsFromAllProjectSlideDocs } from '../utils/refs'
 
 import { ReferencedAssetGrid } from './referencedAssetGrid'
-
-type FormBuilderWithFocus = {
-  focusPath?: readonly FormPathSegment[]
-}
 
 const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
   const { onClose, onSelect } = props
   const client = useClient({ apiVersion: '2024-01-01' })
   const builder = useMemo(() => createImageUrlBuilder(client), [client])
-  const getFormValue = useGetFormValue()
-  const formBuilder = useFormBuilder() as FormBuilderWithFocus
-  const focusPath = formBuilder.focusPath ?? []
-  const sectionPathFromContext = useContext(selectedWorksSectionPathContext)
-
-  const sectionPath = useMemo(() => {
-    if (sectionPathFromContext?.length) return sectionPathFromContext
-    return selectedWorksSectionPathFromFieldPath(focusPath)
-  }, [sectionPathFromContext, focusPath])
-
-  const projectRef = useMemo(() => {
-    if (!sectionPath?.length) return undefined
-    const project = getFormValue([...sectionPath, 'project']) as { _ref?: string } | undefined
-    return project?._ref
-  }, [getFormValue, sectionPath])
 
   const [refs, setRefs] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [fetchError, setFetchError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!projectRef) {
-      setRefs([])
-      setFetchError(null)
-      return
-    }
     let cancelled = false
     setLoading(true)
     setFetchError(null)
-    const ids = publishedAndDraftIdsFromRef(projectRef)
     client
-      .fetch<unknown>(`*[_id in $ids][0].slides`, { ids })
-      .then(slides => {
+      .fetch<Array<{ slides?: unknown }>>(`*[_type == "project" && defined(slides)]{ slides }`)
+      .then(docs => {
         if (cancelled) return
-        setRefs(assetRefsFromProject(slides))
+        setRefs(assetRefsFromAllProjectSlideDocs(docs))
       })
       .catch(() => {
         if (cancelled) return
-        setFetchError('Could not load slides for this project.')
+        setFetchError('Could not load project slides.')
         setRefs([])
       })
       .finally(() => {
@@ -70,7 +39,7 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
     return () => {
       cancelled = true
     }
-  }, [client, projectRef])
+  }, [client])
 
   const handlePick = useCallback(
     (ref: string) => {
@@ -80,20 +49,7 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
   )
 
   let body: ReactNode
-  if (!sectionPath?.length) {
-    body = (
-      <Text muted>
-        Could not resolve this thumbnail’s section in the form. Close the dialog, click into the
-        image field again, then choose <strong>Slide images (project)</strong>.
-      </Text>
-    )
-  } else if (!projectRef) {
-    body = (
-      <Text muted>
-        Select a <strong>project</strong> for this section first.
-      </Text>
-    )
-  } else if (loading) {
+  if (loading) {
     body = (
       <Flex justify="center" padding={4}>
         <Spinner muted />
@@ -109,11 +65,11 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
     body = (
       <Stack space={3}>
         <Text muted>
-          This project has no qualifying images yet. Add at least one <strong>image</strong> (not
-          only files) to <strong>Project slides</strong> on that project, then reopen this picker.
+          No qualifying slide images yet. Add at least one <strong>image</strong> to{' '}
+          <strong>Project slides</strong> on a project, then reopen this picker.
         </Text>
         <Text muted size={1}>
-          Listed assets are image documents referenced from slide media rows only.
+          Listed assets are image documents referenced from slide media (any project).
         </Text>
       </Stack>
     )
@@ -121,7 +77,7 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
     body = (
       <Stack space={3}>
         <Text muted size={1}>
-          Only images already used on this project’s slides (slide → media → image).
+          Images already used on any project’s slides (slide → media → image).
         </Text>
         <ReferencedAssetGrid refs={refs} builder={builder} onPick={handlePick} />
       </Stack>
@@ -130,8 +86,8 @@ const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
 
   return (
     <Dialog
-      header="Slide images for this project"
-      id="referenced-project-slide-images"
+      header="Slide images (all projects)"
+      id="referenced-all-project-slide-images"
       onClose={onClose}
       width={4}
       zOffset={800}

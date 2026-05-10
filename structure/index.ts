@@ -19,14 +19,16 @@ export const structure: StructureResolver = (S) =>
     .title('Content')
     .items([
       headerStructure(S),
+      infoStructure(S),
+      S.divider(),
       selectedWorksStructure(S),
       allProjectsStructure(S),
-      infoStructure(S),
       S.divider(),
       projectsStructure(S),
       ...S.documentTypeListItems().filter((listItem) => {
         const id = listItem.getId()
         if (!id) return false
+        if (id === 'mux.videoAsset') return false
         return !excludedFromAutomaticList(id)
       }),
     ])

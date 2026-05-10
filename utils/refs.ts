@@ -1,3 +1,37 @@
+/** Image asset `_ref`s from slide media on any number of project documents (deduped). */
+export const assetRefsFromAllProjectSlideDocs = (
+  docs: Array<{ slides?: unknown } | null | undefined> | null | undefined,
+): string[] => {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const doc of docs ?? []) {
+    for (const ref of assetRefsFromProject(doc?.slides)) {
+      if (!seen.has(ref)) {
+        seen.add(ref)
+        out.push(ref)
+      }
+    }
+  }
+  return out
+}
+
+/** Mux video asset `_ref`s from slide media on any number of project documents (deduped). */
+export const muxVideoAssetRefsFromAllProjectSlideDocs = (
+  docs: Array<{ slides?: unknown } | null | undefined> | null | undefined,
+): string[] => {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const doc of docs ?? []) {
+    for (const ref of muxVideoAssetRefsFromProject(doc?.slides)) {
+      if (!seen.has(ref)) {
+        seen.add(ref)
+        out.push(ref)
+      }
+    }
+  }
+  return out
+}
+
 export const assetRefsFromProject = (slides: unknown): string[] => {
   const refs: string[] = []
   const seen = new Set<string>()

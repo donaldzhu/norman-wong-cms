@@ -22,7 +22,7 @@ export const project = defineType({
       name: 'slug',
       type: 'slug',
       options: {
-        source: 'title',
+        source: doc => `${doc.title}${doc.subtitle ? `- ${doc.subtitle}` : ''}`.toLowerCase().replace(/ /g, '-'),
       },
       validation: rule => rule.required(),
     }),

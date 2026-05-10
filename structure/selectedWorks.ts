@@ -6,5 +6,9 @@ export const selectedWorksStructure = (S: StructureBuilder) =>
     .title('Selected Works')
     .icon(StarIcon)
     .id('singleton-selected-works')
-    .child(S.document().schemaType('selectedWorks').documentId('selectedWorks'))
-
+    .child(
+      S.document()
+        .schemaType('selectedWorks')
+        .documentId('selectedWorks')
+        .title('Selected Works'),
+    )

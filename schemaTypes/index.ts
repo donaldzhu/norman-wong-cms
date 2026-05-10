@@ -4,8 +4,8 @@ import {
   imageObject,
   projectSlide,
   projectSlideMedia,
-  selectedWorksSection,
   selectedWorksThumbnail,
+  selectedWorksThumbnailRow,
   videoObject,
 } from './objects'
 
@@ -24,8 +24,8 @@ export const schemaTypes = [
   project,
   allProjects,
   selectedWorksThumbnail,
+  selectedWorksThumbnailRow,
   projectSlideMedia,
-  selectedWorksSection,
   selectedWorks,
   info,
   header,
