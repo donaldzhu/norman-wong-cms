@@ -9,9 +9,12 @@ import { assetRefsFromAllProjectSlideDocs } from '../utils/refs'
 
 import { ReferencedAssetGrid } from './referencedAssetGrid'
 
+/** Stable reference — inline `{ apiVersion }` changes every render and can make `useClient` unstable. */
+const SANITY_CLIENT_OPTIONS = { apiVersion: '2024-01-01' as const }
+
 const SelectedWorkAssetPicker = (props: AssetSourceComponentProps) => {
   const { onClose, onSelect } = props
-  const client = useClient({ apiVersion: '2024-01-01' })
+  const client = useClient(SANITY_CLIENT_OPTIONS)
   const builder = useMemo(() => createImageUrlBuilder(client), [client])
 
   const [refs, setRefs] = useState<string[]>([])

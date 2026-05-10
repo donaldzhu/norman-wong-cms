@@ -10,6 +10,9 @@ import {
   muxVideoAssetRefsFromAllProjectSlideDocs,
 } from '../utils/refs'
 
+/** Stable reference — inline `{ apiVersion }` changes every render and can make `useClient` unstable. */
+const SANITY_CLIENT_OPTIONS = { apiVersion: '2024-01-01' as const }
+
 type SlideMediaPickerDialogProps = {
   onClose: () => void
   onPickImage: (imageAssetId: string) => void
@@ -21,7 +24,7 @@ export function SlideMediaPickerDialog({
   onPickImage,
   onPickVideo,
 }: SlideMediaPickerDialogProps) {
-  const client = useClient({ apiVersion: '2024-01-01' })
+  const client = useClient(SANITY_CLIENT_OPTIONS)
   const builder = useMemo(() => createImageUrlBuilder(client), [client])
 
   const [imageRefs, setImageRefs] = useState<string[]>([])

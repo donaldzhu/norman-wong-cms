@@ -22,6 +22,9 @@ import { insert, set, setIfMissing, unset, useClient } from 'sanity'
 
 import { SlideMediaPickerDialog } from './slideMediaPickerDialog'
 
+/** Stable reference — inline `{ apiVersion }` changes every render and can make `useClient` unstable. */
+const SANITY_CLIENT_OPTIONS = { apiVersion: '2024-01-01' as const }
+
 type ThumbnailCell = {
   _key: string
   _type?: string
@@ -258,9 +261,9 @@ function ThumbnailRowCarousel({
 export function SelectedWorksThumbnailRowsInput(
   props: ArrayOfObjectsInputProps,
 ): ReactElement {
-  const { onChange, value = [], readOnly, path, schemaType } = props
+  const { onChange, value = [], readOnly, path, schemaType, validation = [] } = props
   const dialogTitle = schemaType.title ?? 'Thumbnail rows'
-  const client = useClient({ apiVersion: '2024-01-01' })
+  const client = useClient(SANITY_CLIENT_OPTIONS)
   const builder = useMemo(() => createImageUrlBuilder(client), [client])
 
   const rowsField = thumbnailRowsFieldFromPath(path ?? [])
@@ -281,7 +284,7 @@ export function SelectedWorksThumbnailRowsInput(
 
   useEffect(() => {
     if (!muxAssetIds.length) {
-      setMuxPlaybackById({})
+      setMuxPlaybackById(prev => (Object.keys(prev).length === 0 ? prev : {}))
       return
     }
     let cancelled = false
@@ -454,8 +457,21 @@ export function SelectedWorksThumbnailRowsInput(
       ? 'No rows yet — open the editor to add thumbnail rows.'
       : `${rowCount} row${rowCount === 1 ? '' : 's'} · ${cellCount} cell${cellCount === 1 ? '' : 's'}`
 
+  const validationTone = (level: string): 'critical' | 'caution' | 'transparent' => {
+    if (level === 'error') return 'critical'
+    if (level === 'warning') return 'caution'
+    return 'transparent'
+  }
+
+  const validationCards = validation.map((marker, i) => (
+    <Card key={i} padding={3} radius={2} tone={validationTone(marker.level)}>
+      <Text size={1}>{marker.message}</Text>
+    </Card>
+  ))
+
   return (
     <Stack space={3}>
+      {validationCards}
       <Card padding={3} radius={2} tone="transparent" border>
         <Stack space={3}>
           <Text size={1} muted>
@@ -483,7 +499,10 @@ export function SelectedWorksThumbnailRowsInput(
             padding={4}
             style={{ maxHeight: 'min(85vh, 900px)', overflowY: 'auto' }}
           >
-            <Stack space={4}>{editorBody}</Stack>
+            <Stack space={4}>
+              {validationCards}
+              {editorBody}
+            </Stack>
           </Box>
           <Flex justify="flex-end" paddingBottom={4} paddingX={4} gap={2}>
             <Button text="Done" tone="primary" onClick={() => setEditorOpen(false)} />
