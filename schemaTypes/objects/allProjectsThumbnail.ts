@@ -1,17 +1,17 @@
-import * as changeCase from 'change-case'
-
 import { assetRefsFromProject, muxVideoAssetRefsFromProject } from '../../utils/refs'
 import { defineField, defineType } from 'sanity'
 
+import { ProjectSlidePreview } from '../../components/previews/allProjectsThumbnailPreview'
 import { allProjectsAssetSource } from '../../components/allProjectsAsset'
 
 export const allProjectsThumbnail = defineType({
   name: 'allProjectsThumbnail',
   title: 'Image or file',
   type: 'object',
+  components: { preview: ProjectSlidePreview },
   fields: [
     defineField({
-      name: 'type',
+      name: 'mediaType',
       type: 'string',
       initialValue: 'image',
       options: {
@@ -30,11 +30,11 @@ export const allProjectsThumbnail = defineType({
         sources: [allProjectsAssetSource],
         disableNew: true,
       },
-      hidden: ({ parent }) => parent?.type !== 'image',
+      hidden: ({ parent }) => parent?.mediaType !== 'image',
       validation: rule =>
         rule.custom((value, context) => {
-          const parent = context.parent as { type?: string } | undefined
-          if (parent?.type !== 'image') return true
+          const parent = context.parent as { mediaType?: string } | undefined
+          if (parent?.mediaType !== 'image') return true
           if (!value) return 'Add an image'
           const img = value as { asset?: { _ref?: string } }
           const ref = img?.asset?._ref
@@ -51,11 +51,11 @@ export const allProjectsThumbnail = defineType({
     defineField({
       name: 'video',
       type: 'mux.video',
-      hidden: ({ parent }) => parent?.type !== 'video',
+      hidden: ({ parent }) => parent?.mediaType !== 'video',
       validation: rule =>
         rule.custom(async (value: unknown, context) => {
-          const parent = context.parent as { type?: string } | undefined
-          if (parent?.type !== 'video') return true
+          const parent = context.parent as { mediaType?: string } | undefined
+          if (parent?.mediaType !== 'video') return true
           const mux = value as { asset?: { _ref?: string } } | null | undefined
           if (!mux?.asset?._ref) return 'Add a video'
           const doc = context.document as { slides?: unknown } | undefined
@@ -96,14 +96,11 @@ export const allProjectsThumbnail = defineType({
   ],
   preview: {
     select: {
-      size: 'size',
       mediaType: 'mediaType',
-    },
-    prepare({ size, mediaType }) {
-      return {
-        title: changeCase.capitalCase(mediaType ?? 'image'),
-        subtitle: size ? changeCase.capitalCase(size) : undefined,
-      }
-    },
+      image: 'image',
+      video: 'video',
+      desktopSize: 'desktopSize',
+      mobileSize: 'mobileSize',
+    }
   },
 })

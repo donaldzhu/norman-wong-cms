@@ -1,7 +1,6 @@
-import { Flex, Stack, Text } from '@sanity/ui'
 import { PreviewProps } from 'sanity'
-import { MediaRefPreview, type MediaData } from './mediaRefPreview'
-
+import { type MediaData } from './mediaRefPreview'
+import { PreviewTemplate } from './previewTemplate'
 
 type ProjectSlidePreviewProps = PreviewProps & {
   description?: string
@@ -30,18 +29,9 @@ export const ProjectSlidePreview = (props: PreviewProps) => {
   if (description) titleParts.push(description)
   if (year != null) titleParts.push(String(year))
   const title = titleParts.length ? titleParts.join(' · ') : 'Untitled'
+  const subtitle = countMedia(slideMedia ?? [])
 
   return (
-    <Flex align="center" gap={2} paddingY={2}>
-      <MediaRefPreview data={slideMedia} />
-      <Stack space={2} flex={1} style={{ minWidth: 0 }} >
-        <Text size={1} weight="semibold" textOverflow="ellipsis">
-          {title}
-        </Text>
-        <Text size={1} muted textOverflow="ellipsis">
-          {countMedia(slideMedia ?? [])}
-        </Text>
-      </Stack>
-    </Flex>
+    <PreviewTemplate data={slideMedia} title={title} subtitle={subtitle} />
   )
 }

@@ -38,7 +38,7 @@ export const project = defineType({
       title: '"All Projects" Thumbnails',
       type: 'array',
       of: [{ type: 'allProjectsThumbnail' }],
-      validation: rule => rule.min(1).max(10),
+      validation: rule => rule.min(1).max(10), // TODO
     }),
     defineField({
       name: 'hidden',

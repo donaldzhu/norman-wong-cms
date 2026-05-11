@@ -36,7 +36,9 @@ const imageThumbUrl = (
   }
 }
 
-export const MediaRefPreview = ({ data: _data }: ProjectSlidePreviewProps) => {
+export const MediaRefPreview = ({
+  data: _data,
+}: ProjectSlidePreviewProps) => {
   const data = useMemo(() => (Array.isArray(_data) ? _data : []), [_data])
   const first = data[0]
   const client = useClient(SANITY_CLIENT_OPTIONS)
@@ -67,8 +69,8 @@ export const MediaRefPreview = ({ data: _data }: ProjectSlidePreviewProps) => {
     return () => { cancelled = true }
   }, [muxAssetId, client])
 
-
   const imageRef = first?.mediaType === 'image' ? first.image?.asset?._ref : undefined
+
   const thumbUrl = imageRef ?
     imageThumbUrl(builder, imageRef) :
     first?.mediaType === 'video' && muxPlaybackById ?
