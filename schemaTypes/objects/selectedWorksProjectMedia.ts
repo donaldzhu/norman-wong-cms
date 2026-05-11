@@ -1,4 +1,5 @@
 import * as changeCase from 'change-case'
+
 import { defineField, defineType } from 'sanity'
 
 import { SelectedWorksProjectMuxFieldInput } from '../../components/selectedWorksProjectMuxFieldInput'
@@ -11,7 +12,7 @@ export const selectedWorksProjectMedia = defineType({
   type: 'object',
   fields: [
     defineField({
-      name: 'type',
+      name: 'mediaType',
       type: 'string',
       initialValue: 'image',
       options: {
@@ -30,11 +31,11 @@ export const selectedWorksProjectMedia = defineType({
         sources: [selectedWorksProjectSlideImageAsset],
         disableNew: true,
       },
-      hidden: ({ parent }) => parent?.type !== 'image',
+      hidden: ({ parent }) => parent?.mediaType !== 'image',
       validation: rule =>
         rule.custom((value, context) => {
-          const parent = context.parent as { type?: string } | undefined
-          if (parent?.type !== 'image') return true
+          const parent = context.parent as { mediaType?: string } | undefined
+          if (parent?.mediaType !== 'image') return true
           if (!value) return 'Add an image'
           const img = value as { asset?: { _ref?: string } }
           if (!img?.asset?._ref) return 'Add an image'
@@ -47,52 +48,25 @@ export const selectedWorksProjectMedia = defineType({
       components: {
         input: SelectedWorksProjectMuxFieldInput,
       },
-      hidden: ({ parent }) => parent?.type !== 'video',
+      hidden: ({ parent }) => parent?.mediaType !== 'video',
       validation: rule =>
         rule.custom((value: unknown, context) => {
-          const parent = context.parent as { type?: string } | undefined
-          if (parent?.type !== 'video') return true
+          const parent = context.parent as { mediaType?: string } | undefined
+          if (parent?.mediaType !== 'video') return true
           const mux = value as { asset?: { _ref?: string } } | null | undefined
           if (!mux?.asset?._ref) return 'Add a video'
           return true
         }),
     }),
-    defineField({
-      name: 'desktopSize',
-      type: 'string',
-      initialValue: 's',
-      hidden: true,
-      options: {
-        layout: 'dropdown',
-        list: [
-          { title: 'S', value: 's' },
-          { title: 'M', value: 'm' },
-          { title: 'L', value: 'l' },
-        ],
-      },
-    }),
-    defineField({
-      name: 'mobileSize',
-      type: 'string',
-      initialValue: 's',
-      hidden: true,
-      options: {
-        layout: 'dropdown',
-        list: [
-          { title: 'S', value: 's' },
-          { title: 'L', value: 'l' },
-        ],
-      },
-    }),
   ],
   preview: {
     select: {
-      type: 'type',
+      mediaType: 'mediaType',
       image: 'image',
       video: 'video',
     },
-    prepare({ type, image, video }) {
-      const t = type ?? 'image'
+    prepare({ mediaType, image, video }) {
+      const t = mediaType ?? 'image'
       return {
         title: changeCase.capitalCase(t),
         media: t === 'video' ? video : image,

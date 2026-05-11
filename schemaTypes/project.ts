@@ -21,6 +21,7 @@ export const project = defineType({
     defineField({
       name: 'slug',
       type: 'slug',
+      description: 'This is the URL subpath for the project.',
       options: {
         source: doc => `${doc.title}${doc.subtitle ? `- ${doc.subtitle}` : ''}`.toLowerCase().replace(/ /g, '-'),
       },
@@ -49,11 +50,13 @@ export const project = defineType({
   preview: {
     select: {
       title: 'title',
+      subtitle: 'subtitle',
       allProjectsThumbnails: 'allProjectsThumbnails',
     },
-    prepare({ title, allProjectsThumbnails }) {
+    prepare({ title, subtitle, allProjectsThumbnails }) {
       return {
         title,
+        subtitle,
         media: allProjectsThumbnails?.[0]?.image,
       }
     },

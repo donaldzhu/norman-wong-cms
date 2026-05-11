@@ -16,5 +16,9 @@ export const selectedWorks = defineType({
       name: 'desktopLayout',
       type: 'selectedWorksLayout',
     }),
+    defineField({
+      name: 'mobileLayout',
+      type: 'selectedWorksLayout',
+    }),
   ],
 })
