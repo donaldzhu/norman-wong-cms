@@ -8,7 +8,7 @@ export const projectSlideMedia = defineType({
   icon: ProjectsIcon,
   fields: [
     defineField({
-      name: 'type',
+      name: 'mediaType',
       type: 'string',
       initialValue: 'image',
       options: {

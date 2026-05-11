@@ -46,10 +46,10 @@ export const assetRefsFromProject = (slides: unknown): string[] => {
       if (!item || typeof item !== 'object') continue
       const row = item as {
         _type?: string
-        type?: string
+        mediaType?: string
         image?: { asset?: { _ref?: string } }
       }
-      if (row._type !== 'projectSlideMedia' || row.type !== 'image') continue
+      if (row._type !== 'projectSlideMedia' || row.mediaType !== 'image') continue
       const ref = row.image?.asset?._ref
       if (!ref || seen.has(ref)) continue
       seen.add(ref)
@@ -75,10 +75,10 @@ export const muxVideoAssetRefsFromProject = (slides: unknown): string[] => {
       if (!item || typeof item !== 'object') continue
       const row = item as {
         _type?: string
-        type?: string
+        mediaType?: string
         video?: { asset?: { _ref?: string } }
       }
-      if (row._type !== 'projectSlideMedia' || row.type !== 'video') continue
+      if (row._type !== 'projectSlideMedia' || row.mediaType !== 'video') continue
       const ref = row.video?.asset?._ref
       if (!ref || seen.has(ref)) continue
       seen.add(ref)

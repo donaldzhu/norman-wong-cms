@@ -9,7 +9,10 @@
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
     "dev": "sanity dev",
-    "start": "sanity start"
+    "start": "sanity start",
+    "migrate:list": "sanity migrations list",
+    "migrate:project-slide-media-type:dry": "sanity migrations run rename-project-slide-media-type-to-media-type",
+    "migrate:project-slide-media-type": "sanity migrations run rename-project-slide-media-type-to-media-type --no-dry-run"
   },
   "keywords": [
     "sanity"
