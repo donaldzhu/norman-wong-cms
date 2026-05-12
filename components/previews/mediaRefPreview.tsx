@@ -10,7 +10,7 @@ const THUMBNAIL_SIZE = 33
 const SANITY_IMAGE_SIZE = 200
 
 export interface MediaData {
-  mediaType: 'image' | 'video'
+  mediaType: string
   image?: { asset?: { _ref?: string } }
   video?: { asset?: { _ref?: string } }
 }

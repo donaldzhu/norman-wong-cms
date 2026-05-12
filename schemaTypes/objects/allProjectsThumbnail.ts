@@ -3,6 +3,7 @@ import { defineField, defineType } from 'sanity'
 
 import { ProjectSlidePreview } from '../../components/previews/allProjectsThumbnailPreview'
 import { allProjectsAssetSource } from '../../components/allProjectsAsset'
+import { ButtonToggleInput } from '../../components/buttonToggleInput'
 
 export const allProjectsThumbnail = defineType({
   name: 'allProjectsThumbnail',
@@ -14,8 +15,8 @@ export const allProjectsThumbnail = defineType({
       name: 'mediaType',
       type: 'string',
       initialValue: 'image',
+      components: { input: ButtonToggleInput },
       options: {
-        layout: 'radio',
         list: [
           { title: 'Image', value: 'image' },
           { title: 'Video', value: 'video' },
