@@ -1,20 +1,50 @@
-import { MediaRefPreview, type MediaData } from './mediaRefPreview'
-import { Flex, Stack, Text } from '@sanity/ui'
+import { Box, Flex, Stack, Text } from '@sanity/ui'
+
+import { DocumentIcon } from '@sanity/icons'
+import type { MediaData } from '../types/media'
+import { MediaRefPreview } from './mediaRefPreview'
+import { MediaType } from '../../constants/enum'
+import { mediaDataToMediaRef } from '../../utils/refs'
 
 interface PreviewTemplateProps {
-  data?: MediaData[]
+  data?: MediaData
   title?: string
   subtitle?: string
 }
+
+const THUMBNAIL_SIZE = 33
 
 export const PreviewTemplate = ({
   data,
   title,
   subtitle,
 }: PreviewTemplateProps) => {
+  const mediaData = mediaDataToMediaRef(data)
+
   return (
     <Flex align="center" gap={2} paddingY={2}>
-      <MediaRefPreview data={data} />
+      <Box
+        flex="none"
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: THUMBNAIL_SIZE,
+          height: THUMBNAIL_SIZE,
+          borderRadius: 3,
+          overflow: 'hidden',
+          background: 'var(--card-muted-bg-color)',
+        }}
+      >
+        {mediaData ?
+          <MediaRefPreview
+            mediaWithRef={mediaData?.media}
+            mediaType={mediaData?.mediaType}
+            sanityImageWidth={200}
+            style={{ objectFit: 'cover' }} /> :
+          <DocumentIcon style={{ width: 33, height: 21 }} />
+        }
+      </Box>
       <Stack space={2} flex={1} style={{ minWidth: 0 }} >
         <Text size={1} textOverflow="ellipsis">
           {title}

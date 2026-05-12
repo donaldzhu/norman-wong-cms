@@ -1,5 +1,6 @@
+import type { MediaData } from '../types/media'
+import { MediaType } from '../../constants/enum'
 import { PreviewProps } from 'sanity'
-import { type MediaData } from './mediaRefPreview'
 import { PreviewTemplate } from './previewTemplate'
 
 type ProjectSlidePreviewProps = PreviewProps & {
@@ -10,13 +11,12 @@ type ProjectSlidePreviewProps = PreviewProps & {
 
 const countMedia = (rows: MediaData[]) => {
   const counter = []
-  const imageCounter = rows.filter(r => r.mediaType === 'image').length
-  const videoCounter = rows.filter(r => r.mediaType === 'video').length
+  const imageCounter = rows.filter(r => r.mediaType === MediaType.IMAGE).length
+  const videoCounter = rows.filter(r => r.mediaType === MediaType.VIDEO).length
   if (imageCounter) counter.push(`${imageCounter} images`)
   if (videoCounter) counter.push(`${videoCounter} videos`)
   return counter.length ? counter.join(' · ') : 'No media'
 }
-
 
 export const ProjectSlidePreview = (props: PreviewProps) => {
   const {
@@ -32,6 +32,6 @@ export const ProjectSlidePreview = (props: PreviewProps) => {
   const subtitle = countMedia(slideMedia ?? [])
 
   return (
-    <PreviewTemplate data={slideMedia} title={title} subtitle={subtitle} />
+    <PreviewTemplate data={slideMedia?.[0]} title={title} subtitle={subtitle} />
   )
 }

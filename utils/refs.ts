@@ -1,3 +1,8 @@
+import type { AssetRef, MediaData, MediaRef, ValidAssetRef, ValidMediaRef } from '../components/types/media'
+
+import { MediaType } from '../constants/enum'
+import _ from 'lodash'
+
 /** Image asset `_ref`s from slide media on any number of project documents (deduped). */
 export const assetRefsFromAllProjectSlideDocs = (
   docs: Array<{ slides?: unknown } | null | undefined> | null | undefined,
@@ -5,7 +10,7 @@ export const assetRefsFromAllProjectSlideDocs = (
   const seen = new Set<string>()
   const out: string[] = []
   for (const doc of docs ?? []) {
-    for (const ref of assetRefsFromProject(doc?.slides)) {
+    for (const ref of toRemove_assetRefsFromProject(doc?.slides)) {
       if (!seen.has(ref)) {
         seen.add(ref)
         out.push(ref)
@@ -32,7 +37,8 @@ export const muxVideoAssetRefsFromAllProjectSlideDocs = (
   return out
 }
 
-export const assetRefsFromProject = (slides: unknown): string[] => {
+// TODO: remove
+export const toRemove_assetRefsFromProject = (slides: unknown): string[] => {
   const refs: string[] = []
   const seen = new Set<string>()
   if (!Array.isArray(slides)) return refs
@@ -49,7 +55,7 @@ export const assetRefsFromProject = (slides: unknown): string[] => {
         mediaType?: string
         image?: { asset?: { _ref?: string } }
       }
-      if (row._type !== 'projectSlideMedia' || row.mediaType !== 'image') continue
+      if (row._type !== 'projectSlideMedia' || row.mediaType !== MediaType.IMAGE) continue
       const ref = row.image?.asset?._ref
       if (!ref || seen.has(ref)) continue
       seen.add(ref)
@@ -96,4 +102,27 @@ export function projectDocumentIdsForQuery(projectRef: string): string[] {
     return published ? [projectRef, published] : [projectRef]
   }
   return [`drafts.${projectRef}`, projectRef]
+}
+
+
+export const isValidAssetRef = (ref?: AssetRef): ref is ValidAssetRef => !!ref?.asset?._ref
+export const isValidMediaRef = (ref?: MediaRef): ref is ValidMediaRef => !!ref?.mediaType && !!ref?.media?.asset?._ref
+
+export const mediaDataToMediaRef = (data?: MediaData): MediaRef | undefined => {
+  const { mediaType, image, video } = data ?? {}
+  return { mediaType, media: mediaType === MediaType.IMAGE ? image : video }
+}
+
+export const mediaRefsFromProject = (slides: unknown): ValidMediaRef[] => {
+  const refs: (MediaRef | undefined)[] = []
+
+  if (!Array.isArray(slides)) return []
+  for (const slide of slides) {
+    const media = (slide as { media?: unknown }).media
+    if (!Array.isArray(media)) continue
+    for (const item of media)
+      refs.push(mediaDataToMediaRef(item as MediaData))
+  }
+
+  return _.uniq(refs.filter(isValidMediaRef))
 }

@@ -1,0 +1,1 @@
+export const SANITY_CLIENT_OPTIONS = { apiVersion: '2026-05-01' } as const

@@ -1,5 +1,6 @@
 import { defineField, defineType } from 'sanity'
 
+import { MediaType } from '../../constants/enum'
 import { mediaAssetSource } from 'sanity-plugin-media'
 
 export const imageObject = defineType({
@@ -8,7 +9,7 @@ export const imageObject = defineType({
   type: 'object',
   fields: [
     defineField({
-      name: 'image',
+      name: MediaType.IMAGE,
       type: 'image',
       options: {
         sources: [mediaAssetSource],
@@ -18,7 +19,7 @@ export const imageObject = defineType({
   ],
   preview: {
     select: {
-      image: 'image',
+      image: MediaType.IMAGE,
     },
     prepare({ image }) {
       return {

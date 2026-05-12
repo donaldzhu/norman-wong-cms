@@ -1,62 +1,83 @@
-import { assetRefsFromProject, muxVideoAssetRefsFromProject } from '../../utils/refs'
+import { AssetPickerField, createAssetPickerButton } from '../../components/assetPicker/refMediaPickerButton'
+import { MediaType, Size } from '../../constants/enum'
 import { defineField, defineType } from 'sanity'
+import { muxVideoAssetRefsFromProject, toRemove_assetRefsFromProject } from '../../utils/refs'
 
-import { ProjectSlidePreview } from '../../components/previews/allProjectsThumbnailPreview'
-import { allProjectsAssetSource } from '../../components/allProjectsAsset'
+import { AllProjectSlidePreview } from '../../components/previews/allProjectsThumbnailPreview'
 import { ButtonToggleInput } from '../../components/buttonToggleInput'
+import { DocumentIcon } from '@sanity/icons'
 
+const SLIDES_FIELD_ID = 'slides'
+
+const SIZE_FIELDSET = 'sizes'
 export const allProjectsThumbnail = defineType({
   name: 'allProjectsThumbnail',
   title: 'Image or file',
   type: 'object',
-  components: { preview: ProjectSlidePreview },
+  components: { preview: AllProjectSlidePreview },
+  fieldsets: [
+    {
+      name: SIZE_FIELDSET,
+      title: 'Size Settings',
+      options: { columns: 2 }
+    },
+  ],
   fields: [
     defineField({
       name: 'mediaType',
       type: 'string',
-      initialValue: 'image',
+      initialValue: MediaType.IMAGE,
       components: { input: ButtonToggleInput },
       options: {
         list: [
-          { title: 'Image', value: 'image' },
-          { title: 'Video', value: 'video' },
+          { title: 'Image', value: MediaType.IMAGE },
+          { title: 'Video', value: MediaType.VIDEO },
         ],
       },
       validation: rule => rule.required(),
     }),
     defineField({
-      name: 'image',
+      name: MediaType.IMAGE,
       type: 'image',
-      options: {
-        sources: [allProjectsAssetSource],
-        disableNew: true,
+      components: {
+        input: createAssetPickerButton({
+          fieldId: SLIDES_FIELD_ID,
+          mediaType: MediaType.IMAGE,
+        }),
+        field: AssetPickerField,
       },
-      hidden: ({ parent }) => parent?.mediaType !== 'image',
+      hidden: ({ parent }) => parent?.mediaType !== MediaType.IMAGE,
       validation: rule =>
         rule.custom((value, context) => {
           const parent = context.parent as { mediaType?: string } | undefined
-          if (parent?.mediaType !== 'image') return true
+          if (parent?.mediaType !== MediaType.IMAGE) return true
           if (!value) return 'Add an image'
           const img = value as { asset?: { _ref?: string } }
           const ref = img?.asset?._ref
           if (!ref) return 'Add an image'
           const doc = context.document as { slides?: unknown } | undefined
-          const allowed = new Set(assetRefsFromProject(doc?.slides))
+          const allowed = new Set(toRemove_assetRefsFromProject(doc?.slides))
           if (!allowed.has(ref)) {
             return 'The image thumbnail must appear within the project.'
           }
           return true
         }),
-
     }),
     defineField({
-      name: 'video',
+      name: MediaType.VIDEO,
       type: 'mux.video',
-      hidden: ({ parent }) => parent?.mediaType !== 'video',
+      components: {
+        input: createAssetPickerButton({
+          fieldId: SLIDES_FIELD_ID,
+          mediaType: MediaType.VIDEO,
+        }),
+        field: AssetPickerField,
+      },
+      hidden: ({ parent }) => parent?.mediaType !== MediaType.VIDEO,
       validation: rule =>
         rule.custom(async (value: unknown, context) => {
           const parent = context.parent as { mediaType?: string } | undefined
-          if (parent?.mediaType !== 'video') return true
+          if (parent?.mediaType !== MediaType.VIDEO) return true
           const mux = value as { asset?: { _ref?: string } } | null | undefined
           if (!mux?.asset?._ref) return 'Add a video'
           const doc = context.document as { slides?: unknown } | undefined
@@ -69,37 +90,44 @@ export const allProjectsThumbnail = defineType({
     }),
     defineField({
       name: 'desktopSize',
+      title: 'Desktop',
       type: 'string',
-      initialValue: 's',
+      initialValue: Size.S,
+      fieldset: SIZE_FIELDSET,
       options: {
-        layout: 'dropdown',
         list: [
-          { title: 'S', value: 's' },
-          { title: 'M', value: 'm' },
-          { title: 'L', value: 'l' },
+          { title: 'S', value: Size.S },
+          { title: 'M', value: Size.M },
+          { title: 'L', value: Size.L },
         ],
       },
+      components: { input: ButtonToggleInput },
     }),
     defineField({
       name: 'mobileSize',
+      title: 'Mobile',
       type: 'string',
-      initialValue: 's',
+      initialValue: Size.S,
+      fieldset: SIZE_FIELDSET,
       options: {
-        layout: 'dropdown',
         list: [
-          { title: 'S', value: 's' },
-          { title: 'L', value: 'l' },
+          { title: 'S', value: Size.S },
+          { title: 'L', value: Size.L },
         ],
       },
+      components: { input: ButtonToggleInput },
     }),
-
-
+    defineField({
+      name: 'hideOnMobile',
+      type: 'boolean',
+      initialValue: false,
+    }),
   ],
   preview: {
     select: {
       mediaType: 'mediaType',
-      image: 'image',
-      video: 'video',
+      image: MediaType.IMAGE,
+      video: MediaType.VIDEO,
       desktopSize: 'desktopSize',
       mobileSize: 'mobileSize',
     }

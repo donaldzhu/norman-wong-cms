@@ -1,17 +1,16 @@
-import { PreviewProps } from 'sanity'
-import { type MediaData } from './mediaRefPreview'
 import * as changeCase from 'change-case'
-import { PreviewTemplate } from './previewTemplate'
 
-type ProjectSlidePreviewProps = PreviewProps & {
-  desktopSize?: string
-  mobileSize?: string
-  mediaType: MediaData['mediaType']
-  image?: MediaData['image']
-  video?: MediaData['video']
+import type { MediaData } from '../types/media'
+import { PreviewProps } from 'sanity'
+import { PreviewTemplate } from './previewTemplate'
+import type { Size } from '../../constants/enum'
+
+type ProjectSlidePreviewProps = PreviewProps & MediaData & {
+  desktopSize?: Size
+  mobileSize?: Size
 }
 
-export const ProjectSlidePreview = (props: PreviewProps) => {
+export const AllProjectSlidePreview = (props: PreviewProps) => {
   const {
     desktopSize,
     mobileSize,
@@ -34,6 +33,6 @@ export const ProjectSlidePreview = (props: PreviewProps) => {
   }] : undefined
 
   return (
-    <PreviewTemplate data={data} title={title} subtitle={subtitle} />
+    <PreviewTemplate data={data?.[0]} title={title} subtitle={subtitle} />
   )
 }

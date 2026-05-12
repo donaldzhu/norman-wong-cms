@@ -1,63 +1,55 @@
+import { Flex, Spinner } from '@sanity/ui'
 import { useEffect, useMemo, useState } from 'react'
 
-import { Box } from '@sanity/ui'
-import { DocumentIcon } from '@sanity/icons'
+import { MediaType } from '../../constants/enum'
+import { SANITY_CLIENT_OPTIONS } from '../../constants/configs'
 import { createImageUrlBuilder } from '@sanity/image-url'
 import { useClient } from 'sanity'
 
-const SANITY_CLIENT_OPTIONS = { apiVersion: '2026-05-01' } as const
-const THUMBNAIL_SIZE = 33
-const SANITY_IMAGE_SIZE = 200
-
-export interface MediaData {
-  mediaType: string
-  image?: { asset?: { _ref?: string } }
-  video?: { asset?: { _ref?: string } }
-}
-
-type ProjectSlidePreviewProps = {
-  data?: MediaData[]
+type MediaRefPreviewProps = {
+  mediaType?: MediaType
+  mediaWithRef?: { asset?: { _ref?: string } }
+  style?: React.CSSProperties
+  sanityImageWidth: number
+  spinnerSize?: number | string
+  showSpinner?: boolean
 }
 
 const imageThumbUrl = (
   builder: ReturnType<typeof createImageUrlBuilder>,
   imageRef: string,
-): string | undefined => {
-
+  sanityImageWidth: number,
+) => {
   try {
     return builder
       .image({ asset: { _type: 'reference', _ref: imageRef } })
-      .width(SANITY_IMAGE_SIZE)
-      .height(SANITY_IMAGE_SIZE)
+      .width(sanityImageWidth)
       .fit('crop')
       .url()
-  } catch {
-    return undefined
-  }
+  } catch { }
 }
 
 export const MediaRefPreview = ({
-  data: _data,
-}: ProjectSlidePreviewProps) => {
-  const data = useMemo(() => (Array.isArray(_data) ? _data : []), [_data])
-  const first = data[0]
+  mediaWithRef,
+  mediaType,
+  style,
+  sanityImageWidth,
+  spinnerSize = '100%',
+  showSpinner = false,
+}: MediaRefPreviewProps) => {
   const client = useClient(SANITY_CLIENT_OPTIONS)
   const builder = useMemo(() => createImageUrlBuilder(client), [client])
 
-  const muxAssetId = useMemo(() => {
-    if (first?.mediaType === 'video' && first.video?.asset?._ref) return first.video.asset._ref
-    return undefined
-  }, [data])
-
-  const [muxPlaybackById, setMuxPlaybackById] = useState<string>()
+  const mediaRef = mediaWithRef?.asset?._ref
+  const [muxPlaybackById, setMuxPlaybackById] = useState<string | undefined>()
 
   useEffect(() => {
-    if (!muxAssetId) return setMuxPlaybackById(undefined)
+    if (!mediaRef || mediaType !== MediaType.VIDEO) return setMuxPlaybackById(undefined)
     let cancelled = false
     client
       .fetch<Array<{ _id: string; playbackId?: string }>>(
         `*[_type == "mux.videoAsset" && _id == $id]{ _id, playbackId }`,
-        { id: muxAssetId },
+        { id: mediaRef },
       )
       .then(result => {
         if (cancelled) return
@@ -67,37 +59,37 @@ export const MediaRefPreview = ({
         if (!cancelled) setMuxPlaybackById(undefined)
       })
     return () => { cancelled = true }
-  }, [muxAssetId, client])
+  }, [mediaRef, client])
 
-  const imageRef = first?.mediaType === 'image' ? first.image?.asset?._ref : undefined
-
-  const thumbUrl = imageRef ?
-    imageThumbUrl(builder, imageRef) :
-    first?.mediaType === 'video' && muxPlaybackById ?
-      `https://image.mux.com/${muxPlaybackById}/thumbnail.jpg?width=200&height=200&fit_mode=smartcrop` :
-      undefined
+  const thumbUrl = !mediaRef ? undefined :
+    mediaType === MediaType.IMAGE ?
+      imageThumbUrl(builder, mediaRef, sanityImageWidth) :
+      mediaType === MediaType.VIDEO && muxPlaybackById ?
+        `https://image.mux.com/${muxPlaybackById}/thumbnail.jpg?width=${sanityImageWidth}&height=${sanityImageWidth}&fit_mode=smartcrop` :
+        undefined
 
   return (
-    <Box
-      flex="none"
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: THUMBNAIL_SIZE,
-        height: THUMBNAIL_SIZE,
-        borderRadius: 3,
-        overflow: 'hidden',
-        background: 'var(--card-muted-bg-color)',
-      }}
-    >
-      {thumbUrl ? (
-        <img
-          alt=""
-          src={thumbUrl}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-        />
-      ) : <DocumentIcon width={THUMBNAIL_SIZE} height={21} />}
-    </Box>
+    thumbUrl ? (
+      <img
+        alt=""
+        src={thumbUrl}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+          display: 'block',
+          ...style,
+        }}
+      />
+    ) : showSpinner ? (
+      <Flex justify="center" align="center" padding={5} style={{
+        width: spinnerSize,
+        height: spinnerSize,
+        boxSizing: 'border-box',
+      }} >
+        <Spinner muted />
+      </Flex>
+    ) : null
   )
 }
+

@@ -3,20 +3,19 @@ import { Box, Button, Dialog, Flex, Spinner, Stack, Text } from '@sanity/ui'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useClient } from 'sanity'
 
-import { ReferencedAssetGrid } from './referencedAssetGrid'
-import { ReferencedMuxGrid, type MuxAssetThumb } from './referencedMuxGrid'
+import { MediaType } from '../constants/enum'
 import {
   assetRefsFromAllProjectSlideDocs,
-  assetRefsFromProject,
+  toRemove_assetRefsFromProject,
   muxVideoAssetRefsFromAllProjectSlideDocs,
   muxVideoAssetRefsFromProject,
   projectDocumentIdsForQuery,
 } from '../utils/refs'
+import { ReferencedImageGrid } from './assetPicker/_referencedImageGrid'
+import { ReferencedMuxGrid, type MuxAssetThumb } from './assetPicker/_referencedMuxGrid'
+import { SANITY_CLIENT_OPTIONS } from '../constants/configs'
 
-/** Stable reference — inline `{ apiVersion }` changes every render and can make `useClient` unstable. */
-const SANITY_CLIENT_OPTIONS = { apiVersion: '2024-01-01' as const }
-
-export type SlideMediaPickerMode = 'both' | 'image' | 'video'
+export type SlideMediaPickerMode = 'both' | MediaType.IMAGE | MediaType.VIDEO
 
 type SlideMediaPickerDialogProps = {
   onClose: () => void
@@ -60,7 +59,7 @@ export function SlideMediaPickerDialog({
           )
           if (cancelled) return
           const slides = doc?.slides
-          const imgs = assetRefsFromProject(slides)
+          const imgs = toRemove_assetRefsFromProject(slides)
           setImageRefs(imgs)
           const muxIds = muxVideoAssetRefsFromProject(slides)
           if (muxIds.length === 0) {
@@ -126,8 +125,8 @@ export function SlideMediaPickerDialog({
     [onPickVideo, onClose],
   )
 
-  const showImages = mode === 'both' || mode === 'image'
-  const showVideos = mode === 'both' || mode === 'video'
+  const showImages = mode === 'both' || mode === MediaType.IMAGE
+  const showVideos = mode === 'both' || mode === MediaType.VIDEO
 
   const header = projectId ? 'Slide media (this project)' : 'Slide media (all projects)'
 
@@ -171,7 +170,7 @@ export function SlideMediaPickerDialog({
             <Text size={1} weight="semibold">
               {projectId ? 'Images from this project’s slides' : 'Images from slides (any project)'}
             </Text>
-            <ReferencedAssetGrid refs={imageRefs} builder={builder} onPick={handleImage} />
+            <ReferencedImageGrid refs={imageRefs} builder={builder} onPick={handleImage} />
           </Stack>
         ) : null}
         {showVideos && muxThumbs.length > 0 ? (

@@ -3,8 +3,8 @@ import { Box, Button, Card, Dialog, Flex, Stack, Text, TextInput } from '@sanity
 import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react'
 import type { ObjectInputProps } from 'sanity'
 import { set, useClient, useFormValue } from 'sanity'
+import { SANITY_CLIENT_OPTIONS } from '../constants/configs'
 
-const SANITY_CLIENT_OPTIONS = { apiVersion: '2024-01-01' as const }
 
 const MIN_CELLS = 10
 const MAX_CELLS = 12
@@ -60,18 +60,18 @@ function normalizeRowSettings(
 
 function flattenProjectMedia(projects: SelectedWorksProjectValue[] | undefined): StreamItem[] {
   const out: StreamItem[] = []
-  ;(projects ?? []).forEach((proj, projectIndex) => {
-    const media = proj?.media ?? []
-    media.forEach((m, mediaIndex) => {
-      if (!m?._key) return
-      out.push({
-        media: m,
-        projectIndex,
-        mediaIndex,
-        isProjectStart: mediaIndex === 0,
+    ; (projects ?? []).forEach((proj, projectIndex) => {
+      const media = proj?.media ?? []
+      media.forEach((m, mediaIndex) => {
+        if (!m?._key) return
+        out.push({
+          media: m,
+          projectIndex,
+          mediaIndex,
+          isProjectStart: mediaIndex === 0,
+        })
       })
     })
-  })
   return out
 }
 
@@ -299,11 +299,11 @@ export function SelectedWorksGridManagerInput(
                           const imageUrl =
                             cell.media.type !== 'video' && ref
                               ? builder
-                                  .image({ asset: { _type: 'reference', _ref: ref } })
-                                  .width(200)
-                                  .height(200)
-                                  .fit('crop')
-                                  .url()
+                                .image({ asset: { _type: 'reference', _ref: ref } })
+                                .width(200)
+                                .height(200)
+                                .fit('crop')
+                                .url()
                               : undefined
                           const muxRef = cell.media.video?.asset?._ref
                           const playbackId = muxRef ? muxPlaybackById[muxRef] : undefined

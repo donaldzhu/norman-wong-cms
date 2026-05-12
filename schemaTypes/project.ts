@@ -1,12 +1,12 @@
 import { defineField, defineType } from 'sanity'
 
-import { ProjectsIcon } from '@sanity/icons'
+import { DocumentIcon } from '@sanity/icons'
 
 //TODO
 export const project = defineType({
   name: 'project',
   type: 'document',
-  icon: ProjectsIcon,
+  icon: DocumentIcon,
   fields: [
     defineField({
       name: 'title',

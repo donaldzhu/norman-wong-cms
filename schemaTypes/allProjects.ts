@@ -15,6 +15,7 @@ export const allProjects = defineType({
     defineField({
       name: 'projects',
       type: 'array',
+      description: 'All projects in order of appearance.',
       of: [
         {
           type: 'reference',

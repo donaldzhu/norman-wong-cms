@@ -5,12 +5,12 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import type { AssetSourceComponentProps } from 'sanity'
 import { useClient } from 'sanity'
 
-import { assetRefsFromProject, projectDocumentIdsForQuery } from '../utils/refs'
+import { toRemove_assetRefsFromProject, projectDocumentIdsForQuery } from '../utils/refs'
 
-import { ReferencedAssetGrid } from './referencedAssetGrid'
+import { SANITY_CLIENT_OPTIONS } from '../constants/configs'
+import { ReferencedImageGrid } from './assetPicker/_referencedImageGrid'
 import { useSelectedWorksProjectRef } from './selectedWorksProjectContext'
 
-const SANITY_CLIENT_OPTIONS = { apiVersion: '2024-01-01' as const }
 
 const SelectedWorksProjectSlideImagePicker = (props: AssetSourceComponentProps) => {
   const { onClose, onSelect } = props
@@ -40,7 +40,7 @@ const SelectedWorksProjectSlideImagePicker = (props: AssetSourceComponentProps) 
       )
       .then(doc => {
         if (cancelled) return
-        setRefs(assetRefsFromProject(doc?.slides))
+        setRefs(toRemove_assetRefsFromProject(doc?.slides))
       })
       .catch(() => {
         if (cancelled) return
@@ -97,7 +97,7 @@ const SelectedWorksProjectSlideImagePicker = (props: AssetSourceComponentProps) 
         <Text muted size={1}>
           Images from this project’s slides only.
         </Text>
-        <ReferencedAssetGrid refs={refs} builder={builder} onPick={handlePick} />
+        <ReferencedImageGrid refs={refs} builder={builder} onPick={handlePick} />
       </Stack>
     )
   }

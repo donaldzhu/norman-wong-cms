@@ -1,5 +1,6 @@
 import { defineField, defineType } from 'sanity'
 
+import { MediaType } from '../../constants/enum'
 import { ProjectsIcon } from '@sanity/icons'
 
 export const projectSlideMedia = defineType({
@@ -10,26 +11,26 @@ export const projectSlideMedia = defineType({
     defineField({
       name: 'mediaType',
       type: 'string',
-      initialValue: 'image',
+      initialValue: MediaType.IMAGE,
       options: {
         layout: 'radio',
         list: [
-          { title: 'Image', value: 'image' },
-          { title: 'Video', value: 'video' },
+          { title: 'Image', value: MediaType.IMAGE },
+          { title: 'Video', value: MediaType.VIDEO },
         ],
       },
       validation: rule => rule.required(),
     }),
     defineField({
-      name: 'image',
+      name: MediaType.IMAGE,
       type: 'image',
 
-      hidden: ({ parent }) => parent?.type !== 'image',
+      hidden: ({ parent }) => parent?.mediaType !== MediaType.IMAGE,
     }),
     defineField({
-      name: 'video',
+      name: MediaType.VIDEO,
       type: 'mux.video',
-      hidden: ({ parent }) => parent?.type !== 'video'
+      hidden: ({ parent }) => parent?.mediaType !== MediaType.VIDEO,
     }),
     defineField({
       name: 'desktopStart',
