@@ -26,7 +26,6 @@ type SelectedWorksProjectValue = {
 }
 
 type LayoutValue = {
-  projects?: SelectedWorksProjectValue[]
   rowSettings?: number[]
 }
 
@@ -153,12 +152,12 @@ export function SelectedWorksGridManagerInput(
   const { value, onChange, readOnly, renderDefault, validation = [], path } = props
 
   const pathArr = path ?? []
-  const projectsFromForm = useFormValue([...pathArr, 'projects']) as
+  const projectsFromForm = useFormValue(['projects']) as
     | SelectedWorksProjectValue[]
     | undefined
   const rowSettingsFromForm = useFormValue([...pathArr, 'rowSettings']) as number[] | undefined
 
-  const projects = projectsFromForm ?? value?.projects
+  const projects = projectsFromForm
   const rowSettings = rowSettingsFromForm ?? value?.rowSettings
 
   const client = useClient(SANITY_CLIENT_OPTIONS)
@@ -208,11 +207,12 @@ export function SelectedWorksGridManagerInput(
   const [plannerOpen, setPlannerOpen] = useState(false)
 
   useEffect(() => {
+    if (readOnly) return
     const next = normalizeRowSettings(rowSettings, stream.length)
     if (JSON.stringify(next) !== JSON.stringify(rowSettings ?? [])) {
       onChange([set(next, ['rowSettings'])])
     }
-  }, [onChange, rowSettings, stream.length])
+  }, [onChange, readOnly, rowSettings, stream.length])
 
   const gridRows = useMemo(
     () => buildGridRows(stream, rowSettings),
@@ -221,13 +221,14 @@ export function SelectedWorksGridManagerInput(
 
   const patchRowWidth = useCallback(
     (rowIndex: number, width: number) => {
+      if (readOnly) return
       const base = normalizeRowSettings(rowSettings, stream.length)
       if (rowIndex < 0 || rowIndex >= base.length) return
       const next = [...base]
       next[rowIndex] = clampCells(width)
       onChange([set(next, ['rowSettings'])])
     },
-    [onChange, rowSettings, stream.length],
+    [onChange, readOnly, rowSettings, stream.length],
   )
 
   const validationTone = (level: string): 'critical' | 'caution' | 'transparent' => {
@@ -244,7 +245,7 @@ export function SelectedWorksGridManagerInput(
 
   const summary =
     stream.length === 0
-      ? 'No media yet — add projects and images below, then open the grid planner.'
+      ? 'No media yet — add projects and images in the Projects field above, then open the grid planner.'
       : `${stream.length} image${stream.length === 1 ? '' : 's'} / videos across ${projects?.length ?? 0} project block${(projects?.length ?? 0) === 1 ? '' : 's'}`
 
   return (
