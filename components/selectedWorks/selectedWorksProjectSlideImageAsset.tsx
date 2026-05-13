@@ -5,10 +5,10 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import type { AssetSourceComponentProps } from 'sanity'
 import { useClient } from 'sanity'
 
-import { toRemove_assetRefsFromProject, projectDocumentIdsForQuery } from '../utils/refs'
+import { toRemove_assetRefsFromProject, projectDocumentIdsForQuery } from '../../utils/refs'
 
-import { SANITY_CLIENT_OPTIONS } from '../constants/configs'
-import { ReferencedImageGrid } from './assetPicker/_referencedImageGrid'
+import { SANITY_CLIENT_OPTIONS } from '../../constants/configs'
+import { ReferencedImageGrid } from '../assetPicker/_referencedImageGrid'
 import { useSelectedWorksProjectRef } from './selectedWorksProjectContext'
 
 

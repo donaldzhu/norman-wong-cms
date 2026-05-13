@@ -3,7 +3,7 @@ import { useState, type ReactElement } from 'react'
 import type { ObjectInputProps } from 'sanity'
 import { set } from 'sanity'
 
-import { SlideMediaPickerDialog } from './slideMediaPickerDialog'
+import { SlideMediaPickerDialog } from '../slideMediaPickerDialog'
 import { useSelectedWorksProjectRef } from './selectedWorksProjectContext'
 
 /**

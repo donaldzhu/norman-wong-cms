@@ -14,19 +14,18 @@ export const selectedWorks = defineType({
     }),
     defineField({
       name: 'projects',
-      title: 'Projects',
       type: 'array',
       of: [{ type: 'selectedWorksProject' }],
     }),
     defineField({
       name: 'desktopLayout',
-      title: 'Desktop layout',
       type: 'selectedWorksLayout',
+      options: { min: 10, max: 12 },
     }),
     defineField({
       name: 'mobileLayout',
-      title: 'Mobile layout',
       type: 'selectedWorksLayout',
+      options: { min: 3, max: 5 },
     }),
   ],
 })

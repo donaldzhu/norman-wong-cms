@@ -1,10 +1,10 @@
-import { AssetPickerField, createAssetPickerButton } from '../../components/assetPicker/refMediaPickerButton'
-import { MediaType, Size } from '../../constants/enum'
+import { AssetPickerField, createAssetPickerButton } from '../../../components/assetPicker/refMediaPickerButton'
+import { MediaType, Size } from '../../../constants/enum'
 import { defineField, defineType } from 'sanity'
-import { muxVideoAssetRefsFromProject, toRemove_assetRefsFromProject } from '../../utils/refs'
+import { muxVideoAssetRefsFromProject, toRemove_assetRefsFromProject } from '../../../utils/refs'
 
-import { AllProjectSlidePreview } from '../../components/previews/allProjectsThumbnailPreview'
-import { ButtonToggleInput } from '../../components/buttonToggleInput'
+import { AllProjectSlidePreview } from '../../../components/previews/allProjectsThumbnailPreview'
+import { ButtonToggleInput } from '../../../components/common/buttonToggleInput'
 import { DocumentIcon } from '@sanity/icons'
 
 const SLIDES_FIELD_ID = 'slides'

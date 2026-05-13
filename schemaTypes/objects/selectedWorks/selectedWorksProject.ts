@@ -1,8 +1,7 @@
 import { defineField, defineType } from 'sanity'
 
 import { ProjectsIcon } from '@sanity/icons'
-
-import { SelectedWorksProjectBlockInput } from '../../components/selectedWorksProjectBlockInput'
+import { SelectedWorksProjectBlockInput } from '../../../components/selectedWorks/selectedWorksProjectBlockInput'
 
 export const selectedWorksProject = defineType({
   name: 'selectedWorksProject',

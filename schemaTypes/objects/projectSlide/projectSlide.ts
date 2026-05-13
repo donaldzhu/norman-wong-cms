@@ -1,6 +1,6 @@
 import { defineField, defineType } from 'sanity'
 
-import { ProjectSlidePreview } from '../../components/previews/projectSlidePreview'
+import { ProjectSlidePreview } from '../../../components/previews/projectSlidePreview'
 
 export const projectSlide = defineType({
   name: 'projectSlide',

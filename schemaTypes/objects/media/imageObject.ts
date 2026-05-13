@@ -1,6 +1,6 @@
 import { defineField, defineType } from 'sanity'
 
-import { MediaType } from '../../constants/enum'
+import { MediaType } from '../../../constants/enum'
 import { mediaAssetSource } from 'sanity-plugin-media'
 
 export const imageObject = defineType({

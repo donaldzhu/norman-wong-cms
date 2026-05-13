@@ -1,6 +1,6 @@
 import { defineField, defineType } from 'sanity'
 
-import { MediaType } from '../../constants/enum'
+import { MediaType } from '../../../constants/enum'
 import { ProjectsIcon } from '@sanity/icons'
 
 export const projectSlideMedia = defineType({
