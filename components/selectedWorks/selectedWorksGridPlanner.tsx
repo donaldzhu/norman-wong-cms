@@ -1,4 +1,5 @@
-import { Box, Card, Dialog, Flex, Stack, Text, TextInput } from '@sanity/ui'
+import { Box, Button, Card, Dialog, Flex, Stack, Text } from '@sanity/ui'
+import { ChevronDownIcon, ChevronUpIcon } from '@sanity/icons'
 import { set, useFormValue } from 'sanity'
 import { useCallback, useMemo } from 'react'
 
@@ -6,6 +7,7 @@ import { MediaRefPreview } from '../previews/mediaRefPreview'
 import { MediaType } from '../../constants/enum'
 import type { ObjectInputProps } from 'sanity'
 import _ from 'lodash'
+import { useClickAway } from '@uidotdev/usehooks'
 
 export interface SelectedWorksLayoutFormValue {
   rowSettings?: number[]
@@ -49,8 +51,8 @@ export const autoPopulateRowSettings = (
   projectListLength: number,
   { min }: CellRange,
 ) => {
-  if (projectListLength === 0 || !rowSettings) return []
-  const normalized = [...rowSettings]
+  if (projectListLength === 0) return []
+  const normalized = [...(rowSettings ?? [])]
   const DEFAULT_ROW_SIZE = min
 
   while (_.sum(normalized) < projectListLength)
@@ -108,19 +110,15 @@ const GridPlannerMediaCell = ({ cell }: { cell: ProjectListItem }) => {
   const isVideo = cell.media.type === MediaType.VIDEO
   const mediaWithRef = isVideo ? cell.media.video : cell.media.image
   const hasRef = Boolean(mediaWithRef?.asset?._ref)
-
   return (
     <Card
-      padding={0}
       radius={2}
       overflow="hidden"
       style={{
         aspectRatio: '1',
         flex: '0 0 auto',
-        width: 72,
-        border: cell.isProjectStart
-          ? '3px solid var(--card-focus-ring-color)'
-          : '1px solid var(--card-border-color)',
+        width: 60,
+        boxShadow: cell.isProjectStart ? '0 0 3px 2px var(--card-focus-ring-color)' : undefined,
         boxSizing: 'border-box',
         background: 'var(--card-muted-bg-color)',
       }}
@@ -143,6 +141,40 @@ const GridPlannerMediaCell = ({ cell }: { cell: ProjectListItem }) => {
     </Card>
   )
 }
+
+interface RowWidthStepperProps {
+  rowIndex: number
+  width: number
+  range: CellRange
+  onChange: (rowIndex: number, width: number) => void
+}
+
+const RowWidthStepper = ({ rowIndex, width, range, onChange }: RowWidthStepperProps) =>
+(
+  <Flex align="center" gap={3}>
+    <Stack space={1}>
+      <Button
+        icon={ChevronUpIcon}
+        mode="ghost"
+        padding={1}
+        disabled={width >= range.max}
+        aria-label="Increase cells per row"
+        onClick={() => onChange(rowIndex, width + 1)}
+      />
+      <Button
+        icon={ChevronDownIcon}
+        mode="ghost"
+        padding={1}
+        disabled={width <= range.min}
+        aria-label="Decrease cells per row"
+        onClick={() => onChange(rowIndex, width - 1)}
+      />
+    </Stack>
+    <Text size={2} weight="semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>
+      {width}
+    </Text>
+  </Flex>
+)
 
 export type SelectedWorksGridPlannerDialogProps = {
   open: boolean
@@ -169,35 +201,32 @@ export const SelectedWorksGridPlannerDialog = ({
     [projectList, rowSettings, range],
   )
 
-  const onRowWidthChange = useCallback(({ currentTarget }: React.ChangeEvent<HTMLInputElement>, rowIndex: number) => {
-    const width = parseInt(currentTarget.value)
-    const currentRowSettings = autoPopulateRowSettings(rowSettings, projectList.length, range)
-    if (rowIndex < 0 || rowIndex >= currentRowSettings.length) return
-    const newRowSettings = [...currentRowSettings]
-    newRowSettings[rowIndex] = _.clamp(width, range.min, range.max)
-    onChange([set(newRowSettings, ['rowSettings'])])
-  }, [onChange, range, rowSettings, projectList.length])
+  const containerRef = useClickAway<HTMLDivElement>(onClose)
 
+  const handleChange = useCallback(
+    (rowIndex: number, newWidth: number) => {
+      const baseline = autoPopulateRowSettings(rowSettings, projectList.length, range)
+      if (rowIndex < 0 || rowIndex >= baseline.length) return
+      const newRowSettings = [...baseline]
+      newRowSettings[rowIndex] = _.clamp(newWidth, range.min, range.max)
+      onChange([set(newRowSettings, ['rowSettings'])])
+    },
+    [onChange, projectList.length, range, rowSettings],
+  )
 
   if (!open) return null
 
   return (
     <Dialog
-      header="Grid planner"
+      header={`${isMobile ? 'Mobile' : 'Desktop'} Grid planner`}
       id="selected-works-grid-planner"
       open
       onClose={onClose}
-      width={isMobile ? 2 : 3}
+      width={3}
       zOffset={999}
     >
-      <Box padding={4} >
-        <Stack space={5}>
-          <Text muted size={1}>
-            Rows reflow from a single master projectList (project order preserved). First cell of each
-            project has a highlighted border. Each row can show {range.min}
-            {range.min === range.max ? '' : `–${range.max}`} cells; overflow adds rows
-            of {range.min} by default.
-          </Text>
+      <Box padding={4} ref={containerRef}>
+        <Stack >
           {projectList.length === 0 ? (
             <Card padding={4} radius={2} tone="transparent" border>
               <Text muted size={1}>
@@ -205,38 +234,33 @@ export const SelectedWorksGridPlannerDialog = ({
               </Text>
             </Card>
           ) : (
-            gridRows.map(row => (
-              <Flex key={row.rowIndex} align="flex-start" gap={4}>
-                <Box style={{ flex: 1, minWidth: 0 }}>
-                  <Flex gap={2} wrap="wrap" style={{ rowGap: 8 }}>
+            gridRows.map((row, i) => (
+              <Flex
+                key={`row-index-${i}`}
+                align="center"
+                gap={6}
+                padding={[0, 0, 4, 4]}
+                style={{ borderBottom: i === gridRows.length - 1 ? 'none' : '1px solid var(--card-border-color)' }}
+              >
+                <RowWidthStepper
+                  rowIndex={row.rowIndex}
+                  width={row.width}
+                  range={range}
+                  onChange={handleChange}
+                />
+                <Box style={{ flex: 1 }}>
+                  <Flex gap={3} wrap="wrap">
                     {row.cells.map(cell => (
                       <GridPlannerMediaCell key={cell.media._key} cell={cell} />
                     ))}
                   </Flex>
                 </Box>
-                <Box style={{ width: 120, flexShrink: 0 }}>
-                  <Stack space={2}>
-                    <Text size={0} weight="semibold">
-                      Row {row.rowIndex + 1}
-                    </Text>
-                    <Text muted size={0}>
-                      Cells ({range.min}
-                      {range.min === range.max ? '' : `–${range.max}`})
-                    </Text>
-                    <TextInput
-                      type="number"
-                      min={range.min}
-                      max={range.max}
-                      value={String(row.width)}
-                      onChange={e => onRowWidthChange(e, row.rowIndex)}
-                    />
-                  </Stack>
-                </Box>
+
               </Flex>
             ))
           )}
         </Stack>
       </Box>
-    </Dialog>
+    </Dialog >
   )
 }

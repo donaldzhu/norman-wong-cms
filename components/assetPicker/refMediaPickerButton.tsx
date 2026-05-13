@@ -40,7 +40,6 @@ const RefMediaPickerButton = ({ fieldId, mediaType, value, onChange }: RefMediaP
   const copy = createCopy(mediaType)
   const refs = useMemo(() => mediaRefsFromProject(source), [mediaType, source])
 
-
   const isEmpty = refs.length === 0
   const assetRef = value?.asset?._ref as string | undefined
 

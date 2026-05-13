@@ -3,7 +3,7 @@ import createImageUrlBuilder from '@sanity/image-url'
 import { Box, Button, Dialog, Flex, Spinner, Stack, Text } from '@sanity/ui'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { AssetSourceComponentProps } from 'sanity'
-import { useClient } from 'sanity'
+import { useClient, useFormValue } from 'sanity'
 
 import { toRemove_assetRefsFromProject, projectDocumentIdsForQuery } from '../../utils/refs'
 

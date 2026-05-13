@@ -6,7 +6,6 @@ import { MediaType } from '../../../constants/enum'
 import { SelectedWorksProjectMuxFieldInput } from '../../../components/selectedWorks/selectedWorksProjectMuxFieldInput'
 import { selectedWorksProjectSlideImageAsset } from '../../../components/selectedWorks/selectedWorksProjectSlideImageAsset'
 
-/** Same shape as `allProjectsThumbnail`; image/video pickers are scoped to the parent block’s Project reference. */
 export const selectedWorksProjectMedia = defineType({
   name: 'selectedWorksProjectMedia',
   title: 'Image or file',
