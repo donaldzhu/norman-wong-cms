@@ -5,6 +5,7 @@
   "main": "package.json",
   "license": "UNLICENSED",
   "scripts": {
+    "slides:reset-mobile": "node scripts/reset-all-slides-mobile-defaults.mjs",
     "build": "sanity build",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
@@ -27,6 +28,7 @@
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
+    "@sanity/client": "^7.21.0",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.24",
     "@types/react": "^19.2.14",

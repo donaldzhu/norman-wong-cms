@@ -1,12 +1,37 @@
 import { defineField, defineType } from 'sanity'
 
+import { Orientation } from '../../../constants/enum'
+import { ProjectSlideObjectInput } from '../../../components/projectSlide/projectSlideObjectInput'
 import { ProjectSlidesPreview } from '../../../components/previews/projectSlidesPreview'
 
 export const projectSlide = defineType({
   name: 'projectSlide',
   type: 'object',
-  components: { preview: ProjectSlidesPreview },
+  components: { input: ProjectSlideObjectInput, preview: ProjectSlidesPreview },
   fields: [
+    defineField({
+      name: 'automaticMobileLayout',
+      title: 'Automatic mobile layout',
+      type: 'boolean',
+      description:
+        'When on, the front end lays out mobile for this slide. When off, set a mobile span for each media item in the slide grid planner.',
+      initialValue: true,
+    }),
+    defineField({
+      name: 'mobileOrientation',
+      title: 'Mobile grid orientation',
+      type: 'string',
+      initialValue: Orientation.PORTRAIT,
+      options: {
+        layout: 'dropdown',
+        list: [
+          { title: 'Portrait', value: Orientation.PORTRAIT },
+          { title: 'Landscape', value: Orientation.LANDSCAPE },
+        ],
+      },
+      validation: rule => rule.required(),
+      hidden: ({ parent }) => parent?.automaticMobileLayout !== false,
+    }),
     defineField({
       name: 'media',
       type: 'array',

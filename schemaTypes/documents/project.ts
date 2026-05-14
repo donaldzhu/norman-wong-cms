@@ -2,11 +2,18 @@ import { defineField, defineType } from 'sanity'
 
 import { DocumentIcon } from '@sanity/icons'
 
+import { MediaType } from '../../constants/enum'
+import { ProjectDocumentPreview } from '../../components/previews/projectDocumentPreview'
+import { hasProjectGridConfigurationIssue } from '../../utils/projectGridIssue'
+
 //TODO
 export const project = defineType({
   name: 'project',
   type: 'document',
   icon: DocumentIcon,
+  components: {
+    preview: ProjectDocumentPreview,
+  },
   fields: [
     defineField({
       name: 'title',
@@ -52,12 +59,24 @@ export const project = defineType({
       title: 'title',
       subtitle: 'subtitle',
       allProjectsThumbnails: 'allProjectsThumbnails',
+      slides: 'slides',
     },
-    prepare({ title, subtitle, allProjectsThumbnails }) {
+    prepare({
+      title,
+      subtitle,
+      allProjectsThumbnails,
+      slides,
+    }) {
+      const thumb = allProjectsThumbnails?.[0]
+      const slideThumb = thumb?.image
+        ? { mediaType: MediaType.IMAGE, image: thumb.image }
+        : undefined
+
       return {
-        title,
+        title: title ?? 'Untitled',
         subtitle,
-        media: allProjectsThumbnails?.[0]?.image,
+        slideThumb,
+        hasGridIssue: hasProjectGridConfigurationIssue(slides),
       }
     },
   },

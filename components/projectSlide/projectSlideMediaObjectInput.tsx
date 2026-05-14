@@ -1,21 +1,19 @@
 import { Stack } from '@sanity/ui'
-import { useEffect } from 'react'
-import { set, unset, type ObjectInputProps } from 'sanity'
+import { useEffect, useMemo } from 'react'
+import { set, useFormValue, type ObjectInputProps } from 'sanity'
 
 import styled from 'styled-components'
 import {
   MOBILE_LANDSCAPE_COLUMN_COUNT,
   MOBILE_PORTRAIT_ROW_COUNT,
 } from '../../utils/columnRange'
-import { ColumnRangeStrip } from './columnRangeStrip'
+import { Orientation } from '../../constants/enum'
 
 type MobileOrientation = 'portrait' | 'landscape'
 
 type ProjectSlideMediaValue = {
   desktopStart?: number
   desktopEnd?: number
-  automaticMobileLayout?: boolean
-  mobileOrientation?: MobileOrientation
   mobileStart?: number
   mobileEnd?: number
 }
@@ -23,16 +21,29 @@ type ProjectSlideMediaValue = {
 export const ProjectSlideMediaObjectInput = (
   props: ObjectInputProps<ProjectSlideMediaValue>,
 ) => {
-  const { renderDefault, value, onChange, readOnly } = props
+  const { renderDefault, value, onChange, path } = props
+
+  const slidePathPrefix = useMemo(() => {
+    const i = path.indexOf('media')
+    if (i < 1) return null
+    return path.slice(0, i)
+  }, [path])
+
+  const slideAutomaticMobile = useFormValue(
+    slidePathPrefix ? [...slidePathPrefix, 'automaticMobileLayout'] : [],
+  ) as boolean | undefined
+  const slideMobileOrientation = useFormValue(
+    slidePathPrefix ? [...slidePathPrefix, 'mobileOrientation'] : [],
+  ) as string | undefined
+
   const mobileOrientation: MobileOrientation =
-    value?.mobileOrientation === 'landscape' ? 'landscape' : 'portrait'
-  const mobileAxis = mobileOrientation === 'portrait' ? 'row' : 'column'
+    slideMobileOrientation === Orientation.LANDSCAPE ? 'landscape' : 'portrait'
   const mobileCellCount =
     mobileOrientation === 'portrait' ? MOBILE_PORTRAIT_ROW_COUNT : MOBILE_LANDSCAPE_COLUMN_COUNT
   const mobileEndEdgeMax = mobileCellCount + 1
 
   useEffect(() => {
-    if (value?.automaticMobileLayout) return
+    if (slideAutomaticMobile !== false || !slidePathPrefix) return
 
     const patches: ReturnType<typeof set>[] = []
 
@@ -62,10 +73,12 @@ export const ProjectSlideMediaObjectInput = (
 
     if (patches.length > 0) onChange(patches)
   }, [
+    slideAutomaticMobile,
+    slideMobileOrientation,
     mobileCellCount,
     mobileEndEdgeMax,
     onChange,
-    value?.automaticMobileLayout,
+    slidePathPrefix,
     value?.mobileEnd,
     value?.mobileStart,
   ])
@@ -73,40 +86,6 @@ export const ProjectSlideMediaObjectInput = (
   return (
     <StyledStack space={2}>
       {renderDefault(props)}
-
-      <Stack space={3}>
-        <ColumnRangeStrip
-          layout="desktop"
-          title="Desktop column span"
-          start={value?.desktopStart}
-          end={value?.desktopEnd}
-          readOnly={readOnly}
-          onCommit={(start, end) => {
-            onChange([set(start, ['desktopStart']), set(end, ['desktopEnd'])])
-          }}
-          onClear={() => {
-            onChange([unset(['desktopStart']), unset(['desktopEnd'])])
-          }}
-        />
-
-        {!value?.automaticMobileLayout ? (
-          <ColumnRangeStrip
-            layout="mobile"
-            axis={mobileAxis}
-            cellCount={mobileCellCount}
-            title={`Mobile ${mobileOrientation} span`}
-            start={value?.mobileStart}
-            end={value?.mobileEnd}
-            readOnly={readOnly}
-            onCommit={(start, end) => {
-              onChange([set(start, ['mobileStart']), set(end, ['mobileEnd'])])
-            }}
-            onClear={() => {
-              onChange([unset(['mobileStart']), unset(['mobileEnd'])])
-            }}
-          />
-        ) : null}
-      </Stack>
     </StyledStack>
   )
 }
