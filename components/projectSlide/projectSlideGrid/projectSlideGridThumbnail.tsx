@@ -1,4 +1,4 @@
-import { Box, Card, Flex, Text } from '@sanity/ui'
+import { Box, Card, Flex, Text, Tooltip } from '@sanity/ui'
 
 import { ErrorOutlineIcon } from '@sanity/icons'
 import { MediaRefPreview } from '../../previews/mediaRefPreview'
@@ -12,7 +12,7 @@ interface ProjectSlideGridThumbnailProps {
   onSelect: () => void
 }
 
-const ERROR_ICON_SIZE = 21
+const ERROR_ICON_SIZE = 25
 
 export const ProjectSlideGridThumbnail = ({
   item,
@@ -25,7 +25,6 @@ export const ProjectSlideGridThumbnail = ({
   const hasRef = Boolean(mediaWithRef?.asset?._ref)
 
   const borderColor = hasError ? 'var(--card-badge-critical-icon-color)' : selected ? 'var(--card-focus-ring-color)' : 'transparent'
-  const borderThickness = selected ? '2px' : hasError ? '1px' : 0
 
   return (
     <Card
@@ -41,11 +40,10 @@ export const ProjectSlideGridThumbnail = ({
         textAlign: 'left',
         width: '100%',
         boxSizing: 'border-box',
-        outline: selected || hasError ? `1px solid ${borderColor}` : undefined,
+        outline: selected ? `1px solid ${borderColor}` : undefined,
       }}
     >
       <Flex align="center" justify="space-between" gap={3}>
-
         <Flex align="center" justify="space-between">
           <Box
             style={{
@@ -88,13 +86,27 @@ export const ProjectSlideGridThumbnail = ({
           </Text>
         </Flex>
         {hasError ? (
-          <Box style={{
-            color: 'var(--card-badge-critical-icon-color)',
-            width: ERROR_ICON_SIZE,
-            height: ERROR_ICON_SIZE
-          }}>
-            <ErrorOutlineIcon width={ERROR_ICON_SIZE} height={ERROR_ICON_SIZE} />
-          </Box>
+          <Tooltip
+            placement='top'
+            portal
+            animate
+            content={
+              <Box padding={1}>
+                <Text muted size={1}>
+                  Grid setting is invalid or missing.
+                </Text>
+              </Box>
+            }>
+            <Box
+              style={{
+                color: 'var(--card-badge-critical-icon-color)',
+                width: ERROR_ICON_SIZE,
+                height: ERROR_ICON_SIZE,
+              }}
+            >
+              <ErrorOutlineIcon width={ERROR_ICON_SIZE} height={ERROR_ICON_SIZE} />
+            </Box>
+          </Tooltip>
         ) : null}
       </Flex>
     </Card>

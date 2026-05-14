@@ -24,7 +24,5 @@ export function spanFromClickedCells(a: number, b: number): { start: number; end
   return { start: lo, end: hi + 1 }
 }
 
-/** Single-column span when only one cell is chosen. */
-export function spanFromSingleCell(cell: number): { start: number; end: number } {
-  return { start: cell, end: cell + 1 }
-}
+export const getSpanFromSingleCell = (cell: number) => ({ start: cell, end: cell + 1 })
+

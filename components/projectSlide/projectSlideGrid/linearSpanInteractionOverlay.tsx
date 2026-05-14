@@ -2,7 +2,7 @@ import { Box } from '@sanity/ui'
 import { useClickAway } from '@uidotdev/usehooks'
 import { useCallback, useState, type CSSProperties, type MouseEvent } from 'react'
 
-import { cellIsInSpan, spanFromClickedCells, spanFromSingleCell } from '../../../utils/columnRange'
+import { cellIsInSpan, spanFromClickedCells, getSpanFromSingleCell } from '../../../utils/columnRange'
 
 /** Same click rules as `ColumnRangeStrip` / desktop overlay; horizontal = columns, vertical = rows. */
 export const LinearSpanInteractionOverlay = ({
@@ -30,14 +30,14 @@ export const LinearSpanInteractionOverlay = ({
       if (readOnly) return
 
       if (event.shiftKey || pendingAnchor == null) {
-        const { start: s, end: e } = spanFromSingleCell(cell)
+        const { start: s, end: e } = getSpanFromSingleCell(cell)
         onCommit(s, e)
         setPendingAnchor(cell)
         return
       }
 
       if (cell <= pendingAnchor) {
-        const { start: s, end: e } = spanFromSingleCell(cell)
+        const { start: s, end: e } = getSpanFromSingleCell(cell)
         onCommit(s, e)
         setPendingAnchor(cell)
         return
@@ -55,25 +55,25 @@ export const LinearSpanInteractionOverlay = ({
   const overlayStyle: CSSProperties =
     direction === 'horizontal'
       ? {
-          position: 'absolute',
-          inset: 0,
-          display: 'grid',
-          gridTemplateColumns: `repeat(${cellCount}, minmax(0, 1fr))`,
-          gridTemplateRows: '1fr',
-          gap: 1,
-          zIndex: 60,
-          pointerEvents: readOnly ? 'none' : 'auto',
-        }
+        position: 'absolute',
+        inset: 0,
+        display: 'grid',
+        gridTemplateColumns: `repeat(${cellCount}, minmax(0, 1fr))`,
+        gridTemplateRows: '1fr',
+        gap: 1,
+        zIndex: 60,
+        pointerEvents: readOnly ? 'none' : 'auto',
+      }
       : {
-          position: 'absolute',
-          inset: 0,
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gridTemplateRows: `repeat(${cellCount}, minmax(0, 1fr))`,
-          gap: 1,
-          zIndex: 60,
-          pointerEvents: readOnly ? 'none' : 'auto',
-        }
+        position: 'absolute',
+        inset: 0,
+        display: 'grid',
+        gridTemplateColumns: '1fr',
+        gridTemplateRows: `repeat(${cellCount}, minmax(0, 1fr))`,
+        gap: 1,
+        zIndex: 60,
+        pointerEvents: readOnly ? 'none' : 'auto',
+      }
 
   return (
     <Box ref={containerRef} role="group" aria-label={ariaLabel} style={overlayStyle}>

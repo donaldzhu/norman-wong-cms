@@ -6,7 +6,7 @@ import {
   DESKTOP_COLUMN_COUNT,
   cellIsInSpan,
   spanFromClickedCells,
-  spanFromSingleCell,
+  getSpanFromSingleCell,
 } from '../../utils/columnRange'
 
 export type ColumnRangeStripLayout = 'desktop' | 'mobile'
@@ -54,14 +54,14 @@ export function ColumnRangeStrip(props: ColumnRangeStripProps): ReactElement {
       if (readOnly) return
 
       if (event.shiftKey || pendingAnchor == null) {
-        const { start: s, end: e } = spanFromSingleCell(cell)
+        const { start: s, end: e } = getSpanFromSingleCell(cell)
         onCommit(s, e)
         setPendingAnchor(cell)
         return
       }
 
       if (cell <= pendingAnchor) {
-        const { start: s, end: e } = spanFromSingleCell(cell)
+        const { start: s, end: e } = getSpanFromSingleCell(cell)
         onCommit(s, e)
         setPendingAnchor(cell)
         return

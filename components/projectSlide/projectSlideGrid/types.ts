@@ -5,3 +5,8 @@ export type MobilePlacement = {
   start: number
   end: number
 }
+
+export interface GridSpan {
+  start: number
+  end: number
+}

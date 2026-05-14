@@ -16,6 +16,7 @@ import { ProjectSlideGridThumbnail } from './projectSlideGridThumbnail'
 
 import { isValidDesktopSpan, isValidMobileSpan, mediaKeyPath } from './utils'
 import * as changeCase from 'change-case'
+import type { GridSpan } from './types'
 
 
 enum PlannerTab {
@@ -106,6 +107,13 @@ export const ProjectSlideGridDialog = ({
     [onChange],
   )
 
+  const onSetGrid = ({ start, end }: GridSpan, activeMediaKey: string) =>
+    patchActive([
+      set(start, mediaKeyPath(activeMediaKey, 'desktopStart')),
+      set(end, mediaKeyPath(activeMediaKey, 'desktopEnd')),
+    ])
+
+
   if (!open) return null
 
   const automaticMobileOn = slideAutomaticMobile !== false
@@ -185,53 +193,16 @@ export const ProjectSlideGridDialog = ({
                     }}
                     onClick={() => patchSlide([set(!automaticMobileOn, ['automaticMobileLayout'])])}
                   />
-                  <Button
-                    text="Clear"
-                    mode="ghost"
-                    tone="critical"
-                    disabled={
-                      !activeMediaKey ||
-                      Boolean(readOnly) ||
-                      (tab === PlannerTab.MOBILE && automaticMobileOn)
-                    }
-                    title={
-                      tab === PlannerTab.DESKTOP
-                        ? 'Clear desktop column span for the selected media'
-                        : automaticMobileOn
-                          ? 'Turn off automatic mobile layout to clear per-item mobile spans'
-                          : 'Clear mobile row/column span for the selected media'
-                    }
-                    onClick={() => {
-                      if (!activeMediaKey) return
-                      if (tab === PlannerTab.DESKTOP) {
-                        patchActive([
-                          unset(mediaKeyPath(activeMediaKey, 'desktopStart')),
-                          unset(mediaKeyPath(activeMediaKey, 'desktopEnd')),
-                        ])
-                        return
-                      }
-                      if (!automaticMobileOn) {
-                        patchActive([
-                          unset(mediaKeyPath(activeMediaKey, 'mobileStart')),
-                          unset(mediaKeyPath(activeMediaKey, 'mobileEnd')),
-                        ])
-                      }
-                    }}
-                  />
                 </Flex>
-
               </Flex>
             </Flex>
-
             {tab === PlannerTab.DESKTOP ? (
               activeItem && activeMediaKey ? (
                 <Stack space={3}>
                   <Box
                     style={{
                       position: 'relative',
-                      width: '100%',
                       aspectRatio: '2 / 1',
-                      maxWidth: '100%',
                       background: 'var(--card-border-color, rgba(127,127,127,0.22))',
                       borderRadius: 4,
                       overflow: 'hidden',
@@ -242,12 +213,7 @@ export const ProjectSlideGridDialog = ({
                       key={activeMediaKey}
                       start={activeItem.desktopStart}
                       end={activeItem.desktopEnd}
-                      onCommit={(start, end) =>
-                        patchActive([
-                          set(start, mediaKeyPath(activeMediaKey, 'desktopStart')),
-                          set(end, mediaKeyPath(activeMediaKey, 'desktopEnd')),
-                        ])
-                      }
+                      onCommit={span => onSetGrid(span, activeMediaKey)}
                     />
                   </Box>
                 </Stack>

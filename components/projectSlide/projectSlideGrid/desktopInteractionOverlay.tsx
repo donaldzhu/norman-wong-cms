@@ -1,46 +1,37 @@
 import { Box } from '@sanity/ui'
-import { useCallback, useState, type CSSProperties, type MouseEvent } from 'react'
+import { useCallback, useState, type CSSProperties } from 'react'
 
 import {
   DESKTOP_COLUMN_COUNT,
   cellIsInSpan,
   spanFromClickedCells,
-  spanFromSingleCell,
+  getSpanFromSingleCell,
 } from '../../../utils/columnRange'
+import type { GridSpan } from './types'
 
+interface DesktopInteractionOverlayProps {
+  start?: number
+  end?: number
+  onCommit: (span: GridSpan) => void
+}
 export const DesktopInteractionOverlay = ({
   start,
   end,
   onCommit,
-}: {
-  start: number | undefined
-  end: number | undefined
-  onCommit: (start: number, end: number) => void
-}) => {
-  const [pendingAnchor, setPendingAnchor] = useState<number | null>(null)
+}: DesktopInteractionOverlayProps) => {
+  const [startingAnchor, setStartingAnchor] = useState<number | null>(null)
 
-  const handleCellClick = useCallback(
-    (cell: number, event: MouseEvent<HTMLButtonElement>) => {
-
-      if (event.shiftKey || pendingAnchor == null) {
-        const { start: s, end: e } = spanFromSingleCell(cell)
-        onCommit(s, e)
-        setPendingAnchor(cell)
-        return
+  const onCellClick = useCallback(
+    (cell: number) => {
+      if (startingAnchor == null || cell <= startingAnchor) {
+        onCommit(getSpanFromSingleCell(cell))
+        return setStartingAnchor(cell)
       }
 
-      if (cell <= pendingAnchor) {
-        const { start: s, end: e } = spanFromSingleCell(cell)
-        onCommit(s, e)
-        setPendingAnchor(cell)
-        return
-      }
-
-      const { start: s, end: e } = spanFromClickedCells(pendingAnchor, cell)
-      onCommit(s, e)
-      setPendingAnchor(null)
+      onCommit(spanFromClickedCells(startingAnchor, cell))
+      setStartingAnchor(null)
     },
-    [pendingAnchor, onCommit],
+    [startingAnchor, onCommit],
   )
 
   const cells = Array.from({ length: DESKTOP_COLUMN_COUNT }, (_, i) => i + 1)
@@ -65,7 +56,7 @@ export const DesktopInteractionOverlay = ({
           <button
             key={col}
             type="button"
-            onClick={event => handleCellClick(col, event)}
+            onClick={() => onCellClick(col)}
             title={`Column ${col}`}
             style={{
               position: 'relative',
