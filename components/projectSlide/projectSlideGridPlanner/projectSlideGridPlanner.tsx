@@ -26,10 +26,10 @@ import {
   cellIsInSpan,
   spanFromClickedCells,
   spanFromSingleCell,
-} from '../../utils/columnRange'
-import { MediaRefPreview } from '../previews/mediaRefPreview'
-import { MediaType, Orientation } from '../../constants/enum'
-import type { ProjectSlideFormValue, ProjectSlideMediaGridValue } from '../types/media'
+} from '../../../utils/columnRange'
+import { MediaRefPreview } from '../../previews/mediaRefPreview'
+import { MediaType, Orientation } from '../../../constants/enum'
+import type { ProjectSlideFormValue, ProjectSlideMediaGridValue } from '../../types/media'
 
 type PlannerTab = 'desktop' | 'mobile'
 
@@ -102,25 +102,25 @@ const MobileZebraBackdrop = ({
   const gridStyle: CSSProperties =
     direction === 'horizontal'
       ? {
-          position: 'absolute',
-          inset: 0,
-          display: 'grid',
-          gridTemplateColumns: `repeat(${cellCount}, minmax(0, 1fr))`,
-          gridTemplateRows: '1fr',
-          gap: 1,
-          zIndex: 1,
-          pointerEvents: 'none',
-        }
+        position: 'absolute',
+        inset: 0,
+        display: 'grid',
+        gridTemplateColumns: `repeat(${cellCount}, minmax(0, 1fr))`,
+        gridTemplateRows: '1fr',
+        gap: 1,
+        zIndex: 1,
+        pointerEvents: 'none',
+      }
       : {
-          position: 'absolute',
-          inset: 0,
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gridTemplateRows: `repeat(${cellCount}, minmax(0, 1fr))`,
-          gap: 1,
-          zIndex: 1,
-          pointerEvents: 'none',
-        }
+        position: 'absolute',
+        inset: 0,
+        display: 'grid',
+        gridTemplateColumns: '1fr',
+        gridTemplateRows: `repeat(${cellCount}, minmax(0, 1fr))`,
+        gap: 1,
+        zIndex: 1,
+        pointerEvents: 'none',
+      }
 
   return (
     <Box style={gridStyle}>
@@ -464,25 +464,25 @@ const LinearSpanInteractionOverlay = ({
   const overlayStyle: CSSProperties =
     direction === 'horizontal'
       ? {
-          position: 'absolute',
-          inset: 0,
-          display: 'grid',
-          gridTemplateColumns: `repeat(${cellCount}, minmax(0, 1fr))`,
-          gridTemplateRows: '1fr',
-          gap: 1,
-          zIndex: 60,
-          pointerEvents: readOnly ? 'none' : 'auto',
-        }
+        position: 'absolute',
+        inset: 0,
+        display: 'grid',
+        gridTemplateColumns: `repeat(${cellCount}, minmax(0, 1fr))`,
+        gridTemplateRows: '1fr',
+        gap: 1,
+        zIndex: 60,
+        pointerEvents: readOnly ? 'none' : 'auto',
+      }
       : {
-          position: 'absolute',
-          inset: 0,
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gridTemplateRows: `repeat(${cellCount}, minmax(0, 1fr))`,
-          gap: 1,
-          zIndex: 60,
-          pointerEvents: readOnly ? 'none' : 'auto',
-        }
+        position: 'absolute',
+        inset: 0,
+        display: 'grid',
+        gridTemplateColumns: '1fr',
+        gridTemplateRows: `repeat(${cellCount}, minmax(0, 1fr))`,
+        gap: 1,
+        zIndex: 60,
+        pointerEvents: readOnly ? 'none' : 'auto',
+      }
 
   return (
     <Box ref={containerRef} role="group" aria-label={ariaLabel} style={overlayStyle}>
@@ -569,25 +569,25 @@ const MobileAllMediaPreviewLayer = ({
   const gridStyle: CSSProperties =
     direction === 'horizontal'
       ? {
-          position: 'absolute',
-          inset: 0,
-          display: 'grid',
-          gridTemplateColumns: `repeat(${cellCount}, minmax(0, 1fr))`,
-          gridTemplateRows: '1fr',
-          gap: 1,
-          pointerEvents: 'none',
-          zIndex: 20,
-        }
+        position: 'absolute',
+        inset: 0,
+        display: 'grid',
+        gridTemplateColumns: `repeat(${cellCount}, minmax(0, 1fr))`,
+        gridTemplateRows: '1fr',
+        gap: 1,
+        pointerEvents: 'none',
+        zIndex: 20,
+      }
       : {
-          position: 'absolute',
-          inset: 0,
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gridTemplateRows: `repeat(${cellCount}, minmax(0, 1fr))`,
-          gap: 1,
-          pointerEvents: 'none',
-          zIndex: 20,
-        }
+        position: 'absolute',
+        inset: 0,
+        display: 'grid',
+        gridTemplateColumns: '1fr',
+        gridTemplateRows: `repeat(${cellCount}, minmax(0, 1fr))`,
+        gap: 1,
+        pointerEvents: 'none',
+        zIndex: 20,
+      }
 
   const placementFor = (start: number | undefined, end: number | undefined) =>
     direction === 'horizontal'
@@ -658,7 +658,7 @@ const MobileAutomaticReadOnlyPreview = ({
 
   if (placements.length === 0) {
     return (
-      <Box padding={4} radius={2} border>
+      <Box padding={4}>
         <Text size={1}>Add media to preview mobile layout.</Text>
       </Box>
     )
