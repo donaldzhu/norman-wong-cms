@@ -1,13 +1,13 @@
 import { defineField, defineType } from 'sanity'
 
 import { Orientation } from '../../../constants/enum'
-import { ProjectSlideObjectInput } from '../../../components/projectSlide/projectSlideObjectInput'
+import { ProjectSlideGridButton } from '../../../components/projectSlide/projectSlideGrid/projectSlideGridButton'
 import { ProjectSlidesPreview } from '../../../components/previews/projectSlidesPreview'
 
 export const projectSlide = defineType({
   name: 'projectSlide',
   type: 'object',
-  components: { input: ProjectSlideObjectInput, preview: ProjectSlidesPreview },
+  components: { input: ProjectSlideGridButton, preview: ProjectSlidesPreview },
   fields: [
     defineField({
       name: 'automaticMobileLayout',

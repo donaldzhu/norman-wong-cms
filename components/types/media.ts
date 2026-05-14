@@ -29,7 +29,7 @@ export interface MediaData {
 }
 
 /** `projectSlide.media[]` item fields used by the slide grid planner. */
-export type ProjectSlideMediaGridValue = {
+export type ProjectSlideGridValue = {
   _key: string
   mediaType?: MediaType
   image?: AssetRef
@@ -44,7 +44,7 @@ export type ProjectSlideMediaGridValue = {
 export type ProjectSlideFormValue = {
   automaticMobileLayout?: boolean
   mobileOrientation?: string
-  media?: ProjectSlideMediaGridValue[]
+  media?: ProjectSlideGridValue[]
   description?: string
   year?: number
 }
