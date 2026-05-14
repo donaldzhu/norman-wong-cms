@@ -16,6 +16,7 @@ export const projectSlide = defineType({
       description:
         'When on, the front end lays out mobile for this slide. When off, set a mobile span for each media item in the slide grid planner.',
       initialValue: true,
+      hidden: () => true,
     }),
     defineField({
       name: 'mobileOrientation',
@@ -30,7 +31,7 @@ export const projectSlide = defineType({
         ],
       },
       validation: rule => rule.required(),
-      hidden: ({ parent }) => parent?.automaticMobileLayout !== false,
+      hidden: () => true,
     }),
     defineField({
       name: 'media',

@@ -1,5 +1,5 @@
 import { ErrorOutlineIcon } from '@sanity/icons'
-import { Box, Button, Card, Dialog, Flex, Stack, Text } from '@sanity/ui'
+import { Box, Button, Card, Dialog, Flex, Select, Stack, Switch, Text } from '@sanity/ui'
 import {
   set,
   unset,
@@ -62,6 +62,78 @@ const isValidMobileSpan = (
     end >= 2 &&
     end <= maxEdge &&
     end > start
+  )
+}
+
+/** Equal row/column slices for read-only “automatic” preview (not persisted). */
+const equalSplitMobileSpans = (
+  itemCount: number,
+  cellCount: number,
+): { start: number; end: number }[] => {
+  if (itemCount <= 0 || cellCount <= 0) return []
+  const base = Math.floor(cellCount / itemCount)
+  let remainder = cellCount % itemCount
+  const spans: { start: number; end: number }[] = []
+  let start = 1
+  for (let i = 0; i < itemCount; i++) {
+    const len = base + (remainder > 0 ? 1 : 0)
+    if (remainder > 0) remainder -= 1
+    const end = start + len
+    spans.push({ start, end })
+    start = end
+  }
+  return spans
+}
+
+type MobilePlacement = {
+  item: ProjectSlideMediaGridValue
+  start: number
+  end: number
+}
+
+const MobileZebraBackdrop = ({
+  direction,
+  cellCount,
+}: {
+  direction: 'horizontal' | 'vertical'
+  cellCount: number
+}) => {
+  const cells = Array.from({ length: cellCount }, (_, i) => i + 1)
+  const gridStyle: CSSProperties =
+    direction === 'horizontal'
+      ? {
+          position: 'absolute',
+          inset: 0,
+          display: 'grid',
+          gridTemplateColumns: `repeat(${cellCount}, minmax(0, 1fr))`,
+          gridTemplateRows: '1fr',
+          gap: 1,
+          zIndex: 1,
+          pointerEvents: 'none',
+        }
+      : {
+          position: 'absolute',
+          inset: 0,
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gridTemplateRows: `repeat(${cellCount}, minmax(0, 1fr))`,
+          gap: 1,
+          zIndex: 1,
+          pointerEvents: 'none',
+        }
+
+  return (
+    <Box style={gridStyle}>
+      {cells.map(cell => (
+        <Box
+          key={cell}
+          style={{
+            borderRadius: 2,
+            background: cell % 2 === 0 ? 'rgba(127,127,127,0.12)' : 'rgba(127,127,127,0.06)',
+          }}
+        />
+      ))}
+    </Box>
   )
 }
 
@@ -465,17 +537,34 @@ const LinearSpanInteractionOverlay = ({
 }
 
 const MobileAllMediaPreviewLayer = ({
-  media,
   activeKey,
   orientation,
+  placements,
+  media,
 }: {
-  media: ProjectSlideMediaGridValue[]
   activeKey: string | null
   orientation: 'portrait' | 'landscape'
+  placements?: MobilePlacement[]
+  media?: ProjectSlideMediaGridValue[]
 }) => {
   const isPortrait = orientation === 'portrait'
   const cellCount = isPortrait ? MOBILE_PORTRAIT_ROW_COUNT : MOBILE_LANDSCAPE_COLUMN_COUNT
   const direction = isPortrait ? 'vertical' : 'horizontal'
+
+  const rows = useMemo(() => {
+    if (placements && placements.length > 0) return placements
+    const list = media ?? []
+    return list.flatMap(item => {
+      if (!item._key || !isValidMobileSpan(item.mobileStart, item.mobileEnd, cellCount)) return []
+      return [
+        {
+          item,
+          start: item.mobileStart as number,
+          end: item.mobileEnd as number,
+        },
+      ]
+    })
+  }, [placements, media, cellCount])
 
   const gridStyle: CSSProperties =
     direction === 'horizontal'
@@ -507,15 +596,15 @@ const MobileAllMediaPreviewLayer = ({
 
   return (
     <Box style={gridStyle}>
-      {media.map((item, index) => {
-        if (!item._key || !isValidMobileSpan(item.mobileStart, item.mobileEnd, cellCount))
-          return null
+      {rows.map((row, index) => {
+        const { item, start, end } = row
+        if (!item._key) return null
         const isActive = item._key === activeKey
         return (
           <Box
             key={item._key}
             style={{
-              ...placementFor(item.mobileStart, item.mobileEnd),
+              ...placementFor(start, end),
               position: 'relative',
               zIndex: isActive ? 50 : 10 + index,
               overflow: 'hidden',
@@ -529,6 +618,60 @@ const MobileAllMediaPreviewLayer = ({
           </Box>
         )
       })}
+    </Box>
+  )
+}
+
+const mobilePreviewFrameStyle = (isPortrait: boolean): CSSProperties => ({
+  position: 'relative',
+  width: isPortrait ? 'min(45%, 280px)' : '100%',
+  maxWidth: 480,
+  aspectRatio: '1 / 2',
+  background: 'var(--card-border-color, rgba(127,127,127,0.22))',
+  borderRadius: 4,
+  overflow: 'hidden',
+})
+
+/** Read-only mobile frame when automatic layout is on (equal split, not saved). */
+const MobileAutomaticReadOnlyPreview = ({
+  media,
+  activeKey,
+  orientation,
+}: {
+  media: ProjectSlideMediaGridValue[]
+  activeKey: string | null
+  orientation: 'portrait' | 'landscape'
+}) => {
+  const isPortrait = orientation === 'portrait'
+  const cellCount = isPortrait ? MOBILE_PORTRAIT_ROW_COUNT : MOBILE_LANDSCAPE_COLUMN_COUNT
+  const direction = isPortrait ? 'vertical' : 'horizontal'
+
+  const placements = useMemo(() => {
+    const items = media.filter(m => m._key)
+    const spans = equalSplitMobileSpans(items.length, cellCount)
+    return items.map((item, i) => ({
+      item,
+      start: spans[i]?.start ?? 1,
+      end: spans[i]?.end ?? cellCount + 1,
+    }))
+  }, [media, cellCount])
+
+  if (placements.length === 0) {
+    return (
+      <Box padding={4} radius={2} border>
+        <Text size={1}>Add media to preview mobile layout.</Text>
+      </Box>
+    )
+  }
+
+  return (
+    <Box style={mobilePreviewFrameStyle(isPortrait)}>
+      <MobileZebraBackdrop direction={direction} cellCount={cellCount} />
+      <MobileAllMediaPreviewLayer
+        placements={placements}
+        activeKey={activeKey}
+        orientation={orientation}
+      />
     </Box>
   )
 }
@@ -559,15 +702,7 @@ const MobileCombinedActiveSpanEditor = ({
   const rangeLabel =
     start != null && end != null ? `${unitLabel}: ${start}–${end}` : `${unitLabel}: —`
 
-  const stripOuter: CSSProperties = {
-    position: 'relative',
-    width: isPortrait ? 'min(45%, 280px)' : '100%',
-    maxWidth: 480,
-    aspectRatio: '1 / 2',
-    background: 'var(--card-border-color, rgba(127,127,127,0.22))',
-    borderRadius: 4,
-    overflow: 'hidden',
-  }
+  const stripOuter: CSSProperties = mobilePreviewFrameStyle(isPortrait)
 
   return (
     <Box>
@@ -584,6 +719,7 @@ const MobileCombinedActiveSpanEditor = ({
       </Flex>
 
       <Box style={stripOuter}>
+        <MobileZebraBackdrop direction={direction} cellCount={cellCount} />
         <MobileAllMediaPreviewLayer
           media={media}
           activeKey={activeMediaKey}
@@ -679,7 +815,17 @@ export const ProjectSlideGridPlannerDialog = ({
     [activeMediaKey, onChange],
   )
 
+  const patchSlide = useCallback(
+    (patches: FormPatch[]) => {
+      onChange(patches)
+    },
+    [onChange],
+  )
+
   if (!open) return null
+
+  const automaticMobileOn = slideAutomaticMobile !== false
+  const orientationFormValue = slideMobileOrientation ?? Orientation.PORTRAIT
 
   return (
     <Dialog
@@ -718,6 +864,38 @@ export const ProjectSlideGridPlannerDialog = ({
           </Stack>
 
           <Stack space={4} flex={1} style={{ minWidth: 280 }}>
+            <Card padding={3} radius={2} tone="transparent" border>
+              <Stack space={3}>
+                <Flex align="center" gap={3} wrap="wrap">
+                  <Switch
+                    checked={automaticMobileOn}
+                    disabled={Boolean(readOnly)}
+                    onChange={event => {
+                      const checked = event.currentTarget.checked
+                      patchSlide([set(checked, ['automaticMobileLayout'])])
+                    }}
+                  />
+                  <Text size={1}>Automatic mobile layout</Text>
+                </Flex>
+                {!automaticMobileOn ? (
+                  <Flex align="center" gap={3} wrap="wrap">
+                    <Text size={1}>Mobile orientation</Text>
+                    <Select
+                      value={orientationFormValue}
+                      disabled={Boolean(readOnly)}
+                      onChange={event => {
+                        patchSlide([set(event.currentTarget.value, ['mobileOrientation'])])
+                      }}
+                      style={{ minWidth: 160 }}
+                    >
+                      <option value={Orientation.PORTRAIT}>Portrait</option>
+                      <option value={Orientation.LANDSCAPE}>Landscape</option>
+                    </Select>
+                  </Flex>
+                ) : null}
+              </Stack>
+            </Card>
+
             <Flex gap={2}>
               <Button
                 text="Desktop"
@@ -731,62 +909,66 @@ export const ProjectSlideGridPlannerDialog = ({
               />
             </Flex>
 
-            {activeItem && activeMediaKey ? (
-              <>
-                {tab === 'desktop' ? (
-                  <Stack space={3}>
-                    <Box
-                      style={{
-                        position: 'relative',
-                        width: '100%',
-                        aspectRatio: '2 / 1',
-                        maxWidth: '100%',
-                        background: 'var(--card-border-color, rgba(127,127,127,0.22))',
-                        borderRadius: 4,
-                        overflow: 'hidden',
-                      }}
-                    >
-                      <DesktopPreviewLayer media={media} activeKey={activeMediaKey} />
-                      <DesktopInteractionOverlay
-                        key={activeMediaKey}
-                        start={activeItem.desktopStart}
-                        end={activeItem.desktopEnd}
-                        readOnly={Boolean(readOnly)}
-                        onCommit={(start, end) =>
-                          patchActive([
-                            set(start, mediaKeyPath(activeMediaKey, 'desktopStart')),
-                            set(end, mediaKeyPath(activeMediaKey, 'desktopEnd')),
-                          ])
-                        }
-                      />
-                    </Box>
-                  </Stack>
-                ) : (
-                  <Stack space={3}>
-                    {slideAutomaticMobile !== false ? null : (
-                      <MobileCombinedActiveSpanEditor
-                        media={media}
-                        activeItem={activeItem}
-                        activeMediaKey={activeMediaKey}
-                        orientation={slideMobileOrientationVisual}
-                        readOnly={Boolean(readOnly)}
-                        onCommit={(start, end) =>
-                          patchActive([
-                            set(start, mediaKeyPath(activeMediaKey, 'mobileStart')),
-                            set(end, mediaKeyPath(activeMediaKey, 'mobileEnd')),
-                          ])
-                        }
-                        onClear={() =>
-                          patchActive([
-                            unset(mediaKeyPath(activeMediaKey, 'mobileStart')),
-                            unset(mediaKeyPath(activeMediaKey, 'mobileEnd')),
-                          ])
-                        }
-                      />
-                    )}
-                  </Stack>
-                )}
-              </>
+            {tab === 'desktop' ? (
+              activeItem && activeMediaKey ? (
+                <Stack space={3}>
+                  <Box
+                    style={{
+                      position: 'relative',
+                      width: '100%',
+                      aspectRatio: '2 / 1',
+                      maxWidth: '100%',
+                      background: 'var(--card-border-color, rgba(127,127,127,0.22))',
+                      borderRadius: 4,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <DesktopPreviewLayer media={media} activeKey={activeMediaKey} />
+                    <DesktopInteractionOverlay
+                      key={activeMediaKey}
+                      start={activeItem.desktopStart}
+                      end={activeItem.desktopEnd}
+                      readOnly={Boolean(readOnly)}
+                      onCommit={(start, end) =>
+                        patchActive([
+                          set(start, mediaKeyPath(activeMediaKey, 'desktopStart')),
+                          set(end, mediaKeyPath(activeMediaKey, 'desktopEnd')),
+                        ])
+                      }
+                    />
+                  </Box>
+                </Stack>
+              ) : (
+                <Card padding={4} radius={2} tone="transparent" border>
+                  <Text size={1}>Select a media item on the left.</Text>
+                </Card>
+              )
+            ) : automaticMobileOn ? (
+              <MobileAutomaticReadOnlyPreview
+                media={media}
+                activeKey={activeMediaKey}
+                orientation={slideMobileOrientationVisual}
+              />
+            ) : activeItem && activeMediaKey ? (
+              <MobileCombinedActiveSpanEditor
+                media={media}
+                activeItem={activeItem}
+                activeMediaKey={activeMediaKey}
+                orientation={slideMobileOrientationVisual}
+                readOnly={Boolean(readOnly)}
+                onCommit={(start, end) =>
+                  patchActive([
+                    set(start, mediaKeyPath(activeMediaKey, 'mobileStart')),
+                    set(end, mediaKeyPath(activeMediaKey, 'mobileEnd')),
+                  ])
+                }
+                onClear={() =>
+                  patchActive([
+                    unset(mediaKeyPath(activeMediaKey, 'mobileStart')),
+                    unset(mediaKeyPath(activeMediaKey, 'mobileEnd')),
+                  ])
+                }
+              />
             ) : (
               <Card padding={4} radius={2} tone="transparent" border>
                 <Text size={1}>Select a media item on the left.</Text>
