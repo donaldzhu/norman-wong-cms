@@ -6,7 +6,6 @@ import { SelectedWorksProjectInput } from '../../../components/selectedWorks/sel
 
 export const selectedWorksProject = defineType({
   name: 'selectedWorksProject',
-  title: 'Project block',
   type: 'object',
   icon: ProjectsIcon,
   components: {
@@ -16,7 +15,6 @@ export const selectedWorksProject = defineType({
   fields: [
     defineField({
       name: 'project',
-      title: 'Project',
       type: 'reference',
       to: [{ type: 'project' }],
       weak: true,
@@ -25,7 +23,7 @@ export const selectedWorksProject = defineType({
       name: 'media',
       title: 'Media',
       type: 'array',
-      of: [{ type: 'selectedWorksProjectMedia' }],
+      of: [{ type: 'selectedWorksMedia' }],
     }),
   ],
   preview: {

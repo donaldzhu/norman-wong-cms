@@ -6,7 +6,7 @@ import {
   projectSlideMedia,
   selectedWorksLayout,
   selectedWorksProject,
-  selectedWorksProjectMedia,
+  selectedWorksMedia,
   videoObject,
 } from './objects'
 
@@ -26,7 +26,7 @@ export const schemaTypes = [
   allProjects,
   selectedWorksLayout,
   selectedWorksProject,
-  selectedWorksProjectMedia,
+  selectedWorksMedia,
   projectSlideMedia,
   selectedWorks,
   info,
