@@ -30,6 +30,7 @@ export const RefMediaPickerPreview = ({
       overflow: 'hidden',
       background: 'var(--card-muted-bg-color)',
       minHeight: 220,
+      maxHeight: '30vh',
     }}
   >
     <MediaRefPreview

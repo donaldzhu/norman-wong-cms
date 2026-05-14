@@ -1,13 +1,9 @@
-import { AssetPickerField, createAssetPickerButton } from '../../../components/assetPicker/refMediaPickerButton'
 import { MediaType, Size } from '../../../constants/enum'
 import { defineField, defineType } from 'sanity'
-import { muxVideoAssetRefsFromProject, toRemove_assetRefsFromProject } from '../../../utils/refs'
 
 import { AllProjectSlidePreview } from '../../../components/previews/allProjectsThumbnailPreview'
 import { ButtonToggleInput } from '../../../components/common/buttonToggleInput'
 import { createToggleMediaFields } from '../../../utils/field'
-
-const SLIDES_FIELD_ID = 'slides'
 
 const SIZE_FIELDSET = 'sizes'
 export const allProjectsThumbnail = defineType({
@@ -23,7 +19,7 @@ export const allProjectsThumbnail = defineType({
     },
   ],
   fields: [
-    ...createToggleMediaFields({ fieldId: SLIDES_FIELD_ID }),
+    ...createToggleMediaFields(),
     defineField({
       name: 'desktopSize',
       title: 'Desktop',

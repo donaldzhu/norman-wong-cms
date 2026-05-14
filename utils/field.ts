@@ -1,16 +1,14 @@
 import { AssetPickerField, createAssetPickerButton } from '../components/assetPicker/refMediaPickerButton'
 import { mediaRefsFromProject } from './refs'
 
-import type { AssetRef } from '../components/types/media'
+import type { AssetRef, Ref } from '../components/types/media'
 import { ButtonToggleInput } from '../components/common/buttonToggleInput'
 import { MediaType } from '../constants/enum'
 import { defineField, type ImageRule, type Rule } from 'sanity'
+import { SLIDE_FIELD_ID } from '../constants/configs'
+import type { Context } from 'react'
 
-interface CreateToggleMediaFieldsProps {
-  fieldId: string
-}
-
-export const createToggleMediaFields = ({ fieldId }: CreateToggleMediaFieldsProps) => {
+export const createToggleMediaFields = (ProjectContext?: Context<Ref | undefined>) => {
   const validateValue = (
     value: unknown,
     context: { parent?: unknown; document?: unknown },
@@ -25,8 +23,10 @@ export const createToggleMediaFields = ({ fieldId }: CreateToggleMediaFieldsProp
     const ref = (value as AssetRef).asset?._ref
     if (!ref) return ADD_ASSET_ERROR_MESSAGE
 
-    const doc = context.document as { [fieldId]?: unknown } | undefined
-    const allowed = mediaRefsFromProject(doc?.[fieldId])
+    if (ProjectContext) return true
+
+    const doc = context.document as { [SLIDE_FIELD_ID]?: unknown } | undefined
+    const allowed = mediaRefsFromProject(doc?.[SLIDE_FIELD_ID])
       .filter(ref => ref.mediaType === mediaType)
       .map(ref => ref.media.asset._ref)
 
@@ -59,8 +59,8 @@ export const createToggleMediaFields = ({ fieldId }: CreateToggleMediaFieldsProp
       type: 'image',
       components: {
         input: createAssetPickerButton({
-          fieldId,
           mediaType: MediaType.IMAGE,
+          RefContext: ProjectContext,
         }),
         field: AssetPickerField,
       },
@@ -72,8 +72,8 @@ export const createToggleMediaFields = ({ fieldId }: CreateToggleMediaFieldsProp
       type: 'mux.video',
       components: {
         input: createAssetPickerButton({
-          fieldId: fieldId,
           mediaType: MediaType.VIDEO,
+          RefContext: ProjectContext,
         }),
         field: AssetPickerField,
       },

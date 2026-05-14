@@ -1,23 +1,21 @@
 import { createContext, useContext, type ReactNode } from 'react'
+import type { Ref } from '../types/media'
 
-export type ProjectRefValue = { _ref?: string; _weak?: boolean } | undefined
+export type ProjectRefValue = Ref | undefined
 
-const SelectedWorksProjectBlockContext = createContext<ProjectRefValue>(undefined)
+export const SelectedWorksProjectContext = createContext<ProjectRefValue>(undefined)
 
-export function SelectedWorksProjectBlockProvider({
+export const SelectedWorksProjectProvider = ({
   projectRef,
   children,
 }: {
   projectRef: ProjectRefValue
   children: ReactNode
-}) {
-  return (
-    <SelectedWorksProjectBlockContext.Provider value={projectRef}>
-      {children}
-    </SelectedWorksProjectBlockContext.Provider>
-  )
-}
-
+}) => (
+  <SelectedWorksProjectContext.Provider value={projectRef}>
+    {children}
+  </SelectedWorksProjectContext.Provider>
+)
 export function useSelectedWorksProjectRef(): ProjectRefValue {
-  return useContext(SelectedWorksProjectBlockContext)
+  return useContext(SelectedWorksProjectContext)
 }

@@ -1,9 +1,11 @@
-import { Button, Stack } from '@sanity/ui'
+import { Button, Spinner, Stack } from '@sanity/ui'
 import {
   useCallback,
+  useContext,
   useMemo,
   useState,
   type ComponentType,
+  type Context,
   type ReactElement
 } from 'react'
 import {
@@ -16,8 +18,12 @@ import {
 } from 'sanity'
 
 import { SearchIcon } from '@sanity/icons'
+import { SLIDE_FIELD_ID } from '../../constants/configs'
 import { MediaType } from '../../constants/enum'
 import { mediaRefsFromProject } from '../../utils/refs'
+import { DummyContext } from '../common/dummyContext'
+import { useProjectSlides } from '../hooks/useProjectSlides'
+import type { Ref } from '../types/media'
 import { RefMediaPickerDialog } from './refMediaPickerDialog'
 import { RefMediaPickerPreview } from './refMediaPickerPreview'
 
@@ -25,20 +31,32 @@ const createCopy = (mediaType: MediaType) => {
   return {
     select: `Select ${mediaType} from project`,
     none: `This project contains no ${mediaType}s`,
+    loading: `Loading ${mediaType}s from project...`,
     dialogId: `asset-picker-${mediaType}`,
     dialogHeader: `Choose ${mediaType} from project`,
   }
 }
 
 interface RefMediaPickerButtonProps {
-  fieldId: string
   mediaType: MediaType
+  RefContext?: Context<Ref | undefined>
 }
 
-const RefMediaPickerButton = ({ fieldId, mediaType, value, onChange }: RefMediaPickerButtonProps & ObjectInputProps) => {
-  const source = useFormValue([fieldId])
+const RefMediaPickerButton = ({
+  value,
+  onChange,
+  mediaType,
+  RefContext
+}: RefMediaPickerButtonProps & ObjectInputProps) => {
+  const source = useFormValue([SLIDE_FIELD_ID])
+  const project = useContext(RefContext ?? DummyContext)
+  const { isLoading, slides } = useProjectSlides(project)
+
   const copy = createCopy(mediaType)
-  const refs = useMemo(() => mediaRefsFromProject(source), [mediaType, source])
+  const refs = useMemo(() =>
+    mediaRefsFromProject(RefContext ? slides : source),
+    [mediaType, source, slides, RefContext]
+  )
 
   const isEmpty = refs.length === 0
   const assetRef = value?.asset?._ref as string | undefined
@@ -73,8 +91,8 @@ const RefMediaPickerButton = ({ fieldId, mediaType, value, onChange }: RefMediaP
       ) : (
         <Button
           mode="ghost"
-          icon={SearchIcon}
-          text={isEmpty ? copy.none : copy.select}
+          icon={isLoading ? Spinner : SearchIcon}
+          text={isLoading ? copy.loading : isEmpty ? copy.none : copy.select}
           disabled={isEmpty}
           onClick={() => setOpen(true)}
           style={{ width: '100%' }}
@@ -95,11 +113,14 @@ const RefMediaPickerButton = ({ fieldId, mediaType, value, onChange }: RefMediaP
 }
 
 export const createAssetPickerButton = ({
-  fieldId,
   mediaType,
+  RefContext,
 }: RefMediaPickerButtonProps): ComponentType<ObjectInputProps> =>
   (props: ObjectInputProps) =>
-    <RefMediaPickerButton fieldId={fieldId} mediaType={mediaType} {...props} />
+    <RefMediaPickerButton
+      {...props}
+      mediaType={mediaType}
+      RefContext={RefContext} />
 
 export const AssetPickerField = (props: ObjectFieldProps): ReactElement => (
   <FormField

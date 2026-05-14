@@ -19,20 +19,18 @@ export const SelectedWorksGridButton = (
 
   const range = useMemo(() => getCellRange(schemaType?.options), [schemaType?.options])
 
-  const projectsFromForm = useFormValue(['projects']) as
+  const projects = useFormValue(['projects']) as
     | SelectedWorksProject[]
     | undefined
 
-  const projects = projectsFromForm
   const rowSettings = value?.rowSettings
 
   const stream = useMemo(() => flattenProjectList(projects), [projects])
 
   useEffect(() => {
-    const next = autoPopulateRowSettings(rowSettings, stream.length, range)
-    if (JSON.stringify(next) !== JSON.stringify(rowSettings ?? [])) {
-      onChange([set(next, ['rowSettings'])])
-    }
+    const newRowSettings = autoPopulateRowSettings(rowSettings, stream.length, range)
+    if (JSON.stringify(newRowSettings) !== JSON.stringify(rowSettings ?? []))
+      onChange([set(newRowSettings, ['rowSettings'])])
   }, [onChange, range, rowSettings, stream.length])
 
   const [isOpen, setIsOpen] = useState(false)
@@ -46,7 +44,6 @@ export const SelectedWorksGridButton = (
         style={{ cursor: 'pointer' }}
         icon={ExpandIcon}
       />
-
       <SelectedWorksGridPlannerDialog
         open={isOpen}
         onClose={() => setIsOpen(false)}

@@ -1,3 +1,4 @@
+import type { AssetRef, Ref } from '../types/media'
 import { Box, Button, Card, Dialog, Flex, Stack, Text } from '@sanity/ui'
 import { ChevronDownIcon, ChevronUpIcon } from '@sanity/icons'
 import { set, useFormValue } from 'sanity'
@@ -25,14 +26,14 @@ export interface ProjectMedia {
   _type?: string
   _key: string
   type?: string
-  image?: { asset?: { _ref?: string } }
-  video?: { asset?: { _ref?: string } }
+  image?: AssetRef
+  video?: AssetRef
 }
 
 export interface SelectedWorksProject {
   _key?: string
   _type?: string
-  project?: { _ref?: string }
+  project?: Ref
   media?: ProjectMedia[]
 }
 

@@ -1,6 +1,7 @@
 import { Flex, Spinner } from '@sanity/ui'
 import { useEffect, useMemo, useState } from 'react'
 
+import type { AssetRef } from '../types/media'
 import { MediaType } from '../../constants/enum'
 import { SANITY_CLIENT_OPTIONS } from '../../constants/configs'
 import { createImageUrlBuilder } from '@sanity/image-url'
@@ -8,7 +9,7 @@ import { useClient } from 'sanity'
 
 type MediaRefPreviewProps = {
   mediaType?: MediaType
-  mediaWithRef?: { asset?: { _ref?: string } }
+  mediaWithRef?: AssetRef
   style?: React.CSSProperties
   sanityImageWidth: number
   spinnerSize?: number | string

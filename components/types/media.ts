@@ -1,11 +1,15 @@
 import { MediaType } from '../../constants/enum'
 
+export interface Ref {
+  _ref?: string
+}
+
 export interface AssetRef {
-  asset?: { _ref?: string }
+  asset?: Ref
 }
 
 export interface ValidAssetRef {
-  asset: { _ref: string }
+  asset: Required<Ref>
 }
 
 export interface MediaRef {
