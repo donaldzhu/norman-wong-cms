@@ -12,6 +12,8 @@ interface ProjectSlideGridThumbnailProps {
   onSelect: () => void
 }
 
+const ERROR_ICON_SIZE = 21
+
 export const ProjectSlideGridThumbnail = ({
   item,
   selected,
@@ -21,6 +23,9 @@ export const ProjectSlideGridThumbnail = ({
   const isVideo = item.mediaType === MediaType.VIDEO
   const mediaWithRef = isVideo ? item.video : item.image
   const hasRef = Boolean(mediaWithRef?.asset?._ref)
+
+  const borderColor = hasError ? 'var(--card-badge-critical-icon-color)' : selected ? 'var(--card-focus-ring-color)' : 'transparent'
+  const borderThickness = selected ? '2px' : hasError ? '1px' : 0
 
   return (
     <Card
@@ -36,11 +41,12 @@ export const ProjectSlideGridThumbnail = ({
         textAlign: 'left',
         width: '100%',
         boxSizing: 'border-box',
-        outline: selected ? '2px solid var(--card-focus-ring-color)' : undefined,
+        outline: selected || hasError ? `1px solid ${borderColor}` : undefined,
       }}
     >
-      <Flex align="center" gap={3}>
-        <Box flex="none" style={{ position: 'relative', width: 56, height: 56 }}>
+      <Flex align="center" justify="space-between" gap={3}>
+
+        <Flex align="center" justify="space-between">
           <Box
             style={{
               width: 56,
@@ -75,24 +81,21 @@ export const ProjectSlideGridThumbnail = ({
               </Flex>
             )}
           </Box>
-          {hasError ? (
-            <Box
-              style={{
-                position: 'absolute',
-                top: -2,
-                right: -2,
-                color: 'var(--card-badge-critical-icon-color)',
-                lineHeight: 0,
-                pointerEvents: 'none',
-              }}
-            >
-              <ErrorOutlineIcon />
-            </Box>
-          ) : null}
-        </Box>
-        <Text size={1} weight={selected ? 'semibold' : 'regular'}>
-          {isVideo ? 'Video' : 'Image'}
-        </Text>
+
+
+          <Text size={1} weight={selected ? 'semibold' : 'regular'}>
+            {isVideo ? 'Video' : 'Image'}
+          </Text>
+        </Flex>
+        {hasError ? (
+          <Box style={{
+            color: 'var(--card-badge-critical-icon-color)',
+            width: ERROR_ICON_SIZE,
+            height: ERROR_ICON_SIZE
+          }}>
+            <ErrorOutlineIcon width={ERROR_ICON_SIZE} height={ERROR_ICON_SIZE} />
+          </Box>
+        ) : null}
       </Flex>
     </Card>
   )

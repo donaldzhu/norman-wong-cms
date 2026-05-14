@@ -37,7 +37,7 @@ export const ProjectSlideGridDialog = ({
   onClose,
   inputProps,
 }: ProjectSlideGridPlannerDialogProps): ReactElement | null => {
-  const { value, onChange } = inputProps
+  const { value, onChange, readOnly } = inputProps
   const media = value?.media ?? []
 
   const [tab, setTab] = useState<PlannerTab>(PlannerTab.DESKTOP)
@@ -185,6 +185,39 @@ export const ProjectSlideGridDialog = ({
                     }}
                     onClick={() => patchSlide([set(!automaticMobileOn, ['automaticMobileLayout'])])}
                   />
+                  <Button
+                    text="Clear"
+                    mode="ghost"
+                    tone="critical"
+                    disabled={
+                      !activeMediaKey ||
+                      Boolean(readOnly) ||
+                      (tab === PlannerTab.MOBILE && automaticMobileOn)
+                    }
+                    title={
+                      tab === PlannerTab.DESKTOP
+                        ? 'Clear desktop column span for the selected media'
+                        : automaticMobileOn
+                          ? 'Turn off automatic mobile layout to clear per-item mobile spans'
+                          : 'Clear mobile row/column span for the selected media'
+                    }
+                    onClick={() => {
+                      if (!activeMediaKey) return
+                      if (tab === PlannerTab.DESKTOP) {
+                        patchActive([
+                          unset(mediaKeyPath(activeMediaKey, 'desktopStart')),
+                          unset(mediaKeyPath(activeMediaKey, 'desktopEnd')),
+                        ])
+                        return
+                      }
+                      if (!automaticMobileOn) {
+                        patchActive([
+                          unset(mediaKeyPath(activeMediaKey, 'mobileStart')),
+                          unset(mediaKeyPath(activeMediaKey, 'mobileEnd')),
+                        ])
+                      }
+                    }}
+                  />
                 </Flex>
 
               </Flex>
@@ -235,6 +268,7 @@ export const ProjectSlideGridDialog = ({
                 activeItem={activeItem}
                 activeMediaKey={activeMediaKey}
                 orientation={slideMobileOrientationVisual}
+                readOnly={Boolean(readOnly)}
                 onCommit={(start, end) =>
                   patchActive([
                     set(start, mediaKeyPath(activeMediaKey, 'mobileStart')),
