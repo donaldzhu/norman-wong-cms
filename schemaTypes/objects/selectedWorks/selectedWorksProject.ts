@@ -1,7 +1,8 @@
 import { defineField, defineType } from 'sanity'
 
 import { ProjectsIcon } from '@sanity/icons'
-import { SelectedWorksProjectBlockInput } from '../../../components/selectedWorks/selectedWorksProjectBlockInput'
+import { SelectedProjectRefPreview } from '../../../components/previews/selectedProjectRefPreview'
+import { SelectedWorksProjectInput } from '../../../components/selectedWorks/selectedWorksContextProvider'
 
 export const selectedWorksProject = defineType({
   name: 'selectedWorksProject',
@@ -9,7 +10,8 @@ export const selectedWorksProject = defineType({
   type: 'object',
   icon: ProjectsIcon,
   components: {
-    input: SelectedWorksProjectBlockInput,
+    preview: SelectedProjectRefPreview,
+    input: SelectedWorksProjectInput,
   },
   fields: [
     defineField({
@@ -27,13 +29,9 @@ export const selectedWorksProject = defineType({
     }),
   ],
   preview: {
-    select: { media: 'media', projectTitle: 'project.title' },
-    prepare({ media, projectTitle }) {
-      const n = Array.isArray(media) ? media.length : 0
-      return {
-        title: projectTitle || 'Project block',
-        subtitle: n ? `${n} item${n === 1 ? '' : 's'}` : 'No media',
-      }
+    select: {
+      media: 'media',
+      title: 'project.title'
     },
   },
 })

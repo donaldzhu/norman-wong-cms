@@ -29,7 +29,6 @@ export const projectSlide = defineType({
     select: {
       description: 'description',
       year: 'year',
-      /** Not `media` — that key is reserved for the preview thumbnail slot and breaks DefaultPreview. */
       slideMedia: 'media',
     },
   },

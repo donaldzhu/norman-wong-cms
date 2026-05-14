@@ -10,11 +10,11 @@ import {
   videoObject,
 } from './objects'
 
-import { allProjects } from './allProjects'
-import { header } from './header'
-import { info } from './info'
-import { project } from './project'
-import { selectedWorks } from './selectedWorks'
+import { allProjects } from './singletons/allProjects'
+import { header } from './singletons/header'
+import { info } from './singletons/info'
+import { project } from './documents/project'
+import { selectedWorks } from './singletons/selectedWorks'
 
 export const schemaTypes = [
   contact,
