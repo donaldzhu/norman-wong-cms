@@ -23,16 +23,15 @@ export interface RowSetting {
 }
 
 export interface ProjectMedia {
-  _type?: string
   _key: string
   type?: string
   image?: AssetRef
   video?: AssetRef
+  hideOnMobile?: boolean
 }
 
 export interface SelectedWorksProject {
   _key?: string
-  _type?: string
   project?: Ref
   media?: ProjectMedia[]
 }
@@ -64,17 +63,23 @@ export const autoPopulateRowSettings = (
   return normalized
 }
 
-export const flattenProjectList = (projects: SelectedWorksProject[] = []) => {
+export const flattenProjectList = (
+  projects: SelectedWorksProject[] = [],
+  isMobile: boolean = false,
+) => {
   const out: ProjectListItem[] = []
   projects.forEach((proj, projectIndex) => {
     const media = proj?.media ?? []
     media.forEach((m, mediaIndex) => {
-      if (!m?._key) return
+      if (!m?._key || (isMobile && m.hideOnMobile)) return
+      const isProjectStart = !isMobile ?
+        mediaIndex === 0 :
+        media.findIndex(m => !m.hideOnMobile) === mediaIndex
       out.push({
         media: m,
         projectIndex,
         mediaIndex,
-        isProjectStart: mediaIndex === 0,
+        isProjectStart,
       })
     })
   })
@@ -195,7 +200,7 @@ export const SelectedWorksGridPlannerDialog = ({
 
   const projects = useFormValue(['projects']) as SelectedWorksProject[] | undefined
   const rowSettings = value?.rowSettings
-  const projectList = useMemo(() => flattenProjectList(projects), [projects])
+  const projectList = useMemo(() => flattenProjectList(projects, isMobile), [projects, isMobile])
 
   const gridRows = useMemo(
     () => buildGridRows(projectList, rowSettings, range),

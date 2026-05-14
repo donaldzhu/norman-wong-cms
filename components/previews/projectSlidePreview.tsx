@@ -1,28 +1,39 @@
-import type { MediaData } from '../types/media'
+import * as changeCase from 'change-case'
+
+import type { AssetRef, MediaData } from '../types/media'
+
+import { MediaType } from '../../constants/enum'
 import { PreviewProps } from 'sanity'
 import { PreviewTemplate } from './previewTemplate'
-import { getMediaCountSubtitle } from '../../utils/preview'
 
 type ProjectSlidePreviewProps = PreviewProps & {
-  description?: string
-  year?: number
-  slideMedia?: MediaData[]
+  title?: string
+  mediaType?: MediaType
+  image?: AssetRef
+  video?: AssetRef
+  desktopStart?: number
+  desktopEnd?: number
 }
 
 export const ProjectSlidePreview = (props: PreviewProps) => {
   const {
-    description,
-    year,
-    slideMedia
+    mediaType,
+    image,
+    video,
+    desktopStart,
+    desktopEnd,
   } = props as ProjectSlidePreviewProps
 
-  const titleParts: string[] = []
-  if (description) titleParts.push(description)
-  if (year != null) titleParts.push(String(year))
-  const title = titleParts.length ? titleParts.join(' · ') : 'Untitled'
-  const subtitle = getMediaCountSubtitle(slideMedia ?? [])
+  const title = mediaType ? changeCase.capitalCase(mediaType) : 'Unknown'
+  const mediaData: MediaData = {
+    mediaType: mediaType ?? MediaType.IMAGE,
+    image,
+    video,
+  }
+
+  const subtitle = desktopStart && desktopEnd ? `Column ${desktopStart} - ${desktopEnd}` : undefined
 
   return (
-    <PreviewTemplate data={slideMedia?.[0]} title={title} subtitle={subtitle} />
+    <PreviewTemplate data={mediaData} title={title} subtitle={subtitle} />
   )
 }

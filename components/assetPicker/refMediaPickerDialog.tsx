@@ -24,8 +24,8 @@ export const RefMediaPickerDialog = ({
 }: RefMediaPickerDialogProps) => {
   const containerRef = useClickAway<HTMLDivElement>(onClose)
   return (
-    <Dialog id={id} header={header} onClose={onClose} width={3} zOffset={999} open>
-      <Box padding={2} ref={containerRef}>
+    <Dialog id={id} header={header} onClose={onClose} width={2} zOffset={999} open>
+      <Box padding={4} ref={containerRef}>
         <RefMediaPickerGrid refs={refs} onPick={onPick} mediaType={mediaType} />
       </Box>
     </Dialog>

@@ -1,9 +1,9 @@
-import type { AssetRef, MediaRef, ValidMediaRef } from '../types/media'
 import { Card, Grid } from '@sanity/ui'
-import { isValidAssetRef, isValidMediaRef } from '../../utils/refs'
+import type { MediaRef, ValidMediaRef } from '../types/media'
 
 import { MediaRefPreview } from '../previews/mediaRefPreview'
 import { MediaType } from '../../constants/enum'
+import { isValidMediaRef } from '../../utils/refs'
 
 type RefMediaPickerGridProps = {
   refs: MediaRef[]
@@ -17,7 +17,7 @@ export const RefMediaPickerGrid = ({ refs: _refs, onPick, mediaType }: RefMediaP
   const refs: ValidMediaRef[] = _refs.filter(isValidMediaRef)
     .filter(ref => ref.mediaType === mediaType)
   return (
-    <Grid columns={[3, 3, 4, 5]} gap={3}>
+    <Grid columns={[4, 4, 5, 6]} gap={2}>
       {refs.map(ref => (
         <Card
           key={ref.media?.asset?._ref}

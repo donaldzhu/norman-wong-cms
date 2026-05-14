@@ -3,7 +3,6 @@ import { Box, Flex, Stack, Text } from '@sanity/ui'
 import { DocumentIcon } from '@sanity/icons'
 import type { MediaData } from '../types/media'
 import { MediaRefPreview } from './mediaRefPreview'
-import { MediaType } from '../../constants/enum'
 import { mediaDataToMediaRef } from '../../utils/refs'
 
 interface PreviewTemplateProps {

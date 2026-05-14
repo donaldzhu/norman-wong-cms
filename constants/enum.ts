@@ -8,3 +8,8 @@ export enum Size {
   M = 'm',
   L = 'l',
 }
+
+export enum Orientation {
+  PORTRAIT = 'portrait',
+  LANDSCAPE = 'landscape',
+}

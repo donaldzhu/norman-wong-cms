@@ -8,6 +8,20 @@ import { defineField, type ImageRule, type Rule } from 'sanity'
 import { SLIDE_FIELD_ID } from '../constants/configs'
 import type { Context } from 'react'
 
+export const createToggleButtonField = () => defineField({
+  name: 'mediaType',
+  type: 'string',
+  initialValue: MediaType.IMAGE,
+  components: { input: ButtonToggleInput },
+  options: {
+    list: [
+      { title: 'Image', value: MediaType.IMAGE },
+      { title: 'Video', value: MediaType.VIDEO },
+    ],
+  },
+  validation: rule => rule.required(),
+})
+
 export const createToggleMediaFields = (ProjectContext?: Context<Ref | undefined>) => {
   const validateValue = (
     value: unknown,
@@ -41,19 +55,7 @@ export const createToggleMediaFields = (ProjectContext?: Context<Ref | undefined
     rule.custom((value, context) => validateValue(value, context, mediaType))
 
   return [
-    defineField({
-      name: 'mediaType',
-      type: 'string',
-      initialValue: MediaType.IMAGE,
-      components: { input: ButtonToggleInput },
-      options: {
-        list: [
-          { title: 'Image', value: MediaType.IMAGE },
-          { title: 'Video', value: MediaType.VIDEO },
-        ],
-      },
-      validation: rule => rule.required(),
-    }),
+    createToggleButtonField(),
     defineField({
       name: MediaType.IMAGE,
       type: 'image',

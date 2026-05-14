@@ -1,12 +1,16 @@
-import { defineField, defineType } from 'sanity'
-
-import { MediaType } from '../../../constants/enum'
-import { ProjectSlideMediaObjectInput } from '../../../components/projectSlide/projectSlideMediaObjectInput'
-import { ProjectsIcon } from '@sanity/icons'
 import {
   MOBILE_LANDSCAPE_COLUMN_COUNT,
   MOBILE_PORTRAIT_ROW_COUNT,
 } from '../../../utils/columnRange'
+import { MediaType, Orientation } from '../../../constants/enum'
+import { defineField, defineType } from 'sanity'
+
+import { ImageFieldWrapper } from '../../../components/common/imageFIeldWrapper'
+import { ProjectSlideMediaObjectInput } from '../../../components/projectSlide/projectSlideMediaObjectInput'
+import { ProjectSlidePreview } from '../../../components/previews/projectSlidePreview'
+import { ProjectsIcon } from '@sanity/icons'
+import { createToggleButtonField } from '../../../utils/field'
+import { mediaAssetSource } from 'sanity-plugin-media'
 
 const hiddenNumberField = {
   input: () => null,
@@ -26,26 +30,21 @@ export const projectSlideMedia = defineType({
   icon: ProjectsIcon,
   components: {
     input: ProjectSlideMediaObjectInput,
+    preview: ProjectSlidePreview,
   },
   fields: [
-    defineField({
-      name: 'mediaType',
-      type: 'string',
-      initialValue: MediaType.IMAGE,
-      options: {
-        layout: 'radio',
-        list: [
-          { title: 'Image', value: MediaType.IMAGE },
-          { title: 'Video', value: MediaType.VIDEO },
-        ],
-      },
-      validation: rule => rule.required(),
-    }),
+    createToggleButtonField(),
     defineField({
       name: MediaType.IMAGE,
       type: 'image',
-
+      options: {
+        sources: [mediaAssetSource],
+      },
       hidden: ({ parent }) => parent?.mediaType !== MediaType.IMAGE,
+      components: {
+        input: ImageFieldWrapper,
+      },
+      // TODO: validate
     }),
     defineField({
       name: MediaType.VIDEO,
@@ -88,12 +87,12 @@ export const projectSlideMedia = defineType({
       name: 'mobileOrientation',
       title: 'Mobile Orientation',
       type: 'string',
-      initialValue: 'portrait',
+      initialValue: Orientation.PORTRAIT,
       options: {
         layout: 'dropdown',
         list: [
-          { title: 'Portrait', value: 'portrait' },
-          { title: 'Landscape', value: 'landscape' },
+          { title: 'Portrait', value: Orientation.PORTRAIT },
+          { title: 'Landscape', value: Orientation.LANDSCAPE },
         ],
       },
       validation: rule => rule.required(),
@@ -145,4 +144,13 @@ export const projectSlideMedia = defineType({
       components: hiddenNumberField,
     }),
   ],
+  preview: {
+    select: {
+      mediaType: 'mediaType',
+      image: 'image',
+      video: 'video',
+      desktopStart: 'desktopStart',
+      desktopEnd: 'desktopEnd',
+    },
+  },
 })
