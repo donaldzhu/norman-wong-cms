@@ -21,7 +21,6 @@ export const selectedWorksProject = defineType({
     }),
     defineField({
       name: 'media',
-      title: 'Media',
       type: 'array',
       of: [{ type: 'selectedWorksMedia' }],
     }),

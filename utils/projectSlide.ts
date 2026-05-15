@@ -1,9 +1,9 @@
 import * as changeCase from 'change-case'
 
-import { DESKTOP_COLUMN_COUNT, GRID_GAP, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from './configs'
+import { DESKTOP_COLUMN_COUNT, GRID_GAP, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from '../components/projectSlide/configs'
 
-import { DeviceType } from './types'
-import { Orientation } from '../../../constants/enum'
+import { DeviceType } from '../components/types/selectedWorks'
+import { Orientation } from '../constants/enum'
 
 export const getSlideGridKeyPath = (
   key: string,
@@ -14,32 +14,6 @@ export const getSlideGridKeyPath = (
     { _key: key },
     `${deviceType}${changeCase.capitalCase(alignment)}`,
   ]
-
-export const isValidDesktopSpan = (start: number | undefined, end: number | undefined) =>
-  typeof start === 'number' &&
-  typeof end === 'number' &&
-  start >= 1 &&
-  start <= DESKTOP_COLUMN_COUNT &&
-  end >= 2 &&
-  end <= DESKTOP_COLUMN_COUNT + 1 &&
-  end > start
-
-export const isValidMobileSpan = (
-  start: number | undefined,
-  end: number | undefined,
-  cellCount: number,
-) => {
-  const maxEdge = cellCount + 1
-  return (
-    typeof start === 'number' &&
-    typeof end === 'number' &&
-    start >= 1 &&
-    start <= cellCount &&
-    end >= 2 &&
-    end <= maxEdge &&
-    end > start
-  )
-}
 
 export const isValidSpan = (start: number | undefined, end: number | undefined, cellCount: number) => (
   typeof start === 'number' &&
@@ -62,13 +36,14 @@ export const getGridStyle = (tab: DeviceType, orientation: Orientation) => {
   const isPortrait = isMobile && orientation === Orientation.PORTRAIT
   const gridCount = getGridCellCount(tab, orientation)
   const gap = isMobile ? GRID_GAP : GRID_GAP
+  const template = `repeat(${gridCount}, minmax(0, 1fr))`
 
   return {
     position: 'absolute',
     inset: 0,
     display: 'grid',
-    gridTemplateColumns: isPortrait ? '1fr' : `repeat(${gridCount}, minmax(0, 1fr))`,
-    gridTemplateRows: isPortrait ? `repeat(${gridCount}, minmax(0, 1fr))` : '1fr',
+    gridTemplateColumns: isPortrait ? '1fr' : template,
+    gridTemplateRows: isPortrait ? template : '1fr',
     gap: `${gap}px`,
   } as const
 }

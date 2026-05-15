@@ -1,12 +1,10 @@
 import { defineField, defineType } from 'sanity'
 
 import { DocumentIcon } from '@sanity/icons'
-
+import { MediaRefPreview } from '../../components/previews/mediaRefPreview'
 import { MediaType } from '../../constants/enum'
 import { ProjectDocumentPreview } from '../../components/previews/projectDocumentPreview'
-import { hasProjectGridConfigurationIssue } from '../../utils/projectGridIssue'
 
-//TODO
 export const project = defineType({
   name: 'project',
   type: 'document',
@@ -58,26 +56,25 @@ export const project = defineType({
     select: {
       title: 'title',
       subtitle: 'subtitle',
-      allProjectsThumbnails: 'allProjectsThumbnails',
       slides: 'slides',
     },
     prepare({
       title,
       subtitle,
-      allProjectsThumbnails,
       slides,
     }) {
-      const thumb = allProjectsThumbnails?.[0]
-      const slideThumb = thumb?.image
-        ? { mediaType: MediaType.IMAGE, image: thumb.image }
-        : undefined
-
+      const slideMedia = slides?.[0]?.media
+      const firstSlideMedia = slideMedia?.[0]
+      const mediaType = firstSlideMedia?.mediaType
+      const mediaWithRef = mediaType === MediaType.IMAGE ? firstSlideMedia?.image : firstSlideMedia?.video
       return {
-        title: title ?? 'Untitled',
+        title,
         subtitle,
-        slideThumb,
-        hasGridIssue: hasProjectGridConfigurationIssue(slides),
+        media: <MediaRefPreview
+          mediaWithRef={mediaWithRef}
+          mediaType={mediaType}
+          style={{ objectFit: 'cover' }} />
       }
-    },
+    }
   },
 })

@@ -39,7 +39,6 @@ export const PreviewTemplate = ({
           <MediaRefPreview
             mediaWithRef={mediaData?.media}
             mediaType={mediaData?.mediaType}
-            sanityImageWidth={200}
             style={{ objectFit: 'cover' }} /> :
           <DocumentIcon style={{ width: 33, height: 21 }} />
         }

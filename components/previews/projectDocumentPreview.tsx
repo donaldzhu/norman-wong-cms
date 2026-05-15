@@ -1,41 +1,30 @@
-import { ErrorOutlineIcon } from '@sanity/icons'
-import { Box, Card, Flex } from '@sanity/ui'
-import { PreviewProps } from 'sanity'
+import { Box, Card } from '@sanity/ui'
 
 import type { MediaData } from '../types/media'
+import { PreviewProps } from 'sanity'
 import { PreviewTemplate } from './previewTemplate'
 
 type ProjectDocumentPreviewProps = PreviewProps & {
   title?: string
   subtitle?: string
-  slideThumb?: MediaData
-  hasGridIssue?: boolean
+  slides?: MediaData[]
 }
 
 export const ProjectDocumentPreview = (props: PreviewProps) => {
-  const { title, subtitle, slideThumb, hasGridIssue } = props as ProjectDocumentPreviewProps
+  const { title, subtitle, slides, } = props as ProjectDocumentPreviewProps
 
   return (
     <Card
-      tone={hasGridIssue ? 'critical' : 'transparent'}
       padding={2}
       radius={2}
-      border={Boolean(hasGridIssue)}
     >
-      <Flex align="center" gap={2}>
-        {hasGridIssue ? (
-          <Box flex="none" style={{ color: 'var(--card-badge-critical-icon-color)' }}>
-            <ErrorOutlineIcon />
-          </Box>
-        ) : null}
-        <Box flex={1} style={{ minWidth: 0 }}>
-          <PreviewTemplate
-            data={slideThumb}
-            title={title ?? 'Untitled'}
-            subtitle={hasGridIssue ? 'Slide grid incomplete' : subtitle}
-          />
-        </Box>
-      </Flex>
+      <Box flex={1} style={{ minWidth: 0 }}>
+        <PreviewTemplate
+          data={slides?.[0]}
+          title={title ?? 'Untitled'}
+          subtitle={subtitle}
+        />
+      </Box>
     </Card>
   )
 }

@@ -1,9 +1,9 @@
 import { Box } from '@sanity/ui'
-import { DeviceType } from './types'
-import { Orientation } from '../../../constants/enum'
+import { DeviceType } from '../types/selectedWorks'
+import { Orientation } from '../../constants/enum'
 import { ProjectSlideGridMedia } from './projectSlideGridMedia'
-import type { ProjectSlideGridValue } from '../../types/media'
-import { getGridStyle } from './utils'
+import type { ProjectSlideGridValue } from '../types/media'
+import { getGridStyle } from '../../utils/projectSlide'
 
 interface ProjectSlideGridPreviewProps {
   media: ProjectSlideGridValue[]

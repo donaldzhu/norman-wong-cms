@@ -5,12 +5,11 @@ type ListOption = { title?: string; value: string } | string
 
 
 export const ButtonToggleInput = (props: StringInputProps<StringSchemaType>) => {
-  const { value, onChange, readOnly, schemaType, elementProps } = props
+  const { value, onChange, readOnly, schemaType } = props
   const list = (schemaType.options?.list ?? []) as ListOption[]
 
   const handleSelect = (next: string) => {
-    if (next === value) return
-    onChange(next ? set(next) : unset())
+    if (next !== value) onChange(next ? set(next) : unset())
   }
 
   return (
@@ -22,7 +21,6 @@ export const ButtonToggleInput = (props: StringInputProps<StringSchemaType>) => 
         return (
           <Button
             key={optionValue}
-            id={`${elementProps.id}-${optionValue}`}
             text={optionTitle}
             mode={selected ? 'default' : 'ghost'}
             tone={selected ? 'primary' : 'default'}

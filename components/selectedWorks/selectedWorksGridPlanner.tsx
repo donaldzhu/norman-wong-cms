@@ -2,27 +2,27 @@ import type { AssetRef, Ref } from '../types/media'
 import { Box, Button, Card, Dialog, Flex, Stack, Text } from '@sanity/ui'
 import { ChevronDownIcon, ChevronUpIcon } from '@sanity/icons'
 import { set, useFormValue } from 'sanity'
-import { useMemo } from 'react'
 
 import { MediaRefPreview } from '../previews/mediaRefPreview'
 import { MediaType } from '../../constants/enum'
 import type { ObjectInputProps } from 'sanity'
 import _ from 'lodash'
 import { useClickAway } from '@uidotdev/usehooks'
+import { useMemo } from 'react'
 
 export interface SelectedWorksLayoutFormValue {
   rowSettings?: number[]
 }
 
-export interface CellRange { min: number; max: number }
+interface CellRange { min: number; max: number }
 
-export interface RowSetting {
+interface RowSetting {
   rowIndex: number
   cells: ProjectListItem[]
   width: number
 }
 
-export interface ProjectMedia {
+interface ProjectMedia {
   _key: string
   type?: string
   image?: AssetRef
@@ -36,7 +36,7 @@ export interface SelectedWorksProject {
   media?: ProjectMedia[]
 }
 
-export interface ProjectListItem {
+interface ProjectListItem {
   media: ProjectMedia
   projectIndex: number
   mediaIndex: number
@@ -86,7 +86,7 @@ export const flattenProjectList = (
   return out
 }
 
-export const buildGridRows = (
+const buildGridRows = (
   projectList: ProjectListItem[],
   rowSettings: number[] | undefined,
   range: CellRange,
@@ -115,7 +115,7 @@ export const buildGridRows = (
 const GridPlannerMediaCell = ({ cell }: { cell: ProjectListItem }) => {
   const isVideo = cell.media.type === MediaType.VIDEO
   const mediaWithRef = isVideo ? cell.media.video : cell.media.image
-  const hasRef = Boolean(mediaWithRef?.asset?._ref)
+  const hasRef = !!mediaWithRef?.asset?._ref
   return (
     <Card
       radius={2}
@@ -133,7 +133,6 @@ const GridPlannerMediaCell = ({ cell }: { cell: ProjectListItem }) => {
         <MediaRefPreview
           mediaType={isVideo ? MediaType.VIDEO : MediaType.IMAGE}
           mediaWithRef={mediaWithRef}
-          sanityImageWidth={200}
           showSpinner={isVideo}
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
         />
@@ -182,7 +181,7 @@ const RowWidthStepper = ({ rowIndex, width, range, onChange }: RowWidthStepperPr
   </Flex>
 )
 
-export type SelectedWorksGridPlannerDialogProps = {
+interface SelectedWorksGridPlannerDialogProps {
   open: boolean
   onClose: () => void
   inputProps: ObjectInputProps<SelectedWorksLayoutFormValue>

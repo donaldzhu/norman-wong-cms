@@ -1,4 +1,4 @@
-import type { AssetRef, MediaData, MediaRef, ValidAssetRef, ValidMediaRef } from '../components/types/media'
+import type { MediaData, MediaRef, ValidMediaRef } from '../components/types/media'
 
 import { MediaType } from '../constants/enum'
 import _ from 'lodash'
@@ -11,7 +11,7 @@ export const prepareProjectId = (projectRef: string) => {
   return published ? [projectRef, published] : [projectRef]
 }
 
-export const isValidAssetRef = (ref?: AssetRef): ref is ValidAssetRef => !!ref?.asset?._ref
+
 export const isValidMediaRef = (ref?: MediaRef): ref is ValidMediaRef => !!ref?.mediaType && !!ref?.media?.asset?._ref
 
 export const mediaDataToMediaRef = (data?: MediaData): MediaRef | undefined => {

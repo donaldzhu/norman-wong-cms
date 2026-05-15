@@ -7,7 +7,7 @@ type ProjectRefValue = Ref | undefined
 
 export const SelectedWorksProjectContext = createContext<ProjectRefValue>(undefined)
 
-export const SelectedWorksContextProvider = ({
+const SelectedWorksContextProvider = ({
   projectRef,
   children,
 }: {

@@ -1,7 +1,7 @@
 import { defineField, defineType } from 'sanity'
 
 import { Orientation } from '../../../constants/enum'
-import { ProjectSlideGridButton } from '../../../components/projectSlide/projectSlideGrid/projectSlideGridButton'
+import { ProjectSlideGridButton } from '../../../components/projectSlide/projectSlideGridButton'
 import { ProjectSlidesPreview } from '../../../components/previews/projectSlidesPreview'
 
 export const projectSlide = defineType({

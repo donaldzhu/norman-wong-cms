@@ -11,7 +11,7 @@ type MediaRefPreviewProps = {
   mediaType?: MediaType
   mediaWithRef?: AssetRef
   style?: React.CSSProperties
-  sanityImageWidth: number
+  sanityImageWidth?: number
   spinnerSize?: number | string
   showSpinner?: boolean
 }
@@ -34,7 +34,7 @@ export const MediaRefPreview = ({
   mediaWithRef,
   mediaType,
   style,
-  sanityImageWidth,
+  sanityImageWidth = 200,
   spinnerSize = '100%',
   showSpinner = false,
 }: MediaRefPreviewProps) => {

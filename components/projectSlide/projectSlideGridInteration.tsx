@@ -1,14 +1,13 @@
 import { DESKTOP_COLUMN_COUNT, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from './configs'
-import { DeviceType, GridSpan } from './types'
+import { DeviceType, GridSpan } from '../types/selectedWorks'
 import {
-  cellIsInSpan,
   getSpanFromSingleCell,
-  spanFromClickedCells,
-} from '../../../utils/columnRange'
+  spanFromClickedCells
+} from '../../utils/columnRange'
 
 import { Box } from '@sanity/ui'
-import { Orientation } from '../../../constants/enum'
-import { getGridStyle } from './utils'
+import { Orientation } from '../../constants/enum'
+import { getGridStyle } from '../../utils/projectSlide'
 import { useState } from 'react'
 
 interface ProjectSlideGridInterationProps {
@@ -46,37 +45,33 @@ export const ProjectSlideGridInteration = ({
       zIndex: 0,
     }}>
       {Array(cellCount).fill(0).map((_, i) => i + 1)
-        .map(col => {
-          const selected = start != null && end != null && cellIsInSpan(col, start, end)
-          return (
-            <button
-              key={col}
-              type="button"
-              onClick={() => onCellClick(col)}
-              style={{
-                position: 'relative',
-                margin: 0,
-                padding: 0,
-                border: 0,
-                borderRadius: 2,
-                cursor: 'pointer',
-                background: 'transparent',
-              }}
-            >
-              <span
-                aria-hidden
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'rgba(127,127,127,0.125)',
-                  opacity: col % 2 === 0 ? 1 : 0.5,
-                  pointerEvents: 'none',
-                }}
-              />
+        .map(col => <button
+          key={col}
+          type="button"
+          onClick={() => onCellClick(col)}
+          style={{
+            position: 'relative',
+            margin: 0,
+            padding: 0,
+            border: 0,
+            borderRadius: 2,
+            cursor: 'pointer',
+            background: 'transparent',
+          }}
+        >
+          <span
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'rgba(127,127,127,0.125)',
+              opacity: col % 2 === 0 ? 1 : 0.5,
+              pointerEvents: 'none',
+            }}
+          />
 
-            </button>
-          )
-        })}
+        </button>
+        )}
     </Box>
   )
 }

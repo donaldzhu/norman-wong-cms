@@ -1,9 +1,9 @@
 import { Box, Card, Flex, Text, Tooltip } from '@sanity/ui'
 
 import { ErrorOutlineIcon } from '@sanity/icons'
-import { MediaRefPreview } from '../../previews/mediaRefPreview'
-import { MediaType } from '../../../constants/enum'
-import type { ProjectSlideGridValue } from '../../types/media'
+import { MediaRefPreview } from '../previews/mediaRefPreview'
+import { MediaType } from '../../constants/enum'
+import type { ProjectSlideGridValue } from '../types/media'
 
 interface ProjectSlideGridThumbnailProps {
   item: ProjectSlideGridValue
@@ -22,7 +22,7 @@ export const ProjectSlideGridThumbnail = ({
 }: ProjectSlideGridThumbnailProps) => {
   const isVideo = item.mediaType === MediaType.VIDEO
   const mediaWithRef = isVideo ? item.video : item.image
-  const hasRef = Boolean(mediaWithRef?.asset?._ref)
+  const hasRef = !!mediaWithRef?.asset?._ref
 
   const borderColor = hasError ? 'var(--card-badge-critical-icon-color)' : selected ? 'var(--card-focus-ring-color)' : 'transparent'
 
@@ -62,7 +62,6 @@ export const ProjectSlideGridThumbnail = ({
               <MediaRefPreview
                 mediaType={isVideo ? MediaType.VIDEO : MediaType.IMAGE}
                 mediaWithRef={mediaWithRef}
-                sanityImageWidth={200}
                 showSpinner={isVideo}
                 style={{
                   width: '100%',

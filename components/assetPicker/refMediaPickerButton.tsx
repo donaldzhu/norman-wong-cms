@@ -63,17 +63,11 @@ const RefMediaPickerButton = ({
   const [open, setOpen] = useState(false)
 
   const handlePick = (selectedRef: string) => {
-    onChange(
-      set(
-        mediaType === MediaType.IMAGE
-          ? { _type: 'image', asset: { _type: 'reference', _ref: selectedRef } }
-          : { _type: 'mux.video', asset: { _type: 'reference', _ref: selectedRef } },
-      ),
-    )
+    const _type = mediaType === MediaType.IMAGE ? 'image' : 'mux.video'
+    const asset = { _type: 'reference', _ref: selectedRef }
+    onChange(set({ _type, asset }))
     setOpen(false)
   }
-
-  const handleClear = () => onChange(unset())
 
   return (
     <Stack space={2}>
@@ -82,7 +76,7 @@ const RefMediaPickerButton = ({
           mediaType={mediaType}
           assetRef={assetRef}
           onReplace={() => setOpen(true)}
-          onClear={handleClear}
+          onClear={() => onChange(unset())}
         />
       ) : (
         <Button

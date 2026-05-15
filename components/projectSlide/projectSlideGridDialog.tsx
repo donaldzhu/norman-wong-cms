@@ -2,16 +2,16 @@ import { Box, Button, Card, Dialog, Flex, Select, Stack, Text } from '@sanity/ui
 import { useEffect, useMemo, useState, type ChangeEvent, type ReactElement } from 'react'
 import { set, useFormValue, type ObjectInputProps } from 'sanity'
 
-import { Orientation } from '../../../constants/enum'
-import type { ProjectSlideFormValue, ProjectSlideGridValue } from '../../types/media'
+import { Orientation } from '../../constants/enum'
+import type { ProjectSlideFormValue, ProjectSlideGridValue } from '../types/media'
 import { ProjectSlideGridInteration } from './projectSlideGridInteration'
 import { ProjectSlideGridPreview } from './projectSlideGridPreview'
 import { ProjectSlideGridThumbnail } from './projectSlideGridThumbnail'
 
 import * as changeCase from 'change-case'
-import { DeviceType, GridSpan } from './types'
-import { getGridCellCount, getSlideGridKeyPath, isValidSpan } from './utils'
-import { DESKTOP_COLUMN_COUNT, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from './configs'
+import { getGridCellCount, getSlideGridKeyPath, isValidSpan } from '../../utils/projectSlide'
+import { DESKTOP_COLUMN_COUNT } from './configs'
+import { DeviceType, GridSpan } from '../types/selectedWorks'
 
 interface ProjectSlideGridPlannerDialogProps {
   open: boolean

@@ -3,7 +3,7 @@ import { Button, Stack } from '@sanity/ui'
 import { useState, type ReactElement } from 'react'
 import type { ObjectInputProps } from 'sanity'
 
-import type { ProjectSlideFormValue } from '../../types/media'
+import type { ProjectSlideFormValue } from '../types/media'
 import { ProjectSlideGridDialog } from './projectSlideGridDialog'
 
 export const ProjectSlideGridButton = (

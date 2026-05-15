@@ -6,13 +6,7 @@ import { ProjectSlideMediaObjectInput } from '../../../components/projectSlide/p
 import { ProjectSlidePreview } from '../../../components/previews/projectSlidePreview'
 import { ProjectsIcon } from '@sanity/icons'
 import { createToggleButtonField } from '../../../utils/field'
-import { getProjectSlideFromMediaFieldPath } from '../../../utils/getProjectSlideFromMediaFieldPath'
 import { mediaAssetSource } from 'sanity-plugin-media'
-
-const hiddenNumberField = {
-  input: () => null,
-  field: () => null,
-}
 
 export const projectSlideMedia = defineType({
   name: 'projectSlideMedia',
@@ -46,34 +40,28 @@ export const projectSlideMedia = defineType({
       title: 'Desktop Start Column',
       type: 'number',
       initialValue: 11,
-      components: hiddenNumberField,
+      hidden: true
     }),
     defineField({
       name: 'desktopEnd',
       title: 'Desktop End Column',
       type: 'number',
       initialValue: 15,
-      components: hiddenNumberField,
+      hidden: true
     }),
     defineField({
       name: 'mobileStart',
       title: 'Mobile Start Edge',
       type: 'number',
       initialValue: 4,
-      hidden: ({ document, path }) =>
-        getProjectSlideFromMediaFieldPath(document as Record<string, unknown> | undefined, path)
-          ?.automaticMobileLayout !== false,
-      components: hiddenNumberField,
+      hidden: true
     }),
     defineField({
       name: 'mobileEnd',
       title: 'Mobile End Edge',
       type: 'number',
       initialValue: 8,
-      hidden: ({ document, path }) =>
-        getProjectSlideFromMediaFieldPath(document as Record<string, unknown> | undefined, path)
-          ?.automaticMobileLayout !== false,
-      components: hiddenNumberField,
+      hidden: true
     }),
   ],
   preview: {
