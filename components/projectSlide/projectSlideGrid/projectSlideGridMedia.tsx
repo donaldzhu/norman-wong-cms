@@ -1,13 +1,22 @@
 import { Box } from '@sanity/ui'
+import { DeviceType } from './types'
 import { MediaRefPreview } from '../../previews/mediaRefPreview'
 import { MediaType } from '../../../constants/enum'
+import { Orientation } from '../../../constants/enum'
 import type { ProjectSlideGridValue } from '../../types/media'
 
-export const ProjectSlideGridMedia = ({ item }: { item: ProjectSlideGridValue }) => {
+interface ProjectSlideGridMediaProps {
+  item: ProjectSlideGridValue
+  tab: DeviceType
+  orientation: Orientation
+}
+
+export const ProjectSlideGridMedia = ({ item, tab, orientation }: ProjectSlideGridMediaProps) => {
   const isVideo = item.mediaType === MediaType.VIDEO
   const mediaWithRef = isVideo ? item.video : item.image
   if (!mediaWithRef?.asset?._ref) return null
 
+  const isMobilePortrait = tab === DeviceType.MOBILE && orientation === Orientation.PORTRAIT
   return (
     <Box
       display="flex"
@@ -24,8 +33,8 @@ export const ProjectSlideGridMedia = ({ item }: { item: ProjectSlideGridValue })
         sanityImageWidth={800}
         showSpinner={isVideo}
         style={{
-          width: '100%',
-          height: 'auto',
+          width: isMobilePortrait ? 'auto' : '100%',
+          height: isMobilePortrait ? '100%' : 'auto',
           display: 'block',
         }}
       />

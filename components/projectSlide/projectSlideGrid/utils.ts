@@ -1,10 +1,19 @@
-import { DESKTOP_COLUMN_COUNT } from './configs'
+import * as changeCase from 'change-case'
 
-export const mediaKeyPath = (key: string, field: string): [string, { _key: string }, string] => [
-  'media',
-  { _key: key },
-  field,
-]
+import { DESKTOP_COLUMN_COUNT, GRID_GAP, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from './configs'
+
+import { DeviceType } from './types'
+import { Orientation } from '../../../constants/enum'
+
+export const getSlideGridKeyPath = (
+  key: string,
+  deviceType: DeviceType,
+  alignment: 'start' | 'end'
+) => [
+    'media',
+    { _key: key },
+    `${deviceType}${changeCase.capitalCase(alignment)}`,
+  ]
 
 export const isValidDesktopSpan = (start: number | undefined, end: number | undefined) =>
   typeof start === 'number' &&
@@ -32,22 +41,34 @@ export const isValidMobileSpan = (
   )
 }
 
-/** Equal row/column slices for read-only “automatic” preview (not persisted). */
-export const equalSplitMobileSpans = (
-  itemCount: number,
-  cellCount: number,
-): { start: number; end: number }[] => {
-  if (itemCount <= 0 || cellCount <= 0) return []
-  const base = Math.floor(cellCount / itemCount)
-  let remainder = cellCount % itemCount
-  const spans: { start: number; end: number }[] = []
-  let start = 1
-  for (let i = 0; i < itemCount; i++) {
-    const len = base + (remainder > 0 ? 1 : 0)
-    if (remainder > 0) remainder -= 1
-    const end = start + len
-    spans.push({ start, end })
-    start = end
-  }
-  return spans
+export const isValidSpan = (start: number | undefined, end: number | undefined, cellCount: number) => (
+  typeof start === 'number' &&
+  typeof end === 'number' &&
+  start >= 1 &&
+  start <= cellCount &&
+  end >= 2 &&
+  end < cellCount &&
+  end > start
+)
+
+export const getGridCellCount = (tab: DeviceType, orientation: Orientation = Orientation.LANDSCAPE) => {
+  if (tab === DeviceType.DESKTOP) return DESKTOP_COLUMN_COUNT
+  if (orientation === Orientation.PORTRAIT) return MOBILE_PORTRAIT_ROW_COUNT
+  return MOBILE_LANDSCAPE_COLUMN_COUNT
+}
+
+export const getGridStyle = (tab: DeviceType, orientation: Orientation) => {
+  const isMobile = tab === DeviceType.MOBILE
+  const isPortrait = isMobile && orientation === Orientation.PORTRAIT
+  const gridCount = getGridCellCount(tab, orientation)
+  const gap = isMobile ? GRID_GAP : GRID_GAP
+
+  return {
+    position: 'absolute',
+    inset: 0,
+    display: 'grid',
+    gridTemplateColumns: isPortrait ? '1fr' : `repeat(${gridCount}, minmax(0, 1fr))`,
+    gridTemplateRows: isPortrait ? `repeat(${gridCount}, minmax(0, 1fr))` : '1fr',
+    gap: `${gap}px`,
+  } as const
 }

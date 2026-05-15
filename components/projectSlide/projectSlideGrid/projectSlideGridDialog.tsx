@@ -1,27 +1,17 @@
 import { Box, Button, Card, Dialog, Flex, Select, Stack, Text } from '@sanity/ui'
-import { useEffect, useMemo, useState, type ReactElement } from 'react'
-import { set, unset, useFormValue, type FormPatch, type ObjectInputProps } from 'sanity'
+import { useEffect, useMemo, useState, type ChangeEvent, type ReactElement } from 'react'
+import { set, useFormValue, type ObjectInputProps } from 'sanity'
 
 import { Orientation } from '../../../constants/enum'
-import {
-  MOBILE_LANDSCAPE_COLUMN_COUNT,
-  MOBILE_PORTRAIT_ROW_COUNT,
-} from './configs'
 import type { ProjectSlideFormValue, ProjectSlideGridValue } from '../../types/media'
-import { DesktopInteractionOverlay } from './desktopInteractionOverlay'
-import { DesktopPreviewLayer } from './desktopPreviewLayer'
-import { MobileAutomaticReadOnlyPreview } from './mobileAutomaticReadOnlyPreview'
-import { MobileCombinedActiveSpanEditor } from './mobileCombinedActiveSpanEditor'
+import { ProjectSlideGridInteration } from './projectSlideGridInteration'
+import { ProjectSlideGridPreview } from './projectSlideGridPreview'
 import { ProjectSlideGridThumbnail } from './projectSlideGridThumbnail'
 
-import { isValidDesktopSpan, isValidMobileSpan, mediaKeyPath } from './utils'
 import * as changeCase from 'change-case'
-import type { GridSpan } from './types'
-
-enum PlannerTab {
-  DESKTOP = 'desktop',
-  MOBILE = 'mobile',
-}
+import { DeviceType, GridSpan } from './types'
+import { getGridCellCount, getSlideGridKeyPath, isValidSpan } from './utils'
+import { DESKTOP_COLUMN_COUNT, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from './configs'
 
 interface ProjectSlideGridPlannerDialogProps {
   open: boolean
@@ -29,16 +19,15 @@ interface ProjectSlideGridPlannerDialogProps {
   inputProps: ObjectInputProps<ProjectSlideFormValue>
 }
 
-
 export const ProjectSlideGridDialog = ({
   open,
   onClose,
   inputProps,
 }: ProjectSlideGridPlannerDialogProps): ReactElement | null => {
-  const { value, onChange, readOnly } = inputProps
+  const { value, onChange } = inputProps
   const media = value?.media ?? []
 
-  const [tab, setTab] = useState<PlannerTab>(PlannerTab.DESKTOP)
+  const [tab, setTab] = useState<DeviceType>(DeviceType.DESKTOP)
   const [activeMediaKey, setActiveMediaKey] = useState<string | null>(null)
 
   useEffect(() => {
@@ -56,58 +45,46 @@ export const ProjectSlideGridDialog = ({
     [media, activeMediaKey],
   )
 
+  const isMobile = tab === DeviceType.MOBILE
   const slidePath = inputProps.path
 
   const slideAutomaticMobile = useFormValue([
     ...slidePath,
     'automaticMobileLayout',
   ]) as boolean | undefined
-  const slideMobileOrientation = useFormValue([
+  const mobileOrientation = useFormValue([
     ...slidePath,
     'mobileOrientation',
-  ]) as string | undefined
+  ]) as Orientation | undefined
 
-  const slideMobileOrientationVisual: 'portrait' | 'landscape' =
-    slideMobileOrientation === Orientation.LANDSCAPE ? 'landscape' : 'portrait'
-
-  const mobileCellCountForIssue = useMemo(
-    () =>
-      slideMobileOrientation === Orientation.LANDSCAPE
-        ? MOBILE_LANDSCAPE_COLUMN_COUNT
-        : MOBILE_PORTRAIT_ROW_COUNT,
-    [slideMobileOrientation],
-  )
-
-  const itemHasSpanIssue = (item: ProjectSlideGridValue) => {
-    if (!isValidDesktopSpan(item.desktopStart, item.desktopEnd)) return true
-    if (
-      slideAutomaticMobile === false &&
-      !isValidMobileSpan(item.mobileStart, item.mobileEnd, mobileCellCountForIssue)
+  const hasSpanIssue = (item: ProjectSlideGridValue) =>
+    !isValidSpan(item.desktopStart, item.desktopEnd, DESKTOP_COLUMN_COUNT)
+    || (
+      automaticMobileOn &&
+      !isValidSpan(item.mobileStart, item.mobileEnd, getGridCellCount(DeviceType.MOBILE, mobileOrientation))
     )
-      return true
-    return false
-  }
 
-  const patchActive = (patches: FormPatch[]) => {
+  const onToggleOrientation = (event: ChangeEvent<HTMLSelectElement>) =>
+    onChange([set(event.currentTarget.value, ['mobileOrientation'])])
+
+  const onSetGrid = ({ start, end }: GridSpan, activeMediaKey: string) => {
     if (!activeMediaKey) return
-    onChange(patches)
-  }
-
-  const patchSlide = (patches: FormPatch[]) => {
-    onChange(patches)
-  }
-
-  const onSetGrid = ({ start, end }: GridSpan, activeMediaKey: string) =>
-    patchActive([
-      set(start, mediaKeyPath(activeMediaKey, 'desktopStart')),
-      set(end, mediaKeyPath(activeMediaKey, 'desktopEnd')),
+    onChange([
+      set(start, getSlideGridKeyPath(activeMediaKey, tab, 'start')),
+      set(end, getSlideGridKeyPath(activeMediaKey, tab, 'end')),
     ])
+  }
 
+
+  const onToggleAutomaticMobile = () => {
+    onChange([set(!automaticMobileOn, ['automaticMobileLayout'])])
+    setTab(DeviceType.DESKTOP)
+  }
 
   if (!open) return null
 
   const automaticMobileOn = slideAutomaticMobile !== false
-  const orientationFormValue = slideMobileOrientation ?? Orientation.PORTRAIT
+  const orientationFormValue = mobileOrientation ?? Orientation.PORTRAIT
 
   const LEFT_COLUMN_WIDTH = 250
   return (
@@ -136,7 +113,7 @@ export const ProjectSlideGridDialog = ({
                         key={item._key}
                         item={item}
                         selected={item._key === activeMediaKey}
-                        hasError={itemHasSpanIssue(item)}
+                        hasError={hasSpanIssue(item)}
                         onSelect={() => setActiveMediaKey(item._key)}
                       />
                     ) : null,
@@ -149,14 +126,21 @@ export const ProjectSlideGridDialog = ({
             <Flex gap={2} justify="space-between">
               <Flex gap={2}>
                 <Button
-                  text={changeCase.capitalCase(PlannerTab.DESKTOP)}
-                  mode={tab === PlannerTab.DESKTOP ? 'default' : 'ghost'}
-                  onClick={() => setTab(PlannerTab.DESKTOP)}
+                  text={changeCase.capitalCase(DeviceType.DESKTOP)}
+                  mode={!isMobile ? 'default' : 'ghost'}
+                  onClick={() => setTab(DeviceType.DESKTOP)}
+                  style={{
+                    cursor: 'pointer',
+                  }}
                 />
                 <Button
-                  text={changeCase.capitalCase(PlannerTab.MOBILE)}
-                  mode={tab === PlannerTab.MOBILE ? 'default' : 'ghost'}
-                  onClick={() => setTab(PlannerTab.MOBILE)}
+                  text={changeCase.capitalCase(DeviceType.MOBILE)}
+                  mode={isMobile ? 'default' : 'ghost'}
+                  onClick={() => setTab(DeviceType.MOBILE)}
+                  disabled={automaticMobileOn}
+                  style={{
+                    cursor: automaticMobileOn ? 'not-allowed' : 'pointer',
+                  }}
                 />
               </Flex>
               <Flex gap={2}>
@@ -164,11 +148,9 @@ export const ProjectSlideGridDialog = ({
                   <Flex gap={3} align="center">
                     <Text style={{ flexShrink: 0 }}>Mobile Orientation:</Text>
                     <Select
-                      value={orientationFormValue}
+                      value={automaticMobileOn ? Orientation.LANDSCAPE : orientationFormValue}
                       disabled={automaticMobileOn}
-                      onChange={event => {
-                        patchSlide([set(event.currentTarget.value, ['mobileOrientation'])])
-                      }}
+                      onChange={onToggleOrientation}
                     >
                       <option value={Orientation.PORTRAIT}>{changeCase.capitalCase(Orientation.PORTRAIT)}</option>
                       <option value={Orientation.LANDSCAPE}>{changeCase.capitalCase(Orientation.LANDSCAPE)}</option>
@@ -181,30 +163,43 @@ export const ProjectSlideGridDialog = ({
                       cursor: 'pointer',
                       width: LEFT_COLUMN_WIDTH,
                     }}
-                    onClick={() => patchSlide([set(!automaticMobileOn, ['automaticMobileLayout'])])}
+                    onClick={onToggleAutomaticMobile}
                   />
                 </Flex>
               </Flex>
             </Flex>
-            {tab === PlannerTab.DESKTOP ? (
+            {
               activeItem && activeMediaKey ? (
                 <Stack space={3}>
                   <Box
                     style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       position: 'relative',
                       aspectRatio: '2 / 1',
-                      border: '2px solid var(--card-border-color)',
-                      borderRadius: 4,
                       overflow: 'hidden',
                     }}
                   >
-                    <DesktopPreviewLayer media={media} activeKey={activeMediaKey} />
-                    <DesktopInteractionOverlay
-                      key={activeMediaKey}
-                      start={activeItem.desktopStart}
-                      end={activeItem.desktopEnd}
-                      onCommit={span => onSetGrid(span, activeMediaKey)}
-                    />
+                    <Box
+                      style={{
+                        width: !isMobile ? '100%' : '50%',
+                        height: '100%',
+                        position: 'relative',
+                        aspectRatio: isMobile ? '1 / 2' : undefined,
+                        border: '2px solid var(--card-border-color)',
+                        borderRadius: 4,
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      <ProjectSlideGridPreview media={media} activeKey={activeMediaKey} tab={tab} orientation={mobileOrientation} />
+                      <ProjectSlideGridInteration
+                        key={activeMediaKey}
+                        orientation={mobileOrientation}
+                        tab={tab}
+                        onCommit={span => onSetGrid(span, activeMediaKey)}
+                      />
+                    </Box>
                   </Box>
                 </Stack>
               ) : (
@@ -212,37 +207,7 @@ export const ProjectSlideGridDialog = ({
                   <Text size={1}>Select a media item on the left.</Text>
                 </Card>
               )
-            ) : automaticMobileOn ? (
-              <MobileAutomaticReadOnlyPreview
-                media={media}
-                activeKey={activeMediaKey}
-                orientation={slideMobileOrientationVisual}
-              />
-            ) : activeItem && activeMediaKey ? (
-              <MobileCombinedActiveSpanEditor
-                media={media}
-                activeItem={activeItem}
-                activeMediaKey={activeMediaKey}
-                orientation={slideMobileOrientationVisual}
-                readOnly={Boolean(readOnly)}
-                onCommit={(start, end) =>
-                  patchActive([
-                    set(start, mediaKeyPath(activeMediaKey, 'mobileStart')),
-                    set(end, mediaKeyPath(activeMediaKey, 'mobileEnd')),
-                  ])
-                }
-                onClear={() =>
-                  patchActive([
-                    unset(mediaKeyPath(activeMediaKey, 'mobileStart')),
-                    unset(mediaKeyPath(activeMediaKey, 'mobileEnd')),
-                  ])
-                }
-              />
-            ) : (
-              <Card padding={4} radius={2} tone="transparent" border>
-                <Text size={1}>Select a media item on the left.</Text>
-              </Card>
-            )}
+            }
           </Stack>
         </Flex>
       </Stack>

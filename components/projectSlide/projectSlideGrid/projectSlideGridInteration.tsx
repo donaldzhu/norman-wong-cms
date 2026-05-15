@@ -1,4 +1,5 @@
-import { DESKTOP_COLUMN_COUNT, GRID_STYLE } from './configs'
+import { DESKTOP_COLUMN_COUNT, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from './configs'
+import { DeviceType, GridSpan } from './types'
 import {
   cellIsInSpan,
   getSpanFromSingleCell,
@@ -6,19 +7,24 @@ import {
 } from '../../../utils/columnRange'
 
 import { Box } from '@sanity/ui'
-import type { GridSpan } from './types'
+import { Orientation } from '../../../constants/enum'
+import { getGridStyle } from './utils'
 import { useState } from 'react'
 
-interface DesktopInteractionOverlayProps {
+interface ProjectSlideGridInterationProps {
   start?: number
   end?: number
+  orientation?: Orientation
+  tab: DeviceType
   onCommit: (span: GridSpan) => void
 }
-export const DesktopInteractionOverlay = ({
+export const ProjectSlideGridInteration = ({
   start,
   end,
+  tab,
+  orientation = Orientation.LANDSCAPE,
   onCommit,
-}: DesktopInteractionOverlayProps) => {
+}: ProjectSlideGridInterationProps) => {
   const [startingAnchor, setStartingAnchor] = useState<number | null>(null)
 
   const onCellClick = (cell: number) => {
@@ -32,12 +38,14 @@ export const DesktopInteractionOverlay = ({
     setStartingAnchor(null)
   }
 
+  const cellCount = tab === DeviceType.DESKTOP ? DESKTOP_COLUMN_COUNT : orientation === Orientation.LANDSCAPE ? MOBILE_LANDSCAPE_COLUMN_COUNT : MOBILE_PORTRAIT_ROW_COUNT
+
   return (
     <Box style={{
-      ...GRID_STYLE,
-      zIndex: 999,
+      ...getGridStyle(tab, orientation),
+      zIndex: 0,
     }}>
-      {Array(DESKTOP_COLUMN_COUNT).fill(0).map((_, i) => i + 1)
+      {Array(cellCount).fill(0).map((_, i) => i + 1)
         .map(col => {
           const selected = start != null && end != null && cellIsInSpan(col, start, end)
           return (
@@ -45,7 +53,6 @@ export const DesktopInteractionOverlay = ({
               key={col}
               type="button"
               onClick={() => onCellClick(col)}
-              title={`Column ${col}`}
               style={{
                 position: 'relative',
                 margin: 0,
@@ -66,16 +73,7 @@ export const DesktopInteractionOverlay = ({
                   pointerEvents: 'none',
                 }}
               />
-              <span
-                aria-hidden
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: selected ? 'var(--card-focus-ring-color)' : 'transparent',
-                  opacity: selected ? 0.2 : 0,
-                  pointerEvents: 'none',
-                }}
-              />
+
             </button>
           )
         })}
