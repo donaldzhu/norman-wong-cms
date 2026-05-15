@@ -1,7 +1,7 @@
 import {
   MOBILE_LANDSCAPE_COLUMN_COUNT,
   MOBILE_PORTRAIT_ROW_COUNT,
-} from '../../../utils/columnRange'
+} from '../../../components/projectSlide/projectSlideGrid/configs'
 import { MediaType, Orientation } from '../../../constants/enum'
 import { defineField, defineType } from 'sanity'
 

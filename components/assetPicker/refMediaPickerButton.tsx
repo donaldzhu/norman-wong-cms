@@ -1,6 +1,5 @@
 import { Button, Spinner, Stack } from '@sanity/ui'
 import {
-  useCallback,
   useContext,
   useMemo,
   useState,
@@ -63,21 +62,18 @@ const RefMediaPickerButton = ({
 
   const [open, setOpen] = useState(false)
 
-  const handlePick = useCallback(
-    (selectedRef: string) => {
-      onChange(
-        set(
-          mediaType === MediaType.IMAGE
-            ? { _type: 'image', asset: { _type: 'reference', _ref: selectedRef } }
-            : { _type: 'mux.video', asset: { _type: 'reference', _ref: selectedRef } },
-        ),
-      )
-      setOpen(false)
-    },
-    [mediaType, onChange],
-  )
+  const handlePick = (selectedRef: string) => {
+    onChange(
+      set(
+        mediaType === MediaType.IMAGE
+          ? { _type: 'image', asset: { _type: 'reference', _ref: selectedRef } }
+          : { _type: 'mux.video', asset: { _type: 'reference', _ref: selectedRef } },
+      ),
+    )
+    setOpen(false)
+  }
 
-  const handleClear = useCallback(() => onChange(unset()), [onChange])
+  const handleClear = () => onChange(unset())
 
   return (
     <Stack space={2}>

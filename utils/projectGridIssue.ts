@@ -1,9 +1,10 @@
-import { Orientation } from '../constants/enum'
 import {
   DESKTOP_COLUMN_COUNT,
   MOBILE_LANDSCAPE_COLUMN_COUNT,
   MOBILE_PORTRAIT_ROW_COUNT,
-} from './columnRange'
+} from '../components/projectSlide/projectSlideGrid/configs'
+
+import { Orientation } from '../constants/enum'
 
 export const getMobileCellCountForProjectOrientation = (mobileOrientation?: string): number =>
   mobileOrientation === Orientation.LANDSCAPE

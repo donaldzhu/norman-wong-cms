@@ -1,5 +1,4 @@
 import { Button, Inline } from '@sanity/ui'
-import { useCallback } from 'react'
 import { set, unset, type StringInputProps, type StringSchemaType } from 'sanity'
 
 type ListOption = { title?: string; value: string } | string
@@ -9,13 +8,10 @@ export const ButtonToggleInput = (props: StringInputProps<StringSchemaType>) => 
   const { value, onChange, readOnly, schemaType, elementProps } = props
   const list = (schemaType.options?.list ?? []) as ListOption[]
 
-  const handleSelect = useCallback(
-    (next: string) => {
-      if (next === value) return
-      onChange(next ? set(next) : unset())
-    },
-    [onChange, value],
-  )
+  const handleSelect = (next: string) => {
+    if (next === value) return
+    onChange(next ? set(next) : unset())
+  }
 
   return (
     <Inline space={2}>

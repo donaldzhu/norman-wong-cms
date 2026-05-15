@@ -1,14 +1,13 @@
 import { Box, Flex, Text } from '@sanity/ui'
 import { useClickAway } from '@uidotdev/usehooks'
-import { useCallback, useState, type CSSProperties, type MouseEvent, type ReactElement } from 'react'
+import { useState, type CSSProperties, type MouseEvent, type ReactElement } from 'react'
 
 import {
-  DESKTOP_COLUMN_COUNT,
   cellIsInSpan,
   spanFromClickedCells,
   getSpanFromSingleCell,
 } from '../../utils/columnRange'
-
+import { DESKTOP_COLUMN_COUNT } from './projectSlideGrid/configs'
 export type ColumnRangeStripLayout = 'desktop' | 'mobile'
 export type ColumnRangeStripAxis = 'column' | 'row'
 
@@ -49,30 +48,27 @@ export function ColumnRangeStrip(props: ColumnRangeStripProps): ReactElement {
   const [pendingAnchor, setPendingAnchor] = useState<number | null>(null)
   const containerRef = useClickAway<HTMLDivElement>(() => setPendingAnchor(null))
 
-  const handleColumnClick = useCallback(
-    (cell: number, event: MouseEvent<HTMLButtonElement>) => {
-      if (readOnly) return
+  const handleColumnClick = (cell: number, event: MouseEvent<HTMLButtonElement>) => {
+    if (readOnly) return
 
-      if (event.shiftKey || pendingAnchor == null) {
-        const { start: s, end: e } = getSpanFromSingleCell(cell)
-        onCommit(s, e)
-        setPendingAnchor(cell)
-        return
-      }
-
-      if (cell <= pendingAnchor) {
-        const { start: s, end: e } = getSpanFromSingleCell(cell)
-        onCommit(s, e)
-        setPendingAnchor(cell)
-        return
-      }
-
-      const { start: s, end: e } = spanFromClickedCells(pendingAnchor, cell)
+    if (event.shiftKey || pendingAnchor == null) {
+      const { start: s, end: e } = getSpanFromSingleCell(cell)
       onCommit(s, e)
-      setPendingAnchor(null)
-    },
-    [pendingAnchor, onCommit, readOnly],
-  )
+      setPendingAnchor(cell)
+      return
+    }
+
+    if (cell <= pendingAnchor) {
+      const { start: s, end: e } = getSpanFromSingleCell(cell)
+      onCommit(s, e)
+      setPendingAnchor(cell)
+      return
+    }
+
+    const { start: s, end: e } = spanFromClickedCells(pendingAnchor, cell)
+    onCommit(s, e)
+    setPendingAnchor(null)
+  }
 
   const cells = Array.from({ length: cellCount }, (_, i) => i + 1)
 

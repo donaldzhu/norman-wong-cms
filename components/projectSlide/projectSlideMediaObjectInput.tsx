@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import {
   MOBILE_LANDSCAPE_COLUMN_COUNT,
   MOBILE_PORTRAIT_ROW_COUNT,
-} from '../../utils/columnRange'
+} from './projectSlideGrid/configs'
 import { Orientation } from '../../constants/enum'
 
 type MobileOrientation = 'portrait' | 'landscape'

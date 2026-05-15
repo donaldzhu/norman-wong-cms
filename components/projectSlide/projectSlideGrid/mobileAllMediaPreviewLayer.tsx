@@ -4,9 +4,9 @@ import { useMemo, type CSSProperties } from 'react'
 import {
   MOBILE_LANDSCAPE_COLUMN_COUNT,
   MOBILE_PORTRAIT_ROW_COUNT,
-} from '../../../utils/columnRange'
+} from './configs'
 import type { ProjectSlideGridValue } from '../../types/media'
-import { MediaInCell } from './mediaInCell'
+import { ProjectSlideGridMedia } from './projectSlideGridMedia'
 import type { MobilePlacement } from './types'
 import { isValidMobileSpan } from './utils'
 
@@ -88,7 +88,7 @@ export const MobileAllMediaPreviewLayer = ({
               background: 'var(--card-muted-bg-color)',
             }}
           >
-            <MediaInCell item={item} />
+            <ProjectSlideGridMedia item={item} />
           </Box>
         )
       })}

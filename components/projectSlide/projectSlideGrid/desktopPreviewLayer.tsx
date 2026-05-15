@@ -1,6 +1,6 @@
 import { Box } from '@sanity/ui'
-import { DESKTOP_COLUMN_COUNT } from '../../../utils/columnRange'
-import { MediaInCell } from './mediaInCell'
+import { GRID_STYLE } from './configs'
+import { ProjectSlideGridMedia } from './projectSlideGridMedia'
 import type { ProjectSlideGridValue } from '../../types/media'
 import { isValidDesktopSpan } from './utils'
 
@@ -13,11 +13,7 @@ export const DesktopPreviewLayer = ({
 }) => (
   <Box
     style={{
-      position: 'absolute',
-      inset: 0,
-      display: 'grid',
-      gridTemplateColumns: `repeat(${DESKTOP_COLUMN_COUNT}, minmax(0, 1fr))`,
-      gridTemplateRows: '1fr',
+      ...GRID_STYLE,
       pointerEvents: 'none',
       zIndex: 1,
     }}
@@ -32,15 +28,13 @@ export const DesktopPreviewLayer = ({
             gridColumn: `${item.desktopStart} / ${item.desktopEnd}`,
             gridRow: '1',
             position: 'relative',
-            zIndex: isActive ? 50 : 10 + index,
+            zIndex: isActive ? 999 : 10 + index,
             overflow: 'hidden',
-            borderRadius: 2,
-            boxShadow: isActive ? '0 0 0 2px var(--card-focus-ring-color)' : undefined,
+            boxShadow: isActive ? '0 0 0 1px var(--card-focus-ring-color)' : undefined,
             boxSizing: 'border-box',
-            background: 'var(--card-muted-bg-color)',
           }}
         >
-          <MediaInCell item={item} />
+          <ProjectSlideGridMedia item={item} />
         </Box>
       )
     })}

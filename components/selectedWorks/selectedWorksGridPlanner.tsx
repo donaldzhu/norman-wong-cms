@@ -2,7 +2,7 @@ import type { AssetRef, Ref } from '../types/media'
 import { Box, Button, Card, Dialog, Flex, Stack, Text } from '@sanity/ui'
 import { ChevronDownIcon, ChevronUpIcon } from '@sanity/icons'
 import { set, useFormValue } from 'sanity'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { MediaRefPreview } from '../previews/mediaRefPreview'
 import { MediaType } from '../../constants/enum'
@@ -209,16 +209,13 @@ export const SelectedWorksGridPlannerDialog = ({
 
   const containerRef = useClickAway<HTMLDivElement>(onClose)
 
-  const handleChange = useCallback(
-    (rowIndex: number, newWidth: number) => {
-      const baseline = autoPopulateRowSettings(rowSettings, projectList.length, range)
-      if (rowIndex < 0 || rowIndex >= baseline.length) return
-      const newRowSettings = [...baseline]
-      newRowSettings[rowIndex] = _.clamp(newWidth, range.min, range.max)
-      onChange([set(newRowSettings, ['rowSettings'])])
-    },
-    [onChange, projectList.length, range, rowSettings],
-  )
+  const handleChange = (rowIndex: number, newWidth: number) => {
+    const baseline = autoPopulateRowSettings(rowSettings, projectList.length, range)
+    if (rowIndex < 0 || rowIndex >= baseline.length) return
+    const newRowSettings = [...baseline]
+    newRowSettings[rowIndex] = _.clamp(newWidth, range.min, range.max)
+    onChange([set(newRowSettings, ['rowSettings'])])
+  }
 
   if (!open) return null
 

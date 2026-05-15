@@ -1,6 +1,6 @@
 import { Box } from '@sanity/ui'
 import { useClickAway } from '@uidotdev/usehooks'
-import { useCallback, useState, type CSSProperties, type MouseEvent } from 'react'
+import { useState, type CSSProperties, type MouseEvent } from 'react'
 
 import { cellIsInSpan, spanFromClickedCells, getSpanFromSingleCell } from '../../../utils/columnRange'
 
@@ -25,30 +25,27 @@ export const LinearSpanInteractionOverlay = ({
   const [pendingAnchor, setPendingAnchor] = useState<number | null>(null)
   const containerRef = useClickAway<HTMLDivElement>(() => setPendingAnchor(null))
 
-  const handleCellClick = useCallback(
-    (cell: number, event: MouseEvent<HTMLButtonElement>) => {
-      if (readOnly) return
+  const handleCellClick = (cell: number, event: MouseEvent<HTMLButtonElement>) => {
+    if (readOnly) return
 
-      if (event.shiftKey || pendingAnchor == null) {
-        const { start: s, end: e } = getSpanFromSingleCell(cell)
-        onCommit(s, e)
-        setPendingAnchor(cell)
-        return
-      }
-
-      if (cell <= pendingAnchor) {
-        const { start: s, end: e } = getSpanFromSingleCell(cell)
-        onCommit(s, e)
-        setPendingAnchor(cell)
-        return
-      }
-
-      const { start: s, end: e } = spanFromClickedCells(pendingAnchor, cell)
+    if (event.shiftKey || pendingAnchor == null) {
+      const { start: s, end: e } = getSpanFromSingleCell(cell)
       onCommit(s, e)
-      setPendingAnchor(null)
-    },
-    [pendingAnchor, onCommit, readOnly],
-  )
+      setPendingAnchor(cell)
+      return
+    }
+
+    if (cell <= pendingAnchor) {
+      const { start: s, end: e } = getSpanFromSingleCell(cell)
+      onCommit(s, e)
+      setPendingAnchor(cell)
+      return
+    }
+
+    const { start: s, end: e } = spanFromClickedCells(pendingAnchor, cell)
+    onCommit(s, e)
+    setPendingAnchor(null)
+  }
 
   const cells = Array.from({ length: cellCount }, (_, i) => i + 1)
 

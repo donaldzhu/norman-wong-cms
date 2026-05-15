@@ -2,7 +2,7 @@ import { Box, Text } from '@sanity/ui'
 import {
   MOBILE_LANDSCAPE_COLUMN_COUNT,
   MOBILE_PORTRAIT_ROW_COUNT,
-} from '../../../utils/columnRange'
+} from './configs'
 
 import { MobileAllMediaPreviewLayer } from './mobileAllMediaPreviewLayer'
 import { MobileZebraBackdrop } from './mobileZebraBackdrop'

@@ -1,12 +1,12 @@
 import { Box, Button, Card, Dialog, Flex, Select, Stack, Text } from '@sanity/ui'
-import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react'
+import { useEffect, useMemo, useState, type ReactElement } from 'react'
 import { set, unset, useFormValue, type FormPatch, type ObjectInputProps } from 'sanity'
 
 import { Orientation } from '../../../constants/enum'
 import {
   MOBILE_LANDSCAPE_COLUMN_COUNT,
   MOBILE_PORTRAIT_ROW_COUNT,
-} from '../../../utils/columnRange'
+} from './configs'
 import type { ProjectSlideFormValue, ProjectSlideGridValue } from '../../types/media'
 import { DesktopInteractionOverlay } from './desktopInteractionOverlay'
 import { DesktopPreviewLayer } from './desktopPreviewLayer'
@@ -18,13 +18,10 @@ import { isValidDesktopSpan, isValidMobileSpan, mediaKeyPath } from './utils'
 import * as changeCase from 'change-case'
 import type { GridSpan } from './types'
 
-
 enum PlannerTab {
   DESKTOP = 'desktop',
   MOBILE = 'mobile',
 }
-
-
 
 interface ProjectSlideGridPlannerDialogProps {
   open: boolean
@@ -81,31 +78,24 @@ export const ProjectSlideGridDialog = ({
     [slideMobileOrientation],
   )
 
-  const itemHasSpanIssue = useCallback(
-    (item: ProjectSlideGridValue) => {
-      if (!isValidDesktopSpan(item.desktopStart, item.desktopEnd)) return true
-      if (
-        slideAutomaticMobile === false &&
-        !isValidMobileSpan(item.mobileStart, item.mobileEnd, mobileCellCountForIssue)
-      )
-        return true
-      return false
-    },
-    [slideAutomaticMobile, mobileCellCountForIssue],
-  )
+  const itemHasSpanIssue = (item: ProjectSlideGridValue) => {
+    if (!isValidDesktopSpan(item.desktopStart, item.desktopEnd)) return true
+    if (
+      slideAutomaticMobile === false &&
+      !isValidMobileSpan(item.mobileStart, item.mobileEnd, mobileCellCountForIssue)
+    )
+      return true
+    return false
+  }
 
-  const patchActive = useCallback(
-    (patches: FormPatch[]) => {
-      if (!activeMediaKey) return
-      onChange(patches)
-    },
-    [activeMediaKey, onChange],
-  )
+  const patchActive = (patches: FormPatch[]) => {
+    if (!activeMediaKey) return
+    onChange(patches)
+  }
 
-  const patchSlide = useCallback(
-    (patches: FormPatch[]) => onChange(patches),
-    [onChange],
-  )
+  const patchSlide = (patches: FormPatch[]) => {
+    onChange(patches)
+  }
 
   const onSetGrid = ({ start, end }: GridSpan, activeMediaKey: string) =>
     patchActive([
@@ -203,7 +193,7 @@ export const ProjectSlideGridDialog = ({
                     style={{
                       position: 'relative',
                       aspectRatio: '2 / 1',
-                      background: 'var(--card-border-color, rgba(127,127,127,0.22))',
+                      border: '2px solid var(--card-border-color)',
                       borderRadius: 4,
                       overflow: 'hidden',
                     }}

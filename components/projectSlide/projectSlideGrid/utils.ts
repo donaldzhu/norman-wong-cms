@@ -1,4 +1,4 @@
-import { DESKTOP_COLUMN_COUNT } from '../../../utils/columnRange'
+import { DESKTOP_COLUMN_COUNT } from './configs'
 
 export const mediaKeyPath = (key: string, field: string): [string, { _key: string }, string] => [
   'media',

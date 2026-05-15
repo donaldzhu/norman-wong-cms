@@ -2,7 +2,7 @@ import { Box, Button, Flex, Text } from '@sanity/ui'
 import {
   MOBILE_LANDSCAPE_COLUMN_COUNT,
   MOBILE_PORTRAIT_ROW_COUNT,
-} from '../../../utils/columnRange'
+} from './configs'
 
 import { LinearSpanInteractionOverlay } from './linearSpanInteractionOverlay'
 import { MobileAllMediaPreviewLayer } from './mobileAllMediaPreviewLayer'
