@@ -3,7 +3,7 @@ import { DeviceType, GridSpan } from '../types/selectedWorks'
 import {
   getSpanFromCells,
   getSpanFromSingleCell
-} from '../../utils/columnRange'
+} from '../../utils/projectSlide'
 
 import { Box } from '@sanity/ui'
 import { Orientation } from '../../constants/enum'

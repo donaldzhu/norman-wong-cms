@@ -8,7 +8,7 @@ import type { ProjectSlideGridValue } from '../types/media'
 interface ProjectSlideGridThumbnailProps {
   item: ProjectSlideGridValue
   selected: boolean
-  hasError: boolean
+  error: string | undefined
   onSelect: () => void
 }
 
@@ -17,14 +17,14 @@ const ERROR_ICON_SIZE = 25
 export const ProjectSlideGridThumbnail = ({
   item,
   selected,
-  hasError,
+  error,
   onSelect,
 }: ProjectSlideGridThumbnailProps) => {
   const isVideo = item.mediaType === MediaType.VIDEO
   const mediaWithRef = isVideo ? item.video : item.image
   const hasRef = !!mediaWithRef?.asset?._ref
 
-  const borderColor = hasError ? 'var(--card-badge-critical-icon-color)' : selected ? 'var(--card-focus-ring-color)' : 'transparent'
+  const borderColor = error ? 'var(--card-badge-critical-icon-color)' : selected ? 'var(--card-focus-ring-color)' : 'transparent'
 
   return (
     <Card
@@ -32,7 +32,7 @@ export const ProjectSlideGridThumbnail = ({
       type="button"
       padding={2}
       radius={2}
-      tone={hasError ? 'critical' : selected ? 'primary' : 'transparent'}
+      tone={error ? 'critical' : selected ? 'primary' : 'transparent'}
       border
       onClick={onSelect}
       style={{
@@ -84,7 +84,7 @@ export const ProjectSlideGridThumbnail = ({
             {isVideo ? 'Video' : 'Image'}
           </Text>
         </Flex>
-        {hasError ? (
+        {error ? (
           <Tooltip
             placement='top'
             portal
@@ -92,7 +92,7 @@ export const ProjectSlideGridThumbnail = ({
             content={
               <Box padding={1}>
                 <Text muted size={1}>
-                  Grid setting is invalid or missing.
+                  {error}
                 </Text>
               </Box>
             }>

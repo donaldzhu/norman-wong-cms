@@ -9,8 +9,7 @@ import { ProjectSlideGridPreview } from './projectSlideGridPreview'
 import { ProjectSlideGridThumbnail } from './projectSlideGridThumbnail'
 
 import * as changeCase from 'change-case'
-import { getGridCellCount, getSlideGridKeyPath, isValidSpan } from '../../utils/projectSlide'
-import { DESKTOP_COLUMN_COUNT } from './configs'
+import { getSlideGridKeyPath, validateSpan } from '../../utils/projectSlide'
 import { DeviceType, GridSpan } from '../types/selectedWorks'
 
 interface ProjectSlideGridPlannerDialogProps {
@@ -57,12 +56,16 @@ export const ProjectSlideGridDialog = ({
     'mobileOrientation',
   ]) as Orientation | undefined
 
-  const hasSpanIssue = (item: ProjectSlideGridValue) =>
-    !isValidSpan(item.desktopStart, item.desktopEnd, DESKTOP_COLUMN_COUNT)
-    || (
-      automaticMobileOn &&
-      !isValidSpan(item.mobileStart, item.mobileEnd, getGridCellCount(DeviceType.MOBILE, mobileOrientation))
-    )
+  const getSpanIssue = (item: ProjectSlideGridValue) => {
+    const desktopIssue = validateSpan(item.desktopStart, item.desktopEnd, DeviceType.DESKTOP)
+    if (desktopIssue) return desktopIssue
+
+    if (!automaticMobileOn) {
+      const mobileIssue = validateSpan(item.mobileStart, item.mobileEnd, DeviceType.MOBILE, mobileOrientation)
+      if (mobileIssue) return mobileIssue
+    }
+  }
+
 
   const onToggleOrientation = (event: ChangeEvent<HTMLSelectElement>) =>
     onChange([set(event.currentTarget.value, ['mobileOrientation'])])
@@ -113,7 +116,7 @@ export const ProjectSlideGridDialog = ({
                         key={item._key}
                         item={item}
                         selected={item._key === activeMediaKey}
-                        hasError={hasSpanIssue(item)}
+                        error={getSpanIssue(item)}
                         onSelect={() => setActiveMediaKey(item._key)}
                       />
                     ) : null,

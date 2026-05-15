@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity'
 
 import { ImageFieldWrapper } from '../../../components/common/imageFIeldWrapper'
 import { MediaType } from '../../../constants/enum'
-import { ProjectSlideMediaObjectInput } from '../../../components/projectSlide/projectSlideMediaObjectInput'
+import { ProjectSlideMediaInput } from '../../../components/projectSlide/projectSlideMediaInput'
 import { ProjectSlidePreview } from '../../../components/previews/projectSlidePreview'
 import { ProjectsIcon } from '@sanity/icons'
 import { createToggleButtonField } from '../../../utils/field'
@@ -13,7 +13,7 @@ export const projectSlideMedia = defineType({
   type: 'object',
   icon: ProjectsIcon,
   components: {
-    input: ProjectSlideMediaObjectInput,
+    input: ProjectSlideMediaInput,
     preview: ProjectSlidePreview,
   },
   fields: [

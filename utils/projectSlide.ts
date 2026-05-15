@@ -5,6 +5,15 @@ import { DESKTOP_COLUMN_COUNT, GRID_GAP, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_P
 import { DeviceType } from '../components/types/selectedWorks'
 import { Orientation } from '../constants/enum'
 
+export const getSpanFromCells = (a: number, b: number) => {
+  const lo = Math.min(a, b)
+  const hi = Math.max(a, b)
+  return { start: lo, end: hi + 1 }
+}
+
+export const getSpanFromSingleCell = (cell: number) => ({ start: cell, end: cell + 1 })
+
+
 export const getSlideGridKeyPath = (
   key: string,
   deviceType: DeviceType,
@@ -15,15 +24,33 @@ export const getSlideGridKeyPath = (
     `${deviceType}${changeCase.capitalCase(alignment)}`,
   ]
 
-export const isValidSpan = (start: number | undefined, end: number | undefined, cellCount: number) => (
-  typeof start === 'number' &&
-  typeof end === 'number' &&
-  start >= 1 &&
-  start <= cellCount &&
-  end >= 2 &&
-  end < cellCount &&
-  end > start
-)
+
+export const validateSpan = (
+  start: number | undefined,
+  end: number | undefined,
+  deviceType: DeviceType,
+  orientation: Orientation = Orientation.LANDSCAPE
+) => {
+  const cellCount = getGridCellCount(deviceType, orientation)
+  const isMobile = deviceType === DeviceType.MOBILE
+  const isPortrait = orientation === Orientation.PORTRAIT
+  const decorateMessage = (message: string) => `${deviceType}: ${message}`
+  const divType = isMobile && isPortrait ? 'row' : 'column'
+
+  if (typeof start !== 'number' || typeof end !== 'number')
+    return decorateMessage(`Missing start or end ${divType}`)
+
+  if (start < 1 || start > cellCount)
+    return decorateMessage(`Invalid start ${divType}`)
+
+  if (end < 2 || end > cellCount + 1)
+    return decorateMessage(`Invalid end ${divType}`)
+
+  if (end <= start)
+    return decorateMessage(`End ${divType} must be greater than start ${divType}`)
+
+  return
+}
 
 export const getGridCellCount = (tab: DeviceType, orientation: Orientation = Orientation.LANDSCAPE) => {
   if (tab === DeviceType.DESKTOP) return DESKTOP_COLUMN_COUNT
