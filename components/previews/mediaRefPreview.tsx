@@ -7,7 +7,7 @@ import { SANITY_CLIENT_OPTIONS } from '../../constants/configs'
 import { createImageUrlBuilder } from '@sanity/image-url'
 import { useClient } from 'sanity'
 
-type MediaRefPreviewProps = {
+interface MediaRefPreviewProps {
   mediaType?: MediaType
   mediaWithRef?: AssetRef
   style?: React.CSSProperties

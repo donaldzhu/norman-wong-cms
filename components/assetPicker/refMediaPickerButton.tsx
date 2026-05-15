@@ -54,7 +54,7 @@ const RefMediaPickerButton = ({
   const copy = createCopy(mediaType)
   const refs = useMemo(() =>
     mediaRefsFromProject(RefContext ? slides : source),
-    [mediaType, source, slides, RefContext]
+    [source, slides, RefContext]
   )
 
   const isEmpty = refs.length === 0

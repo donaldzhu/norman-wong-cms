@@ -1,8 +1,8 @@
 import { DESKTOP_COLUMN_COUNT, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from './configs'
 import { DeviceType, GridSpan } from '../types/selectedWorks'
 import {
-  getSpanFromSingleCell,
-  spanFromClickedCells
+  getSpanFromCells,
+  getSpanFromSingleCell
 } from '../../utils/columnRange'
 
 import { Box } from '@sanity/ui'
@@ -10,20 +10,20 @@ import { Orientation } from '../../constants/enum'
 import { getGridStyle } from '../../utils/projectSlide'
 import { useState } from 'react'
 
-interface ProjectSlideGridInterationProps {
+interface ProjectSlideGridInteractionProps {
   start?: number
   end?: number
   orientation?: Orientation
   tab: DeviceType
   onCommit: (span: GridSpan) => void
 }
-export const ProjectSlideGridInteration = ({
+export const ProjectSlideGridInteraction = ({
   start,
   end,
   tab,
   orientation = Orientation.LANDSCAPE,
   onCommit,
-}: ProjectSlideGridInterationProps) => {
+}: ProjectSlideGridInteractionProps) => {
   const [startingAnchor, setStartingAnchor] = useState<number | null>(null)
 
   const onCellClick = (cell: number) => {
@@ -33,7 +33,7 @@ export const ProjectSlideGridInteration = ({
       return
     }
 
-    onCommit(spanFromClickedCells(startingAnchor, cell))
+    onCommit(getSpanFromCells(startingAnchor, cell))
     setStartingAnchor(null)
   }
 

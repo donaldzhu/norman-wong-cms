@@ -4,7 +4,7 @@ import { set, useFormValue, type ObjectInputProps } from 'sanity'
 
 import { Orientation } from '../../constants/enum'
 import type { ProjectSlideFormValue, ProjectSlideGridValue } from '../types/media'
-import { ProjectSlideGridInteration } from './projectSlideGridInteration'
+import { ProjectSlideGridInteraction } from './projectSlideGridInteraction'
 import { ProjectSlideGridPreview } from './projectSlideGridPreview'
 import { ProjectSlideGridThumbnail } from './projectSlideGridThumbnail'
 
@@ -193,7 +193,7 @@ export const ProjectSlideGridDialog = ({
                       }}
                     >
                       <ProjectSlideGridPreview media={media} activeKey={activeMediaKey} tab={tab} orientation={mobileOrientation} />
-                      <ProjectSlideGridInteration
+                      <ProjectSlideGridInteraction
                         key={activeMediaKey}
                         orientation={mobileOrientation}
                         tab={tab}

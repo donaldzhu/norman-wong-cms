@@ -1,17 +1,9 @@
 import { Stack } from '@sanity/ui'
-import { useEffect, useMemo } from 'react'
-import { set, useFormValue, type ObjectInputProps } from 'sanity'
+import { type ObjectInputProps } from 'sanity'
 
 import styled from 'styled-components'
-import {
-  MOBILE_LANDSCAPE_COLUMN_COUNT,
-  MOBILE_PORTRAIT_ROW_COUNT,
-} from './configs'
-import { Orientation } from '../../constants/enum'
 
-type MobileOrientation = 'portrait' | 'landscape'
-
-type ProjectSlideMediaValue = {
+interface ProjectSlideMediaValue {
   desktopStart?: number
   desktopEnd?: number
   mobileStart?: number
@@ -20,75 +12,12 @@ type ProjectSlideMediaValue = {
 
 export const ProjectSlideMediaObjectInput = (
   props: ObjectInputProps<ProjectSlideMediaValue>,
-) => {
-  const { renderDefault, value, onChange, path } = props
+) => (
+  <StyledStack space={2}>
+    {props.renderDefault(props)}
+  </StyledStack>
+)
 
-  const slidePathPrefix = useMemo(() => {
-    const i = path.indexOf('media')
-    if (i < 1) return null
-    return path.slice(0, i)
-  }, [path])
-
-  const slideAutomaticMobile = useFormValue(
-    slidePathPrefix ? [...slidePathPrefix, 'automaticMobileLayout'] : [],
-  ) as boolean | undefined
-  const slideMobileOrientation = useFormValue(
-    slidePathPrefix ? [...slidePathPrefix, 'mobileOrientation'] : [],
-  ) as string | undefined
-
-  const mobileOrientation: MobileOrientation =
-    slideMobileOrientation === Orientation.LANDSCAPE ? 'landscape' : 'portrait'
-  const mobileCellCount =
-    mobileOrientation === 'portrait' ? MOBILE_PORTRAIT_ROW_COUNT : MOBILE_LANDSCAPE_COLUMN_COUNT
-  const mobileEndEdgeMax = mobileCellCount + 1
-
-  useEffect(() => {
-    if (slideAutomaticMobile !== false || !slidePathPrefix) return
-
-    const patches: ReturnType<typeof set>[] = []
-
-    const nextStart =
-      typeof value?.mobileStart === 'number'
-        ? Math.min(value.mobileStart, mobileCellCount)
-        : undefined
-    const nextEnd =
-      typeof value?.mobileEnd === 'number'
-        ? Math.min(value.mobileEnd, mobileEndEdgeMax)
-        : undefined
-
-    if (typeof nextStart === 'number' && nextStart !== value?.mobileStart) {
-      patches.push(set(nextStart, ['mobileStart']))
-    }
-
-    if (typeof nextEnd === 'number') {
-      const validEnd =
-        typeof nextStart === 'number' && nextEnd <= nextStart
-          ? Math.min(nextStart + 1, mobileEndEdgeMax)
-          : nextEnd
-
-      if (validEnd !== value?.mobileEnd) {
-        patches.push(set(validEnd, ['mobileEnd']))
-      }
-    }
-
-    if (patches.length > 0) onChange(patches)
-  }, [
-    slideAutomaticMobile,
-    slideMobileOrientation,
-    mobileCellCount,
-    mobileEndEdgeMax,
-    onChange,
-    slidePathPrefix,
-    value?.mobileEnd,
-    value?.mobileStart,
-  ])
-
-  return (
-    <StyledStack space={2}>
-      {renderDefault(props)}
-    </StyledStack>
-  )
-}
 
 
 const StyledStack = styled(Stack)`

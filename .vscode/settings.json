@@ -1,0 +1,9 @@
+{
+  // ESLint defaults to a ~4s validation budget; typed rules (projectService) often exceed that,
+  // which can prevent diagnostics from finishing in the editor.
+  "eslint.enable": true,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.workingDirectories": [{"mode": "auto"}],
+  "eslint.timeBudget.onValidation": 30000,
+  "eslint.timeBudget.onFixes": 10000
+}

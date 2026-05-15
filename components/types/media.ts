@@ -28,8 +28,7 @@ export interface MediaData {
   video?: AssetRef
 }
 
-/** `projectSlide.media[]` item fields used by the slide grid planner. */
-export type ProjectSlideGridValue = {
+export interface ProjectSlideGridValue {
   _key: string
   mediaType?: MediaType
   image?: AssetRef
@@ -40,8 +39,7 @@ export type ProjectSlideGridValue = {
   mobileEnd?: number
 }
 
-/** `projectSlide` object fields used by the slide grid planner. */
-export type ProjectSlideFormValue = {
+export interface ProjectSlideFormValue {
   automaticMobileLayout?: boolean
   mobileOrientation?: string
   media?: ProjectSlideGridValue[]

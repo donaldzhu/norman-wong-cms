@@ -5,7 +5,7 @@ import { MediaRefPreview } from '../previews/mediaRefPreview'
 import { MediaType } from '../../constants/enum'
 import { isValidMediaRef } from '../../utils/refs'
 
-type RefMediaPickerGridProps = {
+interface RefMediaPickerGridProps {
   refs: MediaRef[]
   onPick: (ref: string) => void
   mediaType: MediaType

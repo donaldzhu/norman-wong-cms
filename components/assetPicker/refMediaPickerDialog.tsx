@@ -1,11 +1,11 @@
 import { Box, Dialog } from '@sanity/ui'
-import type { ValidAssetRef, ValidMediaRef } from '../types/media'
 
 import { MediaType } from '../../constants/enum'
 import { RefMediaPickerGrid } from './refMediaPickerGrid'
+import type { ValidMediaRef } from '../types/media'
 import { useClickAway } from '@uidotdev/usehooks'
 
-type RefMediaPickerDialogProps = {
+interface RefMediaPickerDialogProps {
   mediaType: MediaType
   refs: ValidMediaRef[]
   header: string
