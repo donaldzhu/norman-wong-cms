@@ -25,7 +25,7 @@ export const selectedWorks = defineType({
     defineField({
       name: 'mobileLayout',
       type: 'selectedWorksLayout',
-      options: { min: 3, max: 5 },
+      options: { min: 2, max: 4 },
     }),
   ],
 })

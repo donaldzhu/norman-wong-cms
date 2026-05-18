@@ -16,14 +16,14 @@ export const useProjectSlides = (projectRef?: Ref) => {
     if (!projectId) return
     (async () => {
       try {
-        if (projectId) {
-          const doc = await client.fetch<{ slides?: unknown } | null>(
-            `*[_type == "project" && _id in $ids][0]{ slides }`,
-            { ids: prepareProjectId(projectId) },
-          )
-          setSlides(doc?.slides)
-        }
-      } catch { }
+        const doc = await client.fetch<{ slides?: unknown } | null>(
+          `*[_type == "project" && _id in $ids][0]{ slides }`,
+          { ids: prepareProjectId(projectId) },
+        )
+        setSlides(doc?.slides)
+      } catch (error) {
+        throw error
+      }
       setIsLoading(false)
     })()
   }, [client, projectId])

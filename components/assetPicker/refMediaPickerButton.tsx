@@ -49,13 +49,16 @@ const RefMediaPickerButton = ({
 }: RefMediaPickerButtonProps & ObjectInputProps) => {
   const source = useFormValue([SLIDE_FIELD_ID])
   const project = useContext(RefContext ?? DummyContext)
-  const { isLoading, slides } = useProjectSlides(project)
+  const { isLoading: _isLoading, slides } = useProjectSlides(project)
+
 
   const copy = createCopy(mediaType)
   const refs = useMemo(() =>
     mediaRefsFromProject(RefContext ? slides : source),
     [source, slides, RefContext]
   )
+
+  const isLoading = _isLoading && !refs
 
   const isEmpty = refs.length === 0
   const assetRef = value?.asset?._ref as string | undefined

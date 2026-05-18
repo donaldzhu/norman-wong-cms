@@ -24,7 +24,7 @@ interface RowSetting {
 
 interface ProjectMedia {
   _key: string
-  type?: string
+  mediaType?: MediaType
   image?: AssetRef
   video?: AssetRef
   hideOnMobile?: boolean
@@ -113,9 +113,12 @@ const buildGridRows = (
 }
 
 const GridPlannerMediaCell = ({ cell }: { cell: ProjectListItem }) => {
-  const isVideo = cell.media.type === MediaType.VIDEO
+  const isVideo = cell.media.mediaType === MediaType.VIDEO
   const mediaWithRef = isVideo ? cell.media.video : cell.media.image
   const hasRef = !!mediaWithRef?.asset?._ref
+
+
+
   return (
     <Card
       radius={2}

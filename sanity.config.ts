@@ -13,7 +13,11 @@ export default defineConfig({
   projectId: '3vmzcbnr',
   dataset: 'production',
 
-  plugins: [structureTool({ structure }), visionTool(), media(), muxInput()],
+  plugins: [structureTool({ structure }), visionTool(), media(), muxInput({
+    video_quality: 'basic',
+    max_resolution_tier: '1080p',
+    disableTextTrackConfig: true
+  })],
 
   schema: {
     types: schemaTypes,
