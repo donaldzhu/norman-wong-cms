@@ -10,15 +10,6 @@ export const projectSlide = defineType({
   components: { input: ProjectSlideGridButton, preview: ProjectSlidesPreview },
   fields: [
     defineField({
-      name: 'automaticMobileLayout',
-      title: 'Automatic mobile layout',
-      type: 'boolean',
-      description:
-        'When on, the front end lays out mobile for this slide. When off, set a mobile span for each media item in the slide grid planner.',
-      initialValue: true,
-      hidden: () => true,
-    }),
-    defineField({
       name: 'mobileOrientation',
       title: 'Mobile grid orientation',
       type: 'string',

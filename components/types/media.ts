@@ -40,7 +40,6 @@ export interface ProjectSlideGridValue {
 }
 
 export interface ProjectSlideFormValue {
-  automaticMobileLayout?: boolean
   mobileOrientation?: string
   media?: ProjectSlideGridValue[]
   description?: string

@@ -5,7 +5,8 @@
   "main": "package.json",
   "license": "UNLICENSED",
   "scripts": {
-    "slides:reset-mobile": "node scripts/reset-all-slides-mobile-defaults.mjs",
+    "migrate:remove-automatic-mobile-layout": "sanity migrations run remove-automatic-mobile-layout-from-project-slides",
+    "migrate:remove-automatic-mobile-layout:apply": "sanity migrations run remove-automatic-mobile-layout-from-project-slides --no-dry-run --no-confirm",
     "build": "sanity build",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",

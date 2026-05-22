@@ -51,6 +51,7 @@ export const ProjectSlideGridPreview = ({
               overflow: 'hidden',
               boxShadow: isActive ? '0 0 0 1px var(--card-focus-ring-color)' : undefined,
               boxSizing: 'border-box',
+              pointerEvents: 'none',
             }}
           >
             <ProjectSlideGridMedia item={item} tab={tab} orientation={orientation} />

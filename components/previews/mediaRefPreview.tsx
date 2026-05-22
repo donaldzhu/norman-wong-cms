@@ -66,7 +66,7 @@ export const MediaRefPreview = ({
     mediaType === MediaType.IMAGE ?
       imageThumbUrl(builder, mediaRef, sanityImageWidth) :
       mediaType === MediaType.VIDEO && muxPlaybackById ?
-        `https://image.mux.com/${muxPlaybackById}/thumbnail.jpg?width=${sanityImageWidth}&height=${sanityImageWidth}&fit_mode=smartcrop` :
+        `https://image.mux.com/${muxPlaybackById}/thumbnail.jpg?time=0&width=${sanityImageWidth}&height=${sanityImageWidth}&fit_mode=smartcrop` :
         undefined
 
   return (

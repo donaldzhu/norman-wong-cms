@@ -47,10 +47,6 @@ export const ProjectSlideGridDialog = ({
   const isMobile = tab === DeviceType.MOBILE
   const slidePath = inputProps.path
 
-  const slideAutomaticMobile = useFormValue([
-    ...slidePath,
-    'automaticMobileLayout',
-  ]) as boolean | undefined
   const mobileOrientation = useFormValue([
     ...slidePath,
     'mobileOrientation',
@@ -60,10 +56,8 @@ export const ProjectSlideGridDialog = ({
     const desktopIssue = validateSpan(item.desktopStart, item.desktopEnd, DeviceType.DESKTOP)
     if (desktopIssue) return desktopIssue
 
-    if (!automaticMobileOn) {
-      const mobileIssue = validateSpan(item.mobileStart, item.mobileEnd, DeviceType.MOBILE, mobileOrientation)
-      if (mobileIssue) return mobileIssue
-    }
+    const mobileIssue = validateSpan(item.mobileStart, item.mobileEnd, DeviceType.MOBILE, mobileOrientation)
+    if (mobileIssue) return mobileIssue
   }
 
 
@@ -79,14 +73,8 @@ export const ProjectSlideGridDialog = ({
   }
 
 
-  const onToggleAutomaticMobile = () => {
-    onChange([set(!automaticMobileOn, ['automaticMobileLayout'])])
-    setTab(DeviceType.DESKTOP)
-  }
-
   if (!open) return null
 
-  const automaticMobileOn = slideAutomaticMobile !== false
   const orientationFormValue = mobileOrientation ?? Orientation.PORTRAIT
 
   const LEFT_COLUMN_WIDTH = 250
@@ -140,10 +128,7 @@ export const ProjectSlideGridDialog = ({
                   text={changeCase.capitalCase(DeviceType.MOBILE)}
                   mode={isMobile ? 'default' : 'ghost'}
                   onClick={() => setTab(DeviceType.MOBILE)}
-                  disabled={automaticMobileOn}
-                  style={{
-                    cursor: automaticMobileOn ? 'not-allowed' : 'pointer',
-                  }}
+                  style={{ cursor: 'pointer' }}
                 />
               </Flex>
               <Flex gap={2}>
@@ -151,23 +136,13 @@ export const ProjectSlideGridDialog = ({
                   <Flex gap={3} align="center">
                     <Text style={{ flexShrink: 0 }}>Mobile Orientation:</Text>
                     <Select
-                      value={automaticMobileOn ? Orientation.LANDSCAPE : orientationFormValue}
-                      disabled={automaticMobileOn}
+                      value={orientationFormValue}
                       onChange={onToggleOrientation}
                     >
                       <option value={Orientation.PORTRAIT}>{changeCase.capitalCase(Orientation.PORTRAIT)}</option>
                       <option value={Orientation.LANDSCAPE}>{changeCase.capitalCase(Orientation.LANDSCAPE)}</option>
                     </Select>
                   </Flex>
-                  <Button
-                    text={`Automatic Mobile Layout: ${automaticMobileOn ? 'On' : 'Off'}`}
-                    tone={automaticMobileOn ? 'primary' : 'neutral'}
-                    style={{
-                      cursor: 'pointer',
-                      width: LEFT_COLUMN_WIDTH,
-                    }}
-                    onClick={onToggleAutomaticMobile}
-                  />
                 </Flex>
               </Flex>
             </Flex>
