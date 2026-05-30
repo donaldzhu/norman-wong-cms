@@ -11,15 +11,12 @@ import { getGridStyle } from '../../utils/projectSlide'
 import { useState } from 'react'
 
 interface ProjectSlideGridInteractionProps {
-  start?: number
-  end?: number
   orientation?: Orientation
   tab: DeviceType
   onCommit: (span: GridSpan) => void
 }
+
 export const ProjectSlideGridInteraction = ({
-  start,
-  end,
   tab,
   orientation = Orientation.LANDSCAPE,
   onCommit,
@@ -39,9 +36,14 @@ export const ProjectSlideGridInteraction = ({
 
   const cellCount = tab === DeviceType.DESKTOP ? DESKTOP_COLUMN_COUNT : orientation === Orientation.LANDSCAPE ? MOBILE_LANDSCAPE_COLUMN_COUNT : MOBILE_PORTRAIT_ROW_COUNT
 
-  const DESKTOP_COLUMNS_TO_HIGHLIGHT = [1, 6, 7, 12, 13, 18, 19, 24]
-  const MOBILE_COLUMNS_TO_HIGHLIGHT = [1, 6, 7, 12]
-  const shouldHighlightColumn = (col: number) => tab === DeviceType.DESKTOP ? DESKTOP_COLUMNS_TO_HIGHLIGHT.includes(col) : MOBILE_COLUMNS_TO_HIGHLIGHT.includes(col)
+  const getColumnLabel = (col: number) => {
+    const columnCount = tab === DeviceType.DESKTOP ? DESKTOP_COLUMN_COUNT : MOBILE_LANDSCAPE_COLUMN_COUNT
+    const halfColumnCount = columnCount / 2
+    if (col <= halfColumnCount) {
+      return `-${halfColumnCount - col}`
+    }
+    return `+${col - halfColumnCount - 1}`
+  }
   return (
     <Box style={{
       ...getGridStyle(tab, orientation),
@@ -76,7 +78,7 @@ export const ProjectSlideGridInteraction = ({
             }}
           />
           <Box padding={2}>
-            <Text size={1} muted>{col}</Text>
+            <Text size={1} muted style={{ fontSize: '0.75rem' }}>{getColumnLabel(col)}</Text>
           </Box>
         </button>
         )}
