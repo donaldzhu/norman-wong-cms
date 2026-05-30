@@ -82,7 +82,7 @@ export const MediaRefPreview = ({
           ...style,
         }}
       />
-    ) : showSpinner ? (
+    ) : showSpinner && (
       <Flex justify="center" align="center" padding={5} style={{
         width: spinnerSize,
         height: spinnerSize,
@@ -90,7 +90,7 @@ export const MediaRefPreview = ({
       }} >
         <Spinner muted />
       </Flex>
-    ) : null
+    )
   )
 }
 

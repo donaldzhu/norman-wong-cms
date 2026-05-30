@@ -62,6 +62,7 @@ export const allProjectsThumbnail = defineType({
       video: MediaType.VIDEO,
       desktopSize: 'desktopSize',
       mobileSize: 'mobileSize',
+      hideOnMobile: 'hideOnMobile',
     }
   },
 })

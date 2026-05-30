@@ -22,6 +22,7 @@ export const allProjects = defineType({
           to: [{ type: 'project' }],
         },
       ],
+      validation: rule => rule.min(1)
     }),
   ],
 })

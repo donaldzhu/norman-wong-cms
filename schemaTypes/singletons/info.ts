@@ -16,6 +16,7 @@ export const info = defineType({
       name: 'contacts',
       type: 'array',
       of: [{ type: 'contact' }],
+      validation: rule => rule.min(1).max(10),
     }),
   ],
 })

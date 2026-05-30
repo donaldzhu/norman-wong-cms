@@ -1,6 +1,7 @@
 import { defineField, defineType } from 'sanity'
 
 import { ComposeIcon } from '@sanity/icons'
+import { TextLength } from '../../constants/configs'
 
 export const header = defineType({
   name: 'header',
@@ -27,56 +28,56 @@ export const header = defineType({
       name: 'nameDisplayTextDesktop',
       title: '"Name" display text (Desktop)',
       type: 'string',
-      validation: rule => rule.required(),
+      validation: rule => rule.required().max(TextLength.TINY),
       group: 'desktop',
     }),
     defineField({
       name: 'selectedWorksDisplayTextDesktop',
       title: '"Selected Works" display text (Desktop)',
       type: 'string',
-      validation: rule => rule.required(),
+      validation: rule => rule.required().max(TextLength.TINY),
       group: 'desktop',
     }),
     defineField({
       name: 'allProjectsDisplayTextDesktop',
       title: '"All Projects" display text (Desktop)',
       type: 'string',
-      validation: rule => rule.required(),
+      validation: rule => rule.required().max(TextLength.TINY),
       group: 'desktop',
     }),
     defineField({
       name: 'informationDisplayTextDesktop',
       title: '"Information" display text (Desktop)',
       type: 'string',
-      validation: rule => rule.required(),
+      validation: rule => rule.required().max(TextLength.TINY),
       group: 'desktop',
     }),
     defineField({
       name: 'nameDisplayTextMobile',
       title: '"Name" display text (Mobile)',
       type: 'string',
-      validation: rule => rule.required(),
+      validation: rule => rule.required().max(TextLength.TINY),
       group: 'mobile',
     }),
     defineField({
       name: 'selectedWorksDisplayTextMobile',
       title: '"Selected Works" display text (Mobile)',
       type: 'string',
-      validation: rule => rule.required(),
+      validation: rule => rule.required().max(TextLength.TINY),
       group: 'mobile',
     }),
     defineField({
       name: 'allProjectsDisplayTextMobile',
       title: '"All Projects" display text (Mobile)',
       type: 'string',
-      validation: rule => rule.required(),
+      validation: rule => rule.required().max(TextLength.TINY),
       group: 'mobile',
     }),
     defineField({
       name: 'informationDisplayTextMobile',
       title: '"Information" display text (Mobile)',
       type: 'string',
-      validation: rule => rule.required(),
+      validation: rule => rule.required().max(TextLength.TINY),
       group: 'mobile',
     }),
   ],

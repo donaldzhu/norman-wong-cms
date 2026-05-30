@@ -91,7 +91,7 @@ const RefMediaPickerButton = ({
           style={{ width: '100%' }}
         />
       )}
-      {open ? (
+      {open && (
         <RefMediaPickerDialog
           mediaType={mediaType}
           refs={refs}
@@ -100,7 +100,7 @@ const RefMediaPickerButton = ({
           onClose={() => setOpen(false)}
           onPick={handlePick}
         />
-      ) : null}
+      )}
     </Stack>
   )
 }

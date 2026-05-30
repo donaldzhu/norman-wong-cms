@@ -44,7 +44,7 @@ export const ProjectSlideGridThumbnail = ({
       }}
     >
       <Flex align="center" justify="space-between" gap={3}>
-        <Flex align="center" justify="space-between">
+        <Flex align="center" gap={2}>
           <Box
             style={{
               width: 56,
@@ -58,33 +58,20 @@ export const ProjectSlideGridThumbnail = ({
               justifyContent: 'center',
             }}
           >
-            {hasRef ? (
+            {hasRef && (
               <MediaRefPreview
                 mediaType={isVideo ? MediaType.VIDEO : MediaType.IMAGE}
                 mediaWithRef={mediaWithRef}
                 showSpinner={isVideo}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'contain',
-                  display: 'block',
-                }}
+                style={{ objectFit: 'cover' }}
               />
-            ) : (
-              <Flex align="center" justify="center" height="fill" padding={2}>
-                <Text muted size={0}>
-                  {isVideo ? 'Video' : '—'}
-                </Text>
-              </Flex>
             )}
           </Box>
-
-
           <Text size={1} weight={selected ? 'semibold' : 'regular'}>
             {isVideo ? 'Video' : 'Image'}
           </Text>
         </Flex>
-        {error ? (
+        {error && (
           <Tooltip
             placement='top'
             portal
@@ -106,7 +93,7 @@ export const ProjectSlideGridThumbnail = ({
               <ErrorOutlineIcon width={ERROR_ICON_SIZE} height={ERROR_ICON_SIZE} />
             </Box>
           </Tooltip>
-        ) : null}
+        )}
       </Flex>
     </Card>
   )
