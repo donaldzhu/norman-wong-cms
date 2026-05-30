@@ -6,7 +6,7 @@ import styled from 'styled-components'
 export const ProjectSlideMediaInput = (
   props: ObjectInputProps,
 ) => (
-  <StyledStack space={2}>
+  <StyledStack gap={2}>
     {props.renderDefault(props)}
   </StyledStack>
 )

@@ -40,6 +40,8 @@ export const ProjectSlideGridPreview = ({
 
         const gridColumn = !isMobile || !isPortrait ? cellPosition : '1'
         const gridRow = !isMobile || !isPortrait ? '1' : cellPosition
+
+        if (!start || !end) return null
         return (
           <Box
             key={item._key}

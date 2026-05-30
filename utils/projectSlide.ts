@@ -4,6 +4,9 @@ import { DESKTOP_COLUMN_COUNT, GRID_GAP, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_P
 
 import { DeviceType } from '../components/types/selectedWorks'
 import { Orientation } from '../constants/enum'
+import type { ProjectSlideGridValue } from '../components/types/media'
+
+export const GRID_SETTINGS_INCOMPLETE_MESSAGE = 'Grid settings incomplete'
 
 export const getSpanFromCells = (a: number, b: number) => {
   const lo = Math.min(a, b)
@@ -12,7 +15,6 @@ export const getSpanFromCells = (a: number, b: number) => {
 }
 
 export const getSpanFromSingleCell = (cell: number) => ({ start: cell, end: cell + 1 })
-
 
 export const getSlideGridKeyPath = (
   key: string,
@@ -34,23 +36,38 @@ export const validateSpan = (
   const cellCount = getGridCellCount(deviceType, orientation)
   const isMobile = deviceType === DeviceType.MOBILE
   const isPortrait = orientation === Orientation.PORTRAIT
-  const decorateMessage = (message: string) => `${deviceType}: ${message}`
+  const decorateMessage = (message: string) => `${changeCase.capitalCase(deviceType)}: ${message}`
   const divType = isMobile && isPortrait ? 'row' : 'column'
 
   if (typeof start !== 'number' || typeof end !== 'number')
-    return decorateMessage(`Missing start or end ${divType}`)
+    return decorateMessage(`Missing start or end ${divType}.`)
 
   if (start < 1 || start > cellCount)
-    return decorateMessage(`Invalid start ${divType}`)
+    return decorateMessage(`Invalid start ${divType}.`)
 
   if (end < 2 || end > cellCount + 1)
-    return decorateMessage(`Invalid end ${divType}`)
+    return decorateMessage(`Invalid end ${divType}.`)
 
   if (end <= start)
-    return decorateMessage(`End ${divType} must be greater than start ${divType}`)
+    return decorateMessage(`End ${divType} must be greater than start ${divType}.`)
 
   return
 }
+
+export const getMediaGridSpanIssue = (
+  item: Pick<ProjectSlideGridValue, 'desktopStart' | 'desktopEnd' | 'mobileStart' | 'mobileEnd'>,
+  orientation: Orientation = Orientation.PORTRAIT,
+) => {
+  const desktopIssue = validateSpan(item.desktopStart, item.desktopEnd, DeviceType.DESKTOP)
+  if (desktopIssue) return desktopIssue
+
+  return validateSpan(item.mobileStart, item.mobileEnd, DeviceType.MOBILE, orientation)
+}
+
+export const validateSlideGrid = (
+  media: ProjectSlideGridValue[] = [],
+  orientation: Orientation,
+) => media.some(item => getMediaGridSpanIssue(item, orientation))
 
 export const getGridCellCount = (tab: DeviceType, orientation: Orientation = Orientation.LANDSCAPE) => {
   if (tab === DeviceType.DESKTOP) return DESKTOP_COLUMN_COUNT

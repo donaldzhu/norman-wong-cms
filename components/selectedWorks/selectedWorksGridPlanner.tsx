@@ -160,7 +160,7 @@ interface RowWidthStepperProps {
 const RowWidthStepper = ({ rowIndex, width, range, onChange }: RowWidthStepperProps) =>
 (
   <Flex align="center" gap={3}>
-    <Stack space={1}>
+    <Stack gap={1}>
       <Button
         icon={ChevronUpIcon}
         mode="ghost"

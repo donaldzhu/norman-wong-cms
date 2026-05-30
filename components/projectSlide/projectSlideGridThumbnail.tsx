@@ -1,6 +1,6 @@
 import { Box, Card, Flex, Text, Tooltip } from '@sanity/ui'
 
-import { ErrorOutlineIcon } from '@sanity/icons'
+import { ErrorIcon } from '../common/errorIcon'
 import { MediaRefPreview } from '../previews/mediaRefPreview'
 import { MediaType } from '../../constants/enum'
 import type { ProjectSlideGridValue } from '../types/media'
@@ -11,8 +11,6 @@ interface ProjectSlideGridThumbnailProps {
   error: string | undefined
   onSelect: () => void
 }
-
-const ERROR_ICON_SIZE = 25
 
 export const ProjectSlideGridThumbnail = ({
   item,
@@ -83,15 +81,8 @@ export const ProjectSlideGridThumbnail = ({
                 </Text>
               </Box>
             }>
-            <Box
-              style={{
-                color: 'var(--card-badge-critical-icon-color)',
-                width: ERROR_ICON_SIZE,
-                height: ERROR_ICON_SIZE,
-              }}
-            >
-              <ErrorOutlineIcon width={ERROR_ICON_SIZE} height={ERROR_ICON_SIZE} />
-            </Box>
+            <ErrorIcon />
+
           </Tooltip>
         )}
       </Flex>

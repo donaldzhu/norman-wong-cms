@@ -1,8 +1,7 @@
-import { set } from 'sanity'
-
 import { DeviceType } from '../components/types/selectedWorks'
 import { Orientation } from '../constants/enum'
 import { getSlideGridKeyPath } from './projectSlide'
+import { set } from 'sanity'
 
 export type SlideAutoLayoutPreset = 'center' | 'justified'
 
@@ -14,7 +13,6 @@ type LayoutByCount = Record<MediaCount, Span[]>
 
 const toSpan = (start: number, end: number): Span => ({ start, end })
 
-//TODO: check
 const CENTER_LAYOUTS: { desktop: LayoutByCount; mobile: LayoutByCount } = {
   desktop: {
     1: [toSpan(10, 16)],

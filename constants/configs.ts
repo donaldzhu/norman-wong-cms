@@ -8,3 +8,5 @@ export enum TextLength {
   LONG = 1000,
   VERY_LONG = 2000,
 }
+
+export const ERROR_ICON_SIZE = 25

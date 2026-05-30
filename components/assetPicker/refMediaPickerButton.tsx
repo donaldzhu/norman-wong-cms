@@ -73,7 +73,7 @@ const RefMediaPickerButton = ({
   }
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       {assetRef ? (
         <RefMediaPickerPreview
           mediaType={mediaType}

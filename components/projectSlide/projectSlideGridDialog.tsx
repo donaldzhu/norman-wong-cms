@@ -3,20 +3,20 @@ import { useEffect, useMemo, useState, type ChangeEvent, type ReactElement } fro
 import { set, useFormValue, type ObjectInputProps } from 'sanity'
 
 import { Orientation } from '../../constants/enum'
-import type { ProjectSlideFormValue, ProjectSlideGridValue } from '../types/media'
+import type { ProjectSlideFormValue } from '../types/media'
 import { ProjectSlideGridInteraction } from './projectSlideGridInteraction'
 import { ProjectSlideGridPreview } from './projectSlideGridPreview'
 import { ProjectSlideGridThumbnail } from './projectSlideGridThumbnail'
 
 import * as changeCase from 'change-case'
-import { getSlideGridKeyPath, validateSpan } from '../../utils/projectSlide'
+import { getMediaGridSpanIssue, getSlideGridKeyPath } from '../../utils/projectSlide'
 import {
   buildAutoLayoutPatches,
   type SlideAutoLayoutPreset,
 } from '../../utils/projectSlideAutoLayout'
 import { DeviceType, GridSpan } from '../types/selectedWorks'
 
-//TODO: check
+
 interface ProjectSlideGridPlannerDialogProps {
   open: boolean
   onClose: () => void
@@ -54,13 +54,7 @@ export const ProjectSlideGridDialog = ({
     'mobileOrientation',
   ]) as Orientation | undefined
 
-  const getSpanIssue = (item: ProjectSlideGridValue) => {
-    const desktopIssue = validateSpan(item.desktopStart, item.desktopEnd, DeviceType.DESKTOP)
-    if (desktopIssue) return desktopIssue
-
-    const mobileIssue = validateSpan(item.mobileStart, item.mobileEnd, DeviceType.MOBILE, mobileOrientation)
-    if (mobileIssue) return mobileIssue
-  }
+  const orientationFormValue = mobileOrientation ?? Orientation.PORTRAIT
 
   const onToggleOrientation = (event: ChangeEvent<HTMLSelectElement>) =>
     onChange([set(event.currentTarget.value, ['mobileOrientation'])])
@@ -82,8 +76,6 @@ export const ProjectSlideGridDialog = ({
   const hasMedia = media.length > 0
 
   if (!open) return null
-
-  const orientationFormValue = mobileOrientation ?? Orientation.PORTRAIT
 
   const LEFT_COLUMN_WIDTH = 250
   const MEDIA_LIST_MAX_HEIGHT = 'calc(90vh - 18rem)'
@@ -127,14 +119,14 @@ export const ProjectSlideGridDialog = ({
             }}
           >
             {media.length === 0 ? <Text muted>This project contains no media.</Text> :
-              <Stack space={2} >
+              <Stack gap={2} >
                 {media.map(item =>
                   item._key && (
                     <ProjectSlideGridThumbnail
                       key={item._key}
                       item={item}
                       selected={item._key === activeMediaKey}
-                      error={getSpanIssue(item)}
+                      error={getMediaGridSpanIssue(item, orientationFormValue)}
                       onSelect={() => setActiveMediaKey(item._key)}
                     />
                   ),
@@ -142,8 +134,8 @@ export const ProjectSlideGridDialog = ({
               </Stack>
             }
           </Card>
-          <Stack space={3} style={{ flexShrink: 0, marginTop: 'auto' }}>
-            <Stack space={2}>
+          <Stack gap={5} style={{ flexShrink: 0, marginTop: 'auto' }}>
+            <Stack gap={3}>
               <Text size={1} weight="medium">
                 Auto Layout
               </Text>
@@ -174,7 +166,7 @@ export const ProjectSlideGridDialog = ({
                 />
               </Flex>
             </Stack>
-            <Stack space={2}>
+            <Stack gap={3}>
               <Text size={1} weight="medium">
                 Mobile Orientation
               </Text>
@@ -188,7 +180,10 @@ export const ProjectSlideGridDialog = ({
             </Stack>
           </Stack>
         </Flex>
-        <Stack space={4} flex={1} style={{ minWidth: 280 }} marginTop={4}>
+        <Stack gap={4} flex={1}>
+          <Text size={1} style={{ opacity: 0 }}>
+            EMPTY
+          </Text>
           <Flex gap={2} wrap="wrap">
             <Button
               text={changeCase.capitalCase(DeviceType.DESKTOP)}
@@ -207,7 +202,7 @@ export const ProjectSlideGridDialog = ({
           </Flex>
           {
             activeItem && activeMediaKey ? (
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Box
                   style={{
                     display: 'flex',

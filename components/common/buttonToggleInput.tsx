@@ -13,7 +13,7 @@ export const ButtonToggleInput = (props: StringInputProps<StringSchemaType>) => 
   }
 
   return (
-    <Inline space={2}>
+    <Inline gap={2}>
       {list.map(item => {
         const optionValue = typeof item === 'string' ? item : item.value
         const optionTitle = typeof item === 'string' ? item : (item.title ?? item.value)

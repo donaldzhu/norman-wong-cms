@@ -43,7 +43,7 @@ export const PreviewTemplate = ({
           <DocumentIcon style={{ width: 33, height: 21 }} />
         }
       </Box>
-      <Stack space={2} flex={1} style={{ minWidth: 0 }} >
+      <Stack gap={2} flex={1} style={{ minWidth: 0 }} >
         <Text size={1} textOverflow="ellipsis">
           {title}
         </Text>
