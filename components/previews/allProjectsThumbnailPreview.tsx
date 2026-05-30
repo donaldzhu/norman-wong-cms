@@ -1,10 +1,9 @@
 import * as changeCase from 'change-case'
 
+import { HideableOnMobile } from './hideableOnMobile'
 import type { MediaData } from '../types/media'
 import { PreviewProps } from 'sanity'
-import { PreviewTemplate } from './previewTemplate'
 import type { Size } from '../../constants/enum'
-import { Badge, Card, Flex } from '@sanity/ui'
 
 type ProjectSlidePreviewProps = PreviewProps & MediaData & {
   desktopSize?: Size
@@ -36,17 +35,10 @@ export const AllProjectSlidePreview = (props: PreviewProps) => {
   }] : undefined
 
   return (
-    <Card paddingRight={2}>
-      <Flex align="center">
-        <Flex flex={1} style={{ minWidth: 0 }}>
-          <PreviewTemplate data={data?.[0]} title={title} subtitle={subtitle} />
-        </Flex>
-        {hideOnMobile && (
-          <Badge tone="neutral" fontSize={1}>
-            Hidden on Mobile
-          </Badge>
-        )}
-      </Flex>
-    </Card>
+    <HideableOnMobile
+      data={data?.[0]}
+      title={title}
+      subtitle={subtitle}
+      hideOnMobile={hideOnMobile} />
   )
 }

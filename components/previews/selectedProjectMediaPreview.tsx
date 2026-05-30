@@ -1,28 +1,23 @@
-import type { AssetRef, MediaData } from '../types/media'
+import * as changeCase from 'change-case'
+
+import type { AssetRef } from '../types/media'
+import { HideableOnMobile } from './hideableOnMobile'
+import { MediaType } from '../../constants/enum'
 import { PreviewProps } from 'sanity'
-import { PreviewTemplate } from './previewTemplate'
-import type { MediaType } from '../../constants/enum'
 
 type SelectedProjectMediaPreviewProps = PreviewProps & {
-  mediaType: MediaType
+  mediaType?: MediaType
   image?: AssetRef
   video?: AssetRef
+  hideOnMobile?: boolean | undefined
 }
 
-export const SelectedProjectMediaPreview = (props: PreviewProps) => {
-  const {
-    mediaType,
-    image,
-    video,
-  } = props as SelectedProjectMediaPreviewProps
-
-  const mediaData: MediaData = {
-    mediaType,
-    image,
-    video,
-  }
-
-  return (
-    <PreviewTemplate data={mediaData} title={mediaType} />
-  )
-}
+export const SelectedProjectMediaPreview = ({
+  hideOnMobile,
+  mediaType,
+  ...props
+}: SelectedProjectMediaPreviewProps) =>
+  <HideableOnMobile
+    data={{ ...props, mediaType: mediaType ?? MediaType.IMAGE }}
+    title={changeCase.capitalCase(mediaType ?? 'Unknown')}
+    hideOnMobile={hideOnMobile} />

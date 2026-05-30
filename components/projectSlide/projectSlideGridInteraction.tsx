@@ -1,3 +1,4 @@
+import { Box, Text } from '@sanity/ui'
 import { DESKTOP_COLUMN_COUNT, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from './configs'
 import { DeviceType, GridSpan } from '../types/selectedWorks'
 import {
@@ -5,7 +6,6 @@ import {
   getSpanFromSingleCell
 } from '../../utils/projectSlide'
 
-import { Box } from '@sanity/ui'
 import { Orientation } from '../../constants/enum'
 import { getGridStyle } from '../../utils/projectSlide'
 import { useState } from 'react'
@@ -39,6 +39,9 @@ export const ProjectSlideGridInteraction = ({
 
   const cellCount = tab === DeviceType.DESKTOP ? DESKTOP_COLUMN_COUNT : orientation === Orientation.LANDSCAPE ? MOBILE_LANDSCAPE_COLUMN_COUNT : MOBILE_PORTRAIT_ROW_COUNT
 
+  const DESKTOP_COLUMNS_TO_HIGHLIGHT = [1, 6, 7, 12, 13, 18, 19, 24]
+  const MOBILE_COLUMNS_TO_HIGHLIGHT = [1, 6, 7, 12]
+  const shouldHighlightColumn = (col: number) => tab === DeviceType.DESKTOP ? DESKTOP_COLUMNS_TO_HIGHLIGHT.includes(col) : MOBILE_COLUMNS_TO_HIGHLIGHT.includes(col)
   return (
     <Box style={{
       ...getGridStyle(tab, orientation),
@@ -57,6 +60,9 @@ export const ProjectSlideGridInteraction = ({
             borderRadius: 2,
             cursor: 'pointer',
             background: 'transparent',
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
           }}
         >
           <span
@@ -69,7 +75,9 @@ export const ProjectSlideGridInteraction = ({
               pointerEvents: 'none',
             }}
           />
-
+          <Box padding={2}>
+            <Text size={1} muted>{col}</Text>
+          </Box>
         </button>
         )}
     </Box>

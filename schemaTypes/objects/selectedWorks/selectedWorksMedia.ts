@@ -23,6 +23,7 @@ export const selectedWorksMedia = defineType({
       mediaType: 'mediaType',
       image: 'image',
       video: 'video',
+      hideOnMobile: 'hideOnMobile',
     },
   },
 })

@@ -5,7 +5,10 @@ import { set } from 'sanity'
 
 export type SlideAutoLayoutPreset = 'center' | 'justified'
 
-type Span = { start: number; end: number }
+interface Span {
+  start: number
+  end: number
+}
 
 type MediaCount = 1 | 2 | 3 | 4
 

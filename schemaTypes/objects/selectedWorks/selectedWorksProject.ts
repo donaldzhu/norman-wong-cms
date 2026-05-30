@@ -18,11 +18,13 @@ export const selectedWorksProject = defineType({
       type: 'reference',
       to: [{ type: 'project' }],
       weak: true,
+      validation: rule => rule.required(),
     }),
     defineField({
       name: 'media',
       type: 'array',
       of: [{ type: 'selectedWorksMedia' }],
+      validation: rule => rule.required(),
     }),
   ],
   preview: {

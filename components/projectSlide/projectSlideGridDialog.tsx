@@ -29,7 +29,7 @@ export const ProjectSlideGridDialog = ({
   inputProps,
 }: ProjectSlideGridPlannerDialogProps): ReactElement | null => {
   const { value, onChange } = inputProps
-  const media = value?.media ?? []
+  const media = useMemo(() => value?.media ?? [], [value?.media])
 
   const [tab, setTab] = useState<DeviceType>(DeviceType.DESKTOP)
   const [activeMediaKey, setActiveMediaKey] = useState<string | null>(null)

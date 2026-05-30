@@ -5,5 +5,5 @@ export const allProjectsStructure = (S: StructureBuilder) =>
   S.listItem()
     .title('All projects')
     .icon(ListIcon)
-    .id('singleton-all-projects')
+    .id('all-projects')
     .child(S.document().schemaType('allProjects').documentId('allProjects'))
