@@ -19,6 +19,8 @@ export default defineConfig({
     disableTextTrackConfig: true
   })],
 
+  tools: prev => prev.filter((tool) => tool.name !== 'vision' && tool.name !== 'releases'),
+
   schema: {
     types: schemaTypes,
   },
