@@ -40,10 +40,10 @@ export const project = defineType({
       of: [{ type: 'projectSlide' }],
     }),
     defineField({
-      name: 'allProjectsThumbnails',
-      title: '"All Projects" Thumbnails',
+      name: 'selectedWorksThumbnails',
+      title: '"Selected Works" Thumbnails',
       type: 'array',
-      of: [{ type: 'allProjectsThumbnail' }],
+      of: [{ type: 'selectedWorksThumbnail' }],
       validation: rule => rule
         .min(1) //TODO
         .max(10)

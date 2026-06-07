@@ -1,11 +1,11 @@
 import { defineArrayMember, defineField, defineType } from 'sanity'
 
-import { SelectedWorksGridButton } from '../../../components/selectedWorks/selectedWorksGridButton'
+import { AllProjectsGridButton } from '../../../components/allProjects/allProjectsGridButton'
 import { UnnestedField } from '../../../components/common/unnestedField'
 
-export const selectedWorksLayout = defineType({
-  name: 'selectedWorksLayout',
-  title: 'Selected works layout',
+export const allProjectsLayout = defineType({
+  name: 'allProjectsLayout',
+  title: 'All projects layout',
   type: 'object',
   fields: [
     defineField({
@@ -25,7 +25,7 @@ export const selectedWorksLayout = defineType({
     }),
   ],
   components: {
-    input: SelectedWorksGridButton,
+    input: AllProjectsGridButton,
     field: UnnestedField,
   },
 })

@@ -1,5 +1,5 @@
 import { Box } from '@sanity/ui'
-import { DeviceType } from '../types/selectedWorks'
+import { DeviceType } from '../types/gridLayout'
 import { Orientation } from '../../constants/enum'
 import { ProjectSlideGridMedia } from './projectSlideGridMedia'
 import type { ProjectSlideGridValue } from '../types/media'

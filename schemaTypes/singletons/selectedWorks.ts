@@ -1,11 +1,11 @@
 import { defineField, defineType } from 'sanity'
 
-import { StarIcon } from '@sanity/icons'
+import { ListIcon } from '@sanity/icons'
 
 export const selectedWorks = defineType({
   name: 'selectedWorks',
   type: 'document',
-  icon: StarIcon,
+  icon: ListIcon,
   fields: [
     defineField({
       name: 'title',
@@ -15,17 +15,14 @@ export const selectedWorks = defineType({
     defineField({
       name: 'projects',
       type: 'array',
-      of: [{ type: 'selectedWorksProject' }],
-    }),
-    defineField({
-      name: 'desktopLayout',
-      type: 'selectedWorksLayout',
-      options: { min: 10, max: 12 },
-    }),
-    defineField({
-      name: 'mobileLayout',
-      type: 'selectedWorksLayout',
-      options: { min: 2, max: 4 },
+      description: 'Selected works in order of appearance.',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'project' }],
+        },
+      ],
+      validation: rule => rule.min(1)
     }),
   ],
 })

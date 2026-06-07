@@ -14,7 +14,7 @@ import {
   buildAutoLayoutPatches,
   type SlideAutoLayoutPreset,
 } from '../../utils/projectSlideAutoLayout'
-import { DeviceType, GridSpan } from '../types/selectedWorks'
+import { DeviceType, GridSpan } from '../types/gridLayout'
 
 
 interface ProjectSlideGridPlannerDialogProps {

@@ -5,21 +5,21 @@ import { createContext, type ReactNode } from 'react'
 
 type ProjectRefValue = Ref | undefined
 
-export const SelectedWorksProjectContext = createContext<ProjectRefValue>(undefined)
+export const AllProjectsProjectContext = createContext<ProjectRefValue>(undefined)
 
-const SelectedWorksContextProvider = ({
+const AllProjectsContextProvider = ({
   projectRef,
   children,
 }: {
   projectRef: ProjectRefValue
   children: ReactNode
 }) => (
-  <SelectedWorksProjectContext.Provider value={projectRef}>
+  <AllProjectsProjectContext.Provider value={projectRef}>
     {children}
-  </SelectedWorksProjectContext.Provider>
+  </AllProjectsProjectContext.Provider>
 )
 
-export const SelectedWorksProjectInput = (
+export const AllProjectsProjectInput = (
   props: ObjectInputProps<{ project?: Ref }>,
 ) => {
   const { path, renderDefault, value } = props
@@ -28,8 +28,8 @@ export const SelectedWorksProjectInput = (
   const projectRef = projectFromForm ?? value?.project
 
   return (
-    <SelectedWorksContextProvider projectRef={projectRef}>
+    <AllProjectsContextProvider projectRef={projectRef}>
       {renderDefault(props)}
-    </SelectedWorksContextProvider>
+    </AllProjectsContextProvider>
   )
 }

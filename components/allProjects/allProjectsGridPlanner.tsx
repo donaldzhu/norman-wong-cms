@@ -10,7 +10,7 @@ import _ from 'lodash'
 import { useClickAway } from '@uidotdev/usehooks'
 import { useMemo } from 'react'
 
-export interface SelectedWorksLayoutFormValue {
+export interface AllProjectsLayoutFormValue {
   rowSettings?: number[]
 }
 
@@ -30,7 +30,7 @@ interface ProjectMedia {
   hideOnMobile?: boolean
 }
 
-export interface SelectedWorksProject {
+export interface AllProjectsProject {
   _key?: string
   project?: Ref
   media?: ProjectMedia[]
@@ -64,7 +64,7 @@ export const autoPopulateRowSettings = (
 }
 
 export const flattenProjectList = (
-  projects: SelectedWorksProject[] = [],
+  projects: AllProjectsProject[] = [],
   isMobile: boolean = false,
 ) => {
   const out: ProjectListItem[] = []
@@ -184,23 +184,23 @@ const RowWidthStepper = ({ rowIndex, width, range, onChange }: RowWidthStepperPr
   </Flex>
 )
 
-interface SelectedWorksGridPlannerDialogProps {
+interface AllProjectsGridPlannerDialogProps {
   open: boolean
   onClose: () => void
-  inputProps: ObjectInputProps<SelectedWorksLayoutFormValue>
+  inputProps: ObjectInputProps<AllProjectsLayoutFormValue>
 }
 
-export const SelectedWorksGridPlannerDialog = ({
+export const AllProjectsGridPlannerDialog = ({
   open,
   onClose,
   inputProps,
-}: SelectedWorksGridPlannerDialogProps) => {
+}: AllProjectsGridPlannerDialogProps) => {
   const { value, onChange, schemaType } = inputProps
 
   const range = useMemo<CellRange>(() => getCellRange(schemaType?.options), [schemaType?.options])
   const isMobile = range.min < 10
 
-  const projects = useFormValue(['projects']) as SelectedWorksProject[] | undefined
+  const projects = useFormValue(['projects']) as AllProjectsProject[] | undefined
   const rowSettings = value?.rowSettings
   const projectList = useMemo(() => flattenProjectList(projects, isMobile), [projects, isMobile])
 
@@ -224,7 +224,7 @@ export const SelectedWorksGridPlannerDialog = ({
   return (
     <Dialog
       header={`${isMobile ? 'Mobile' : 'Desktop'} Grid planner`}
-      id="selected-works-grid-planner"
+      id="all-projects-grid-planner"
       open
       onClose={onClose}
       width={3}

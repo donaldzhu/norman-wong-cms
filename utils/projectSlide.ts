@@ -2,7 +2,7 @@ import * as changeCase from 'change-case'
 
 import { DESKTOP_COLUMN_COUNT, GRID_GAP, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from '../components/projectSlide/configs'
 
-import { DeviceType } from '../components/types/selectedWorks'
+import { DeviceType } from '../components/types/gridLayout'
 import { Orientation } from '../constants/enum'
 import type { ProjectSlideGridValue } from '../components/types/media'
 

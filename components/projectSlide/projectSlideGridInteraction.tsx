@@ -1,6 +1,6 @@
 import { Box, Text } from '@sanity/ui'
 import { DESKTOP_COLUMN_COUNT, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from './configs'
-import { DeviceType, GridSpan } from '../types/selectedWorks'
+import { DeviceType, GridSpan } from '../types/gridLayout'
 import {
   getSpanFromCells,
   getSpanFromSingleCell

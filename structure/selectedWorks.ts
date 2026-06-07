@@ -1,10 +1,10 @@
-import { StarIcon } from '@sanity/icons'
+import { ListIcon } from '@sanity/icons'
 import type { StructureBuilder } from 'sanity/structure'
 
 export const selectedWorksStructure = (S: StructureBuilder) =>
   S.listItem()
     .title('Selected Works')
-    .icon(StarIcon)
+    .icon(ListIcon)
     .id('selected-works')
     .child(
       S.document()

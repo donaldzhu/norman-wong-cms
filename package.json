@@ -7,6 +7,10 @@
   "scripts": {
     "migrate:remove-hidden-from-projects": "sanity migrations run remove-hidden-from-projects",
     "migrate:remove-hidden-from-projects:apply": "sanity migrations run remove-hidden-from-projects --no-dry-run --no-confirm",
+    "migrate:swap-selected-all-naming": "sanity migrations run swap-selected-all-naming",
+    "migrate:swap-selected-all-naming:apply": "sanity migrations run swap-selected-all-naming --no-dry-run --no-confirm",
+    "migrate:restore-selected-works-singleton": "sanity migrations run restore-selected-works-singleton",
+    "migrate:restore-selected-works-singleton:apply": "sanity migrations run restore-selected-works-singleton --no-dry-run --no-confirm",
     "build": "sanity build",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",

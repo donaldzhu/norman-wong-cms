@@ -1,5 +1,5 @@
 import { Box } from '@sanity/ui'
-import { DeviceType } from '../types/selectedWorks'
+import { DeviceType } from '../types/gridLayout'
 import { MediaRefPreview } from '../previews/mediaRefPreview'
 import { MediaType } from '../../constants/enum'
 import { Orientation } from '../../constants/enum'

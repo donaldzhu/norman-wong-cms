@@ -1,17 +1,17 @@
 import { defineField, defineType } from 'sanity'
 
-import { SelectedProjectMediaPreview } from '../../../components/previews/selectedProjectMediaPreview'
-import { SelectedWorksProjectContext } from '../../../components/selectedWorks/selectedWorksContextProvider'
+import { AllProjectsProjectMediaPreview } from '../../../components/previews/allProjectsProjectMediaPreview'
+import { AllProjectsProjectContext } from '../../../components/allProjects/allProjectsContextProvider'
 import { createToggleMediaFields } from '../../../utils/field'
 
-export const selectedWorksMedia = defineType({
-  name: 'selectedWorksMedia',
+export const allProjectsMedia = defineType({
+  name: 'allProjectsMedia',
   type: 'object',
   components: {
-    preview: SelectedProjectMediaPreview,
+    preview: AllProjectsProjectMediaPreview,
   },
   fields: [
-    ...createToggleMediaFields(SelectedWorksProjectContext),
+    ...createToggleMediaFields(AllProjectsProjectContext),
     defineField({
       name: 'hideOnMobile',
       type: 'boolean',

@@ -1,4 +1,4 @@
-import { DeviceType } from '../components/types/selectedWorks'
+import { DeviceType } from '../components/types/gridLayout'
 import { Orientation } from '../constants/enum'
 import { getSlideGridKeyPath } from './projectSlide'
 import { set } from 'sanity'

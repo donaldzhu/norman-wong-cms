@@ -7,20 +7,20 @@ import {
   flattenProjectList,
   autoPopulateRowSettings,
   getCellRange,
-  SelectedWorksGridPlannerDialog,
-  type SelectedWorksLayoutFormValue,
-  type SelectedWorksProject,
-} from './selectedWorksGridPlanner'
+  AllProjectsGridPlannerDialog,
+  type AllProjectsLayoutFormValue,
+  type AllProjectsProject,
+} from './allProjectsGridPlanner'
 
-export const SelectedWorksGridButton = (
-  props: ObjectInputProps<SelectedWorksLayoutFormValue>,
+export const AllProjectsGridButton = (
+  props: ObjectInputProps<AllProjectsLayoutFormValue>,
 ): ReactElement => {
   const { value, onChange, schemaType } = props
 
   const range = useMemo(() => getCellRange(schemaType?.options), [schemaType?.options])
 
   const projects = useFormValue(['projects']) as
-    | SelectedWorksProject[]
+    | AllProjectsProject[]
     | undefined
 
   const rowSettings = value?.rowSettings
@@ -44,7 +44,7 @@ export const SelectedWorksGridButton = (
         style={{ cursor: 'pointer' }}
         icon={ExpandIcon}
       />
-      <SelectedWorksGridPlannerDialog
+      <AllProjectsGridPlannerDialog
         open={isOpen}
         onClose={() => setIsOpen(false)}
         inputProps={props}

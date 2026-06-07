@@ -1,16 +1,16 @@
 import { defineField, defineType } from 'sanity'
 
 import { ProjectsIcon } from '@sanity/icons'
-import { SelectedProjectRefPreview } from '../../../components/previews/selectedProjectRefPreview'
-import { SelectedWorksProjectInput } from '../../../components/selectedWorks/selectedWorksContextProvider'
+import { AllProjectsProjectRefPreview } from '../../../components/previews/allProjectsProjectRefPreview'
+import { AllProjectsProjectInput } from '../../../components/allProjects/allProjectsContextProvider'
 
-export const selectedWorksProject = defineType({
-  name: 'selectedWorksProject',
+export const allProjectsProject = defineType({
+  name: 'allProjectsProject',
   type: 'object',
   icon: ProjectsIcon,
   components: {
-    preview: SelectedProjectRefPreview,
-    input: SelectedWorksProjectInput,
+    preview: AllProjectsProjectRefPreview,
+    input: AllProjectsProjectInput,
   },
   fields: [
     defineField({
@@ -23,7 +23,7 @@ export const selectedWorksProject = defineType({
     defineField({
       name: 'media',
       type: 'array',
-      of: [{ type: 'selectedWorksMedia' }],
+      of: [{ type: 'allProjectsMedia' }],
       validation: rule => rule.required(),
     }),
   ],

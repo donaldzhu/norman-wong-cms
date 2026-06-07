@@ -5,18 +5,18 @@ import { HideableOnMobile } from './hideableOnMobile'
 import { MediaType } from '../../constants/enum'
 import { PreviewProps } from 'sanity'
 
-type SelectedProjectMediaPreviewProps = PreviewProps & {
+type AllProjectsProjectMediaPreviewProps = PreviewProps & {
   mediaType?: MediaType
   image?: AssetRef
   video?: AssetRef
   hideOnMobile?: boolean | undefined
 }
 
-export const SelectedProjectMediaPreview = ({
+export const AllProjectsProjectMediaPreview = ({
   hideOnMobile,
   mediaType,
   ...props
-}: SelectedProjectMediaPreviewProps) =>
+}: AllProjectsProjectMediaPreviewProps) =>
   <HideableOnMobile
     data={{ ...props, mediaType: mediaType ?? MediaType.IMAGE }}
     title={changeCase.capitalCase(mediaType ?? 'Unknown')}

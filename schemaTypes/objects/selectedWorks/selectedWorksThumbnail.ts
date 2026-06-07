@@ -1,16 +1,16 @@
 import { MediaType, Size } from '../../../constants/enum'
 import { defineField, defineType } from 'sanity'
 
-import { AllProjectSlidePreview } from '../../../components/previews/allProjectsThumbnailPreview'
+import { SelectedWorksThumbnailPreview } from '../../../components/previews/selectedWorksThumbnailPreview'
 import { ButtonToggleInput } from '../../../components/common/buttonToggleInput'
 import { createToggleMediaFields } from '../../../utils/field'
 
 const SIZE_FIELDSET = 'sizes'
-export const allProjectsThumbnail = defineType({
-  name: 'allProjectsThumbnail',
+export const selectedWorksThumbnail = defineType({
+  name: 'selectedWorksThumbnail',
   title: 'Image or file',
   type: 'object',
-  components: { preview: AllProjectSlidePreview },
+  components: { preview: SelectedWorksThumbnailPreview },
   fieldsets: [
     {
       name: SIZE_FIELDSET,

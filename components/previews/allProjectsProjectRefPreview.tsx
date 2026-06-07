@@ -3,16 +3,16 @@ import { PreviewProps } from 'sanity'
 import { PreviewTemplate } from './previewTemplate'
 import { getMediaCountSubtitle } from '../../utils/preview'
 
-type SelectedProjectRefPreviewProps = PreviewProps & {
+type AllProjectsProjectRefPreviewProps = PreviewProps & {
   title?: string
   media: MediaData[]
 }
 
-export const SelectedProjectRefPreview = (props: PreviewProps) => {
+export const AllProjectsProjectRefPreview = (props: PreviewProps) => {
   const {
     title,
     media,
-  } = props as SelectedProjectRefPreviewProps
+  } = props as AllProjectsProjectRefPreviewProps
 
   return (
     <PreviewTemplate data={media?.[0]} title={title} subtitle={getMediaCountSubtitle(media)} />

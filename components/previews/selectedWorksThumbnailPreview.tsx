@@ -5,13 +5,13 @@ import type { MediaData } from '../types/media'
 import { PreviewProps } from 'sanity'
 import type { Size } from '../../constants/enum'
 
-type ProjectSlidePreviewProps = PreviewProps & MediaData & {
+type SelectedWorksThumbnailPreviewProps = PreviewProps & MediaData & {
   desktopSize?: Size
   mobileSize?: Size
   hideOnMobile?: boolean
 }
 
-export const AllProjectSlidePreview = (props: PreviewProps) => {
+export const SelectedWorksThumbnailPreview = (props: PreviewProps) => {
   const {
     desktopSize,
     mobileSize,
@@ -19,7 +19,7 @@ export const AllProjectSlidePreview = (props: PreviewProps) => {
     mediaType,
     image,
     video,
-  } = props as ProjectSlidePreviewProps
+  } = props as SelectedWorksThumbnailPreviewProps
 
   const title = changeCase.capitalCase(mediaType ?? 'Unknown')
 
