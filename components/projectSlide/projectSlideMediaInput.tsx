@@ -14,6 +14,12 @@ export const ProjectSlideMediaInput = (
 const StyledStack = styled(Stack)`
   > div[data-ui="Stack"]:first-child
   > div[data-ui="Stack"]:nth-child(2)
+  > div > div > fieldset > div[data-ui="Box"],
+  > div[data-ui="Stack"]:first-child
+  > div[data-ui="Stack"]:nth-child(5)
+  > div > div > fieldset > div[data-ui="Box"],
+  > div[data-ui="Stack"]:first-child
+  > div[data-ui="Stack"]:nth-child(6)
   > div > div > fieldset > div[data-ui="Box"]{
     padding: 0 !important;
     border: none !important;

@@ -47,9 +47,11 @@ export const PreviewTemplate = ({
         <Text size={1} textOverflow="ellipsis">
           {title}
         </Text>
-        <Text size={1} muted textOverflow="ellipsis">
-          {subtitle}
-        </Text>
+        {subtitle && (
+          <Text size={1} muted textOverflow="ellipsis">
+            {subtitle}
+          </Text>
+        )}
       </Stack>
     </Flex>
   )

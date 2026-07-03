@@ -1,9 +1,9 @@
 import { Box } from '@sanity/ui'
 import { DeviceType } from '../types/gridLayout'
 import { MediaRefPreview } from '../previews/mediaRefPreview'
-import { MediaType } from '../../constants/enum'
-import { Orientation } from '../../constants/enum'
+import { MediaType, Orientation } from '../../constants/enum'
 import type { ProjectSlideGridValue } from '../types/media'
+import { getProjectSlideMediaForDevice } from '../../utils/projectSlide'
 
 interface ProjectSlideGridMediaProps {
   item: ProjectSlideGridValue
@@ -12,9 +12,11 @@ interface ProjectSlideGridMediaProps {
 }
 
 export const ProjectSlideGridMedia = ({ item, tab, orientation }: ProjectSlideGridMediaProps) => {
-  const isVideo = item.mediaType === MediaType.VIDEO
-  const mediaWithRef = isVideo ? item.video : item.image
-  if (!mediaWithRef?.asset?._ref) return null
+  const resolved = getProjectSlideMediaForDevice(item, tab)
+  if (!resolved?.mediaWithRef?.asset?._ref) return null
+
+  const { mediaType, mediaWithRef } = resolved
+  const isVideo = mediaType === MediaType.VIDEO
 
   const isMobilePortrait = tab === DeviceType.MOBILE && orientation === Orientation.PORTRAIT
   return (
@@ -28,7 +30,7 @@ export const ProjectSlideGridMedia = ({ item, tab, orientation }: ProjectSlideGr
       }}
     >
       <MediaRefPreview
-        mediaType={isVideo ? MediaType.VIDEO : MediaType.IMAGE}
+        mediaType={mediaType}
         mediaWithRef={mediaWithRef}
         sanityImageWidth={800}
         showSpinner={isVideo}

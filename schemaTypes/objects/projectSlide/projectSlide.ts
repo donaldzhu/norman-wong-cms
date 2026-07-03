@@ -45,18 +45,18 @@ export const projectSlide = defineType({
       name: 'description',
       type: 'string',
       validation: rule => rule.max(200),
+      hidden: () => true,
     }),
     defineField({
       name: 'year',
       type: 'number',
       validation: rule => rule.integer(),
+      hidden: () => true,
     }),
   ],
   preview: {
     select: {
-      description: 'description',
-      year: 'year',
-      slideMedia: 'media',
+      media: 'media',
     },
   },
 })

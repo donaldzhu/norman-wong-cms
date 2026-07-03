@@ -8,8 +8,13 @@ import { defineField, type ImageRule, type Rule } from 'sanity'
 import { SLIDE_FIELD_ID } from '../constants/configs'
 import type { Context } from 'react'
 
-export const createToggleButtonField = () => defineField({
-  name: 'mediaType',
+export const createToggleButtonField = (options?: {
+  name?: string
+  title?: string
+  required?: boolean
+}) => defineField({
+  name: options?.name ?? 'mediaType',
+  title: options?.title,
   type: 'string',
   initialValue: MediaType.IMAGE,
   components: { input: ButtonToggleInput },

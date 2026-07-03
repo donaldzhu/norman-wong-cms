@@ -33,6 +33,9 @@ export interface ProjectSlideGridValue {
   mediaType?: MediaType
   image?: AssetRef
   video?: AssetRef
+  mobileMediaType?: MediaType
+  mobileImage?: AssetRef
+  mobileVideo?: AssetRef
   desktopStart?: number
   desktopEnd?: number
   mobileStart?: number

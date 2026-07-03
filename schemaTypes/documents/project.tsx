@@ -59,6 +59,7 @@ export const project = defineType({
 
           return true
         }),
+      hidden: true,
     }),
   ],
   // TODO: other preview selects should follow this

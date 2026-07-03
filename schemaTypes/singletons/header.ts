@@ -30,6 +30,7 @@ export const header = defineType({
       type: 'string',
       validation: rule => rule.required().max(TextLength.TINY),
       group: 'desktop',
+      hidden: true,
     }),
     defineField({
       name: 'selectedWorksDisplayTextDesktop',
@@ -58,6 +59,7 @@ export const header = defineType({
       type: 'string',
       validation: rule => rule.required().max(TextLength.TINY),
       group: 'mobile',
+      hidden: true,
     }),
     defineField({
       name: 'selectedWorksDisplayTextMobile',

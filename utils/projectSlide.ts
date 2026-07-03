@@ -3,10 +3,48 @@ import * as changeCase from 'change-case'
 import { DESKTOP_COLUMN_COUNT, GRID_GAP, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from '../components/projectSlide/configs'
 
 import { DeviceType } from '../components/types/gridLayout'
-import { Orientation } from '../constants/enum'
-import type { ProjectSlideGridValue } from '../components/types/media'
+import { MediaType, Orientation } from '../constants/enum'
+import type { AssetRef, ProjectSlideGridValue } from '../components/types/media'
 
 export const GRID_SETTINGS_INCOMPLETE_MESSAGE = 'Grid settings incomplete'
+
+type SlideMediaItem = Pick<
+  ProjectSlideGridValue,
+  'mediaType' | 'image' | 'video' | 'mobileMediaType' | 'mobileImage' | 'mobileVideo'
+>
+
+export const getProjectSlideMediaForDevice = (
+  item: SlideMediaItem,
+  deviceType: DeviceType,
+): { mediaType: MediaType; mediaWithRef: AssetRef } | null => {
+  if (deviceType === DeviceType.DESKTOP) {
+    const isVideo = item.mediaType === MediaType.VIDEO
+    const mediaWithRef = isVideo ? item.video : item.image
+    if (!mediaWithRef?.asset?._ref) return null
+    return {
+      mediaType: isVideo ? MediaType.VIDEO : MediaType.IMAGE,
+      mediaWithRef,
+    }
+  }
+
+  const mobileMediaType = item.mobileMediaType ?? item.mediaType ?? MediaType.IMAGE
+  const isMobileVideo = mobileMediaType === MediaType.VIDEO
+
+  if (isMobileVideo && item.mobileVideo?.asset?._ref) {
+    return { mediaType: MediaType.VIDEO, mediaWithRef: item.mobileVideo }
+  }
+  if (!isMobileVideo && item.mobileImage?.asset?._ref) {
+    return { mediaType: MediaType.IMAGE, mediaWithRef: item.mobileImage }
+  }
+
+  const isVideo = item.mediaType === MediaType.VIDEO
+  const mediaWithRef = isVideo ? item.video : item.image
+  if (!mediaWithRef?.asset?._ref) return null
+  return {
+    mediaType: isVideo ? MediaType.VIDEO : MediaType.IMAGE,
+    mediaWithRef,
+  }
+}
 
 export const getSpanFromCells = (a: number, b: number) => {
   const lo = Math.min(a, b)

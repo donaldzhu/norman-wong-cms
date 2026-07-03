@@ -1,3 +1,4 @@
+import { createToggleButtonField, createToggleMediaFields } from '../../../utils/field'
 import { defineField, defineType } from 'sanity'
 
 import { ImageFieldWrapper } from '../../../components/common/imageFIeldWrapper'
@@ -5,7 +6,6 @@ import { MediaType } from '../../../constants/enum'
 import { ProjectSlideMediaInput } from '../../../components/projectSlide/projectSlideMediaInput'
 import { ProjectSlidePreview } from '../../../components/previews/projectSlidePreview'
 import { ProjectsIcon } from '@sanity/icons'
-import { createToggleButtonField } from '../../../utils/field'
 import { mediaAssetSource } from 'sanity-plugin-media'
 
 export const projectSlideMedia = defineType({
@@ -17,23 +17,23 @@ export const projectSlideMedia = defineType({
     preview: ProjectSlidePreview,
   },
   fields: [
-    createToggleButtonField(),
+    ...createToggleMediaFields(),
+    createToggleButtonField({ name: 'mobileMediaType' }),
     defineField({
-      name: MediaType.IMAGE,
+      name: 'mobileImage',
       type: 'image',
       options: {
         sources: [mediaAssetSource],
       },
-      hidden: ({ parent }) => parent?.mediaType !== MediaType.IMAGE,
+      hidden: ({ parent }) => parent?.mobileMediaType !== MediaType.IMAGE,
       components: {
         input: ImageFieldWrapper,
       },
-      // TODO: validate
     }),
     defineField({
-      name: MediaType.VIDEO,
+      name: 'mobileVideo',
       type: 'mux.video',
-      hidden: ({ parent }) => parent?.mediaType !== MediaType.VIDEO,
+      hidden: ({ parent }) => parent?.mobileMediaType !== MediaType.VIDEO,
     }),
     defineField({
       name: 'desktopStart',

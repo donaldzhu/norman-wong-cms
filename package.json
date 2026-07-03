@@ -11,6 +11,9 @@
     "migrate:swap-selected-all-naming:apply": "sanity migrations run swap-selected-all-naming --no-dry-run --no-confirm",
     "migrate:restore-selected-works-singleton": "sanity migrations run restore-selected-works-singleton",
     "migrate:restore-selected-works-singleton:apply": "sanity migrations run restore-selected-works-singleton --no-dry-run --no-confirm",
+    "migrate:set-mobile-media-type-default": "sanity migrations run set-mobile-media-type-default",
+    "migrate:set-mobile-media-type-default:apply": "sanity migrations run set-mobile-media-type-default --no-dry-run --no-confirm",
+
     "build": "sanity build",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
@@ -22,12 +25,12 @@
   ],
   "dependencies": {
     "@sanity/image-url": "^2.0.3",
-    "@sanity/vision": "^5.30.0",
+    "@sanity/vision": "^5.31.1",
     "@uidotdev/usehooks": "^2.4.1",
     "change-case": "^5.4.4",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "sanity": "^5.30.0",
+    "sanity": "^5.31.1",
     "sanity-plugin-media": "^4.2.0",
     "sanity-plugin-mux-input": "^2.17.0",
     "styled-components": "^6.1.18"
