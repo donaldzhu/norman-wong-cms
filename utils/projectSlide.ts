@@ -13,6 +13,15 @@ type SlideMediaItem = Pick<
   'mediaType' | 'image' | 'video' | 'mobileMediaType' | 'mobileImage' | 'mobileVideo'
 >
 
+type DesktopMediaItem = Pick<ProjectSlideGridValue, 'mediaType' | 'image' | 'video'>
+
+export const isDesktopMediaUnset = (item?: unknown) => {
+  const parent = item as DesktopMediaItem | undefined
+  const isVideo = parent?.mediaType === MediaType.VIDEO
+  const mediaWithRef = isVideo ? parent?.video : parent?.image
+  return !mediaWithRef?.asset?._ref
+}
+
 export const getProjectSlideMediaForDevice = (
   item: SlideMediaItem,
   deviceType: DeviceType,

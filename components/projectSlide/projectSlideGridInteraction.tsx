@@ -40,9 +40,9 @@ export const ProjectSlideGridInteraction = ({
     const columnCount = tab === DeviceType.DESKTOP ? DESKTOP_COLUMN_COUNT : MOBILE_LANDSCAPE_COLUMN_COUNT
     const halfColumnCount = columnCount / 2
     if (col <= halfColumnCount) {
-      return `-${halfColumnCount - col}`
+      return `-${halfColumnCount - col + 1}`
     }
-    return `+${col - halfColumnCount - 1}`
+    return `+${col - halfColumnCount}`
   }
   return (
     <Box style={{

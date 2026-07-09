@@ -44,21 +44,21 @@ export const project = defineType({
       title: '"Selected Works" Thumbnails',
       type: 'array',
       of: [{ type: 'selectedWorksThumbnail' }],
-      validation: rule => rule
-        .min(1) //TODO
-        .max(10)
-        .custom(thumbnails => {
-          if (!thumbnails?.length) return true
-
-          const showingOnMobileCount = (thumbnails as { hideOnMobile?: boolean }[]).filter(
-            thumbnail => !thumbnail.hideOnMobile,
-          ).length
-
-          if (showingOnMobileCount < 5) return 'Must have at least 5 thumbnails showing on mobile.'
-          if (showingOnMobileCount > 7) return 'Must have at most 7 thumbnails showing on mobile.'
-
-          return true
-        }),
+      /*  validation: rule => rule
+         .min(1) //TODO
+         .max(10)
+         .custom(thumbnails => {
+           if (!thumbnails?.length) return true
+ 
+           const showingOnMobileCount = (thumbnails as { hideOnMobile?: boolean }[]).filter(
+             thumbnail => !thumbnail.hideOnMobile,
+           ).length
+ 
+           if (showingOnMobileCount < 5) return 'Must have at least 5 thumbnails showing on mobile.'
+           if (showingOnMobileCount > 7) return 'Must have at most 7 thumbnails showing on mobile.'
+ 
+           return true
+         }), */
       hidden: true,
     }),
   ],
