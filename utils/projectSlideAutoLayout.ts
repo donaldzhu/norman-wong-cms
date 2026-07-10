@@ -46,7 +46,7 @@ const JUSTIFIED_LAYOUTS: { desktop: LayoutByCount; mobile: LayoutByCount } = {
   },
 }
 
-export const SLIDE_AUTO_LAYOUTS: Record<
+const SLIDE_AUTO_LAYOUTS: Record<
   SlideAutoLayoutPreset,
   { desktop: LayoutByCount; mobile: LayoutByCount }
 > = {

@@ -15,7 +15,7 @@ export const HideableOnMobile = ({ data, title, subtitle, hideOnMobile }: {
         <PreviewTemplate data={data} title={title} subtitle={subtitle} />
       </Flex>
       {hideOnMobile && (
-        <Badge tone="neutral" fontSize={1}>
+        <Badge tone="neutral">
           Hidden on Mobile
         </Badge>
       )}

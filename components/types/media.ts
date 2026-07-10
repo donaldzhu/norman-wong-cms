@@ -8,10 +8,6 @@ export interface AssetRef {
   asset?: Ref
 }
 
-export interface ValidAssetRef {
-  asset: Required<Ref>
-}
-
 export interface MediaRef {
   mediaType?: MediaType
   media?: AssetRef
@@ -19,7 +15,9 @@ export interface MediaRef {
 
 export interface ValidMediaRef {
   mediaType: MediaType
-  media: ValidAssetRef
+  media: {
+    asset: Required<Ref>
+  }
 }
 
 export interface MediaData {
@@ -45,6 +43,4 @@ export interface ProjectSlideGridValue {
 export interface ProjectSlideFormValue {
   mobileOrientation?: string
   media?: ProjectSlideGridValue[]
-  description?: string
-  year?: number
 }

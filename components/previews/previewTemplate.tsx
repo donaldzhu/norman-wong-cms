@@ -40,7 +40,7 @@ export const PreviewTemplate = ({
             mediaWithRef={mediaData?.media}
             mediaType={mediaData?.mediaType}
             style={{ objectFit: 'cover' }} /> :
-          <DocumentIcon style={{ width: 33, height: 21 }} />
+          <DocumentIcon style={{ width: THUMBNAIL_SIZE, height: 21 }} />
         }
       </Box>
       <Stack gap={2} flex={1} style={{ minWidth: 0 }} >

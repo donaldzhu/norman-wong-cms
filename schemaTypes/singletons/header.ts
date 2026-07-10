@@ -25,14 +25,6 @@ export const header = defineType({
       hidden: true,
     }),
     defineField({
-      name: 'nameDisplayTextDesktop',
-      title: '"Name" display text (Desktop)',
-      type: 'string',
-      validation: rule => rule.required().max(TextLength.TINY),
-      group: 'desktop',
-      hidden: true,
-    }),
-    defineField({
       name: 'selectedWorksDisplayTextDesktop',
       title: '"Selected Works" display text (Desktop)',
       type: 'string',
@@ -52,14 +44,6 @@ export const header = defineType({
       type: 'string',
       validation: rule => rule.required().max(TextLength.TINY),
       group: 'desktop',
-    }),
-    defineField({
-      name: 'nameDisplayTextMobile',
-      title: '"Name" display text (Mobile)',
-      type: 'string',
-      validation: rule => rule.required().max(TextLength.TINY),
-      group: 'mobile',
-      hidden: true,
     }),
     defineField({
       name: 'selectedWorksDisplayTextMobile',

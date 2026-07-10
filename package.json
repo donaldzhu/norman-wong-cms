@@ -5,15 +5,6 @@
   "main": "package.json",
   "license": "UNLICENSED",
   "scripts": {
-    "migrate:remove-hidden-from-projects": "sanity migrations run remove-hidden-from-projects",
-    "migrate:remove-hidden-from-projects:apply": "sanity migrations run remove-hidden-from-projects --no-dry-run --no-confirm",
-    "migrate:swap-selected-all-naming": "sanity migrations run swap-selected-all-naming",
-    "migrate:swap-selected-all-naming:apply": "sanity migrations run swap-selected-all-naming --no-dry-run --no-confirm",
-    "migrate:restore-selected-works-singleton": "sanity migrations run restore-selected-works-singleton",
-    "migrate:restore-selected-works-singleton:apply": "sanity migrations run restore-selected-works-singleton --no-dry-run --no-confirm",
-    "migrate:set-mobile-media-type-default": "sanity migrations run set-mobile-media-type-default",
-    "migrate:set-mobile-media-type-default:apply": "sanity migrations run set-mobile-media-type-default --no-dry-run --no-confirm",
-
     "build": "sanity build",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
@@ -28,6 +19,7 @@
     "@sanity/vision": "^5.31.1",
     "@uidotdev/usehooks": "^2.4.1",
     "change-case": "^5.4.4",
+    "lodash": "^4.18.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "sanity": "^5.31.1",
@@ -36,12 +28,10 @@
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
-    "@sanity/client": "^7.21.0",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.24",
     "@types/react": "^19.2.14",
     "eslint": "^9.28",
-    "prettier": "^3.5",
     "typescript": "^5.8"
   },
   "prettier": {

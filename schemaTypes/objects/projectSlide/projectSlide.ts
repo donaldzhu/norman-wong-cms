@@ -9,7 +9,10 @@ import { ProjectSlidesPreview } from '../../../components/previews/projectSlides
 export const projectSlide = defineType({
   name: 'projectSlide',
   type: 'object',
-  components: { input: ProjectSlideGridButton, preview: ProjectSlidesPreview },
+  components: {
+    input: ProjectSlideGridButton,
+    preview: ProjectSlidesPreview
+  },
   validation: rule =>
     rule.custom(value => {
       const slide = value as ProjectSlideFormValue | undefined
@@ -40,18 +43,6 @@ export const projectSlide = defineType({
       of: [{ type: 'projectSlideMedia' }],
       description: 'Maximum 4 images/videos.',
       validation: rule => rule.required().min(1).max(4),
-    }),
-    defineField({
-      name: 'description',
-      type: 'string',
-      validation: rule => rule.max(200),
-      hidden: () => true,
-    }),
-    defineField({
-      name: 'year',
-      type: 'number',
-      validation: rule => rule.integer(),
-      hidden: () => true,
     }),
   ],
   preview: {

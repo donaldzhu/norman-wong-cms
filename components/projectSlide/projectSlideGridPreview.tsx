@@ -31,8 +31,6 @@ export const ProjectSlideGridPreview = ({
       }}
     >
       {media.map((item, index) => {
-        // TODO
-        // if (!item._key || !isValidDesktopSpan(item.desktopStart, item.desktopEnd)) return null
         const isActive = item._key === activeKey
         const start = isMobile ? item.mobileStart : item.desktopStart
         const end = isMobile ? item.mobileEnd : item.desktopEnd

@@ -1,10 +1,10 @@
 import * as changeCase from 'change-case'
 
+import type { AssetRef, ProjectSlideGridValue } from '../components/types/media'
 import { DESKTOP_COLUMN_COUNT, GRID_GAP, MOBILE_LANDSCAPE_COLUMN_COUNT, MOBILE_PORTRAIT_ROW_COUNT } from '../components/projectSlide/configs'
+import { MediaType, Orientation } from '../constants/enum'
 
 import { DeviceType } from '../components/types/gridLayout'
-import { MediaType, Orientation } from '../constants/enum'
-import type { AssetRef, ProjectSlideGridValue } from '../components/types/media'
 
 export const GRID_SETTINGS_INCOMPLETE_MESSAGE = 'Grid settings incomplete'
 
@@ -17,8 +17,8 @@ type DesktopMediaItem = Pick<ProjectSlideGridValue, 'mediaType' | 'image' | 'vid
 
 export const isDesktopMediaUnset = (item?: unknown) => {
   const parent = item as DesktopMediaItem | undefined
-  const isVideo = parent?.mediaType === MediaType.VIDEO
-  const mediaWithRef = isVideo ? parent?.video : parent?.image
+  if (!parent) return true
+  const mediaWithRef = parent.mediaType === MediaType.VIDEO ? parent.video : parent.image
   return !mediaWithRef?.asset?._ref
 }
 
@@ -74,7 +74,7 @@ export const getSlideGridKeyPath = (
   ]
 
 
-export const validateSpan = (
+const validateSpan = (
   start: number | undefined,
   end: number | undefined,
   deviceType: DeviceType,
@@ -116,7 +116,7 @@ export const validateSlideGrid = (
   orientation: Orientation,
 ) => media.some(item => getMediaGridSpanIssue(item, orientation))
 
-export const getGridCellCount = (tab: DeviceType, orientation: Orientation = Orientation.LANDSCAPE) => {
+const getGridCellCount = (tab: DeviceType, orientation: Orientation = Orientation.LANDSCAPE) => {
   if (tab === DeviceType.DESKTOP) return DESKTOP_COLUMN_COUNT
   if (orientation === Orientation.PORTRAIT) return MOBILE_PORTRAIT_ROW_COUNT
   return MOBILE_LANDSCAPE_COLUMN_COUNT

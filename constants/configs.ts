@@ -3,10 +3,7 @@ export const SLIDE_FIELD_ID = 'slides'
 
 export enum TextLength {
   TINY = 100,
-  SHORT = 250,
-  MEDIUM = 500,
-  LONG = 1000,
-  VERY_LONG = 2000,
+  SHORT = 250
 }
 
 export const ERROR_ICON_SIZE = 25

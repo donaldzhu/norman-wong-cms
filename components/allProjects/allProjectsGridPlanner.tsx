@@ -178,7 +178,7 @@ const RowWidthStepper = ({ rowIndex, width, range, onChange }: RowWidthStepperPr
         onClick={() => onChange(rowIndex, width - 1)}
       />
     </Stack>
-    <Text size={2} weight="semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>
+    <Text weight="semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>
       {width}
     </Text>
   </Flex>

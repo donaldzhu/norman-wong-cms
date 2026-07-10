@@ -26,7 +26,6 @@ export const ButtonToggleInput = (props: StringInputProps<StringSchemaType>) => 
             tone={selected ? 'primary' : 'default'}
             disabled={readOnly}
             onClick={() => handleSelect(optionValue)}
-            type="button"
             style={{
               cursor: 'pointer',
             }}

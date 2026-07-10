@@ -19,19 +19,6 @@ export const projectSlideMedia = defineType({
   },
   fields: [
     ...createToggleMediaFields({ limitToProject: false }),
-    /* createToggleButtonField(),
-    defineField({
-      name: MediaType.IMAGE,
-      type: 'image',
-
-      hidden: ({ parent }) => parent?.mediaType !== MediaType.IMAGE,
-
-    }),
-    defineField({
-      name: MediaType.VIDEO,
-      type: 'mux.video',
-      hidden: ({ parent }) => parent?.mediaType !== MediaType.VIDEO,
-    }), */
     createToggleButtonField({
       name: 'mobileMediaType',
       hidden: ({ parent }) => isDesktopMediaUnset(parent),

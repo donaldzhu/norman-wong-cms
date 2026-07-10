@@ -47,7 +47,6 @@ export const RefMediaPickerPreview = ({
             icon={EllipsisHorizontalIcon}
             mode="ghost"
             padding={2}
-            radius={2}
             aria-label="Open asset menu"
           />
         }
@@ -67,7 +66,7 @@ export const RefMediaPickerPreview = ({
             />
           </Menu>
         }
-        popover={{ portal: true, placement: 'left' }}
+        popover={{ placement: 'left' }}
       />
     </Box>
   </Card>

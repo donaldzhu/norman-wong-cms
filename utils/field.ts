@@ -32,7 +32,6 @@ const validateValue = (
   value: unknown,
   context: { parent?: unknown; document?: unknown },
   mediaType: MediaType,
-  ProjectContext?: Context<Ref | undefined>,
 ) => {
   const parent = context.parent as { mediaType?: MediaType } | undefined
   if (parent?.mediaType !== mediaType) return true
@@ -40,25 +39,14 @@ const validateValue = (
   const ADD_ASSET_ERROR_MESSAGE = `Add ${mediaType === MediaType.IMAGE ? 'an image' : 'a video'}.`
   if (!value) return ADD_ASSET_ERROR_MESSAGE
 
-  /* const ref = (value as AssetRef).asset?._ref
-  if (!ref) return ADD_ASSET_ERROR_MESSAGE
-
-  if (ProjectContext) return true
-
-  const doc = context.document as { [SLIDE_FIELD_ID]?: unknown } | undefined
-  const allowed = mediaRefsFromProject(doc?.[SLIDE_FIELD_ID])
-    .filter(ref => ref.mediaType === mediaType)
-    .map(ref => ref.media.asset._ref)
-
-  if (!allowed.includes(ref)) return `The ${mediaType} must appear within the project.` */
   return true
 }
 
-export const validateImage = (rule: ImageRule, mediaType: MediaType, ProjectContext?: Context<Ref | undefined>) =>
-  rule.custom((value, context) => validateValue(value, context, mediaType, ProjectContext))
+const validateImage = (rule: ImageRule, mediaType: MediaType, ProjectContext?: Context<Ref | undefined>) =>
+  rule.custom((value, context) => validateValue(value, context, mediaType))
 
-export const validateVideo = (rule: Rule, mediaType: MediaType, ProjectContext?: Context<Ref | undefined>) =>
-  rule.custom((value, context) => validateValue(value, context, mediaType, ProjectContext))
+const validateVideo = (rule: Rule, mediaType: MediaType, ProjectContext?: Context<Ref | undefined>) =>
+  rule.custom((value, context) => validateValue(value, context, mediaType,))
 
 interface CreateToggleMediaFieldsProps {
   context?: Context<Ref | undefined>
@@ -81,20 +69,13 @@ export const createToggleMediaFields = ({
         field: AssetPickerField,
       },
       hidden: ({ parent }) => parent?.mediaType !== MediaType.IMAGE,
-      validation: rule => validateImage(rule, MediaType.IMAGE, ProjectContext),
+      validation: rule => validateImage(rule, MediaType.IMAGE),
     }),
     defineField({
       name: MediaType.VIDEO,
       type: 'mux.video',
-      /* components: {
-        input: limitToProject ? createAssetPickerButton({
-          mediaType: MediaType.VIDEO,
-          RefContext: ProjectContext,
-        }) : undefined,
-        field: AssetPickerField,
-      }, */
       hidden: ({ parent }) => parent?.mediaType !== MediaType.VIDEO,
-      validation: rule => validateVideo(rule, MediaType.VIDEO, ProjectContext),
+      validation: rule => validateVideo(rule, MediaType.VIDEO),
     }),
   ]
 }

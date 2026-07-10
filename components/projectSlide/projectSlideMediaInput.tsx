@@ -81,6 +81,13 @@ const StyledStack = styled(Stack)`
             }
           }
         }
+
+        div[data-ui="fieldHeaderContentBox"] > div {
+          &,
+          & > div {
+            padding: 0.25rem 0 !important;
+          }
+        }
       }
     }
 

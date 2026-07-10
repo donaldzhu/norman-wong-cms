@@ -39,30 +39,8 @@ export const project = defineType({
       type: 'array',
       of: [{ type: 'projectSlide' }],
     }),
-    defineField({
-      name: 'selectedWorksThumbnails',
-      title: '"Selected Works" Thumbnails',
-      type: 'array',
-      of: [{ type: 'selectedWorksThumbnail' }],
-      /*  validation: rule => rule
-         .min(1) //TODO
-         .max(10)
-         .custom(thumbnails => {
-           if (!thumbnails?.length) return true
- 
-           const showingOnMobileCount = (thumbnails as { hideOnMobile?: boolean }[]).filter(
-             thumbnail => !thumbnail.hideOnMobile,
-           ).length
- 
-           if (showingOnMobileCount < 5) return 'Must have at least 5 thumbnails showing on mobile.'
-           if (showingOnMobileCount > 7) return 'Must have at most 7 thumbnails showing on mobile.'
- 
-           return true
-         }), */
-      hidden: true,
-    }),
   ],
-  // TODO: other preview selects should follow this
+
   preview: {
     select: {
       title: 'title',
@@ -79,6 +57,9 @@ export const project = defineType({
         title,
         subtitle,
         slides,
+
+        // media is not redundant - this and the preview component are used respectively
+        // for array preview and document list preview
         media:
           mediaType === MediaType.IMAGE && image
             ? image
