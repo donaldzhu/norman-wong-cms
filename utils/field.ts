@@ -1,11 +1,9 @@
 import { AssetPickerField, createAssetPickerButton } from '../components/assetPicker/refMediaPickerButton'
-import { mediaRefsFromProject } from './refs'
 
-import type { AssetRef, Ref } from '../components/types/media'
+import type { Ref } from '../components/types/media'
 import { ButtonToggleInput } from '../components/common/buttonToggleInput'
 import { MediaType } from '../constants/enum'
 import { defineField, type ImageRule, type Rule } from 'sanity'
-import { SLIDE_FIELD_ID } from '../constants/configs'
 import type { Context } from 'react'
 import { ImageFieldWrapper } from '../components/common/imageFIeldWrapper'
 
@@ -42,7 +40,7 @@ const validateValue = (
   const ADD_ASSET_ERROR_MESSAGE = `Add ${mediaType === MediaType.IMAGE ? 'an image' : 'a video'}.`
   if (!value) return ADD_ASSET_ERROR_MESSAGE
 
-  const ref = (value as AssetRef).asset?._ref
+  /* const ref = (value as AssetRef).asset?._ref
   if (!ref) return ADD_ASSET_ERROR_MESSAGE
 
   if (ProjectContext) return true
@@ -52,7 +50,7 @@ const validateValue = (
     .filter(ref => ref.mediaType === mediaType)
     .map(ref => ref.media.asset._ref)
 
-  if (!allowed.includes(ref)) return `The ${mediaType} must appear within the project.`
+  if (!allowed.includes(ref)) return `The ${mediaType} must appear within the project.` */
   return true
 }
 
@@ -88,13 +86,13 @@ export const createToggleMediaFields = ({
     defineField({
       name: MediaType.VIDEO,
       type: 'mux.video',
-      components: {
+      /* components: {
         input: limitToProject ? createAssetPickerButton({
           mediaType: MediaType.VIDEO,
           RefContext: ProjectContext,
         }) : undefined,
         field: AssetPickerField,
-      },
+      }, */
       hidden: ({ parent }) => parent?.mediaType !== MediaType.VIDEO,
       validation: rule => validateVideo(rule, MediaType.VIDEO, ProjectContext),
     }),

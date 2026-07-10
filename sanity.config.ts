@@ -13,13 +13,32 @@ export default defineConfig({
   projectId: '3vmzcbnr',
   dataset: 'production',
 
-  plugins: [structureTool({ structure }), visionTool(), media(), muxInput({
-    video_quality: 'basic',
-    max_resolution_tier: '1080p',
-    disableTextTrackConfig: true
-  })],
+  plugins: [
+    structureTool({ structure }),
+    visionTool(),
+    media({
+      // directUploads: false,
+    }),
+    muxInput({
+      video_quality: 'basic',
+      max_resolution_tier: '1080p',
+      disableTextTrackConfig: true
+    })
+  ],
 
-  tools: prev => prev.filter((tool) => tool.name !== 'vision' && tool.name !== 'releases'),
+
+
+  tools: prev => prev
+    .filter((tool) => tool.name !== 'vision' && tool.name !== 'releases')
+    .map((tool) => {
+      if (tool.name === 'media') {
+        return {
+          ...tool,
+          title: 'Images',
+        }
+      }
+      return tool
+    }),
 
   schema: {
     types: schemaTypes,
@@ -34,5 +53,5 @@ export default defineConfig({
         )
       return prev
     }
-  }
+  },
 })
