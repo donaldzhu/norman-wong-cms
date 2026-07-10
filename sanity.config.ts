@@ -17,7 +17,7 @@ export default defineConfig({
     structureTool({ structure }),
     visionTool(),
     media({
-      // directUploads: false,
+      directUploads: false,
     }),
     muxInput({
       video_quality: 'basic',
@@ -30,11 +30,17 @@ export default defineConfig({
 
   tools: prev => prev
     .filter((tool) => tool.name !== 'vision' && tool.name !== 'releases')
-    .map((tool) => {
+    .map(tool => {
       if (tool.name === 'media') {
         return {
           ...tool,
-          title: 'Images',
+          title: 'Images (Read-Only)',
+        }
+      }
+      if (tool.name === 'mux') {
+        return {
+          ...tool,
+          title: 'Videos (Read-Only)',
         }
       }
       return tool
