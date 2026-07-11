@@ -74,6 +74,13 @@ export const createToggleMediaFields = ({
     defineField({
       name: MediaType.VIDEO,
       type: 'mux.video',
+      components: {
+        input: limitToProject ? createAssetPickerButton({
+          mediaType: MediaType.VIDEO,
+          RefContext: ProjectContext,
+        }) : undefined,
+        field: AssetPickerField,
+      },
       hidden: ({ parent }) => parent?.mediaType !== MediaType.VIDEO,
       validation: rule => validateVideo(rule, MediaType.VIDEO),
     }),

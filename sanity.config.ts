@@ -22,10 +22,10 @@ export default defineConfig({
     muxInput({
       video_quality: 'basic',
       max_resolution_tier: '1080p',
-      disableTextTrackConfig: true
+      disableTextTrackConfig: true,
+      normalize_audio: true,
     })
   ],
-
 
 
   tools: prev => prev
