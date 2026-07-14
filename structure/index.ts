@@ -21,10 +21,10 @@ export const structure: StructureResolver = (S) =>
       headerStructure(S),
       infoStructure(S),
       S.divider(),
+      projectsStructure(S),
+      S.divider(),
       selectedWorksStructure(S),
       allProjectsStructure(S),
-      S.divider(),
-      projectsStructure(S),
       ...S.documentTypeListItems().filter((listItem) => {
         const id = listItem.getId()
         if (!id) return false
