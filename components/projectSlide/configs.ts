@@ -2,4 +2,4 @@ export const DESKTOP_COLUMN_COUNT = 24
 export const MOBILE_PORTRAIT_ROW_COUNT = 12
 export const MOBILE_LANDSCAPE_COLUMN_COUNT = 12
 
-export const GRID_GAP = 15
+export const GRID_GAP = 8

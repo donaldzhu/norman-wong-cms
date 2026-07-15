@@ -45,14 +45,14 @@ export const projectSlideMedia = defineType({
       name: 'desktopStart',
       title: 'Desktop Start Column',
       type: 'number',
-      initialValue: 11,
+      initialValue: 10,
       hidden: true
     }),
     defineField({
       name: 'desktopEnd',
       title: 'Desktop End Column',
       type: 'number',
-      initialValue: 15,
+      initialValue: 16,
       hidden: true
     }),
     defineField({
@@ -66,7 +66,7 @@ export const projectSlideMedia = defineType({
       name: 'mobileEnd',
       title: 'Mobile End Edge',
       type: 'number',
-      initialValue: 8,
+      initialValue: 10,
       hidden: true
     }),
   ],

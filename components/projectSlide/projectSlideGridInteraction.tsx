@@ -78,7 +78,7 @@ export const ProjectSlideGridInteraction = ({
             }}
           />
           <Box padding={2}>
-            <Text size={1} muted style={{ fontSize: '0.75rem' }}>{getColumnLabel(col)}</Text>
+            <Text size={1} muted style={{ fontSize: '0.625rem' }}>{getColumnLabel(col)}</Text>
           </Box>
         </button>
         )}

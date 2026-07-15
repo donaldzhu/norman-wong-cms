@@ -126,7 +126,6 @@ export const getGridStyle = (tab: DeviceType, orientation: Orientation) => {
   const isMobile = tab === DeviceType.MOBILE
   const isPortrait = isMobile && orientation === Orientation.PORTRAIT
   const gridCount = getGridCellCount(tab, orientation)
-  const gap = isMobile ? GRID_GAP : GRID_GAP
   const template = `repeat(${gridCount}, minmax(0, 1fr))`
 
   return {
@@ -135,6 +134,6 @@ export const getGridStyle = (tab: DeviceType, orientation: Orientation) => {
     display: 'grid',
     gridTemplateColumns: isPortrait ? '1fr' : template,
     gridTemplateRows: isPortrait ? template : '1fr',
-    gap: `${gap}px`,
+    gap: `${GRID_GAP}px`,
   } as const
 }
