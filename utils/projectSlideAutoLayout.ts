@@ -18,7 +18,7 @@ const toSpan = (start: number, end: number): Span => ({ start, end })
 
 const CENTER_LAYOUTS: { desktop: LayoutByCount; mobile: LayoutByCount } = {
   desktop: {
-    1: [toSpan(8, 18)],
+    1: [toSpan(9, 17)],
     2: [toSpan(5, 13), toSpan(13, 21)],
     3: [toSpan(4, 10), toSpan(10, 16), toSpan(16, 22)],
     4: [toSpan(1, 7), toSpan(7, 13), toSpan(13, 19), toSpan(19, 25)],
