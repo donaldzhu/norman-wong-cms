@@ -43,7 +43,15 @@ export function maxAvailableColumns(media: ProjectSlideGridValue[], sizes: MockS
 }
 
 export const MOBILE_SIZES = [3, 4, 5, 6, 7, 8] as const
-export const autoMobileSpan = (desktopSpan: number): number => desktopSpan === 18 ? 8 : desktopSpan / 2
+export const autoMobileSpan = (desktopSpan: number): number => Math.min(8, desktopSpan / 2)
+export function autoMobileSpans(desktopSpans: number[]): number[] {
+  const base = desktopSpans.map(autoMobileSpan)
+  for (const bump of [2, 1, 0]) {
+    const spans = base.map(span => Math.min(8, span + bump))
+    if (spans.reduce((sum, span) => sum + span, 0) <= 12) return spans
+  }
+  return base
+}
 export const MOBILE_VIEWPORT = { width: 390, height: 844, gap: 20, gridBuffer: 8 } as const
 export interface MobileLayout {
   auto: boolean

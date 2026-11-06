@@ -10,6 +10,7 @@ import { GRID_SETTINGS_INCOMPLETE_MESSAGE, validateSlideGrid } from '../../utils
 import { ErrorIcon } from '../common/errorIcon'
 import type { ProjectSlideFormValue } from '../types/media'
 import { ProjectSlideMockDialog } from './projectSlideMockDialog'
+import { ProjectSlideJustifyContext } from './projectSlidePreviewContext'
 
 
 export const ProjectSlideGridButton = (
@@ -21,6 +22,10 @@ export const ProjectSlideGridButton = (
     if (!props.readOnly) props.onChange(projectSlideMediaChange(props.value, PatchEvent.from(change)))
   }, [props.onChange, props.readOnly, props.value])
   const orientation = (props.value?.mobileOrientation ?? Orientation.PORTRAIT) as Orientation
+  const media = props.value?.media ?? []
+  const justified = media.length === 1 && (props.value?.layoutV2
+    ? props.value.layoutV2.desktop?.mode === 'justify'
+    : media[0].desktopEnd! - media[0].desktopStart! === 24)
 
   const layoutError = useMemo(
     () => props.value?.layoutV2 ? slideV2Error(props.value) : validateSlideGrid(props.value?.media, orientation) ? GRID_SETTINGS_INCOMPLETE_MESSAGE : undefined,
@@ -55,7 +60,9 @@ export const ProjectSlideGridButton = (
       />}
       {/* Nested fields use form callbacks rather than the ObjectInput onChange prop. */}
       <FormCallbacksProvider {...formCallbacks} onChange={handleMediaChange}>
-        {props.renderDefault({ ...props, onChange: handleMediaChange })}
+        <ProjectSlideJustifyContext.Provider value={justified}>
+          {props.renderDefault({ ...props, onChange: handleMediaChange })}
+        </ProjectSlideJustifyContext.Provider>
       </FormCallbacksProvider>
     </Stack>
   )

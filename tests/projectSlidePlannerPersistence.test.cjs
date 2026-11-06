@@ -101,4 +101,39 @@ async function verifyXXXL() {
   assert.equal([...document.querySelectorAll('button')].find(b=>b.textContent==='XXXL (18)').getAttribute('aria-pressed'),'true')
   await act(async()=>root.unmount())
 }
-;(async()=>{const root=createRoot(document.getElementById('root'));await act(async()=>root.render(React.createElement(Host)));assert.equal(writes.length,0);await click('XXL (16)',0);assert.equal(writes.length,1);assert.ok(!document.body.textContent.includes('Slide changed'));await click('XXL (16)',1);assert.equal(writes.length,1);assert.ok(document.body.textContent.includes('Layout exceeds max column size (24).'));await click('S (8)',0);assert.equal(writes.length,2);await act(async()=>remote());assert.ok(document.body.textContent.includes('Slide changed'));await click('XS (6)',0);assert.equal(writes.length,2);await act(async()=>root.unmount());await verifyRecovery();await verifyAutoRetention();await verifyXXXL();console.log('PASS: no write on open, valid writes echo cleanly, invalid edits stay local, recovery saves, remote changes block overwrite; invalid V2 sizes and Justify recover without legacy fallback.')})().catch(e=>{console.error(e);process.exitCode=1})
+async function verifyAutoOrientation() {
+  for (const initiallyAuto of [false,true]) {
+    const saved = []
+    function OrientationHost() {
+      const [value,setValue] = React.useState({layoutV2:{version:2,desktop:{mode:'center'},mobile:{auto:initiallyAuto,mode:'center',orientation:'landscape'}},media:[{_key:'a',desktopSpan:8,mobileSpan:4}]})
+      return React.createElement(ProjectSlideMockDialog,{value,onClose:()=>{},onLayoutChange:(layoutV2,spans)=>{
+        saved.push(layoutV2)
+        setValue(v=>({...v,layoutV2,media:v.media.map(m=>({...m,...spans.find(s=>s._key===m._key)}))}))
+      }})
+    }
+    const root = createRoot(document.getElementById('root'))
+    await act(async()=>root.render(React.createElement(OrientationHost)))
+    assert.equal(saved.length,0,'opening Auto landscape does not write')
+    if (initiallyAuto) await click('XS (6)')
+    else {
+      await click('Mobile')
+      assert.equal(document.getElementById('mock-mobile-orientation').value,'landscape')
+      await act(async()=>document.getElementById('mock-mobile-auto').click())
+    }
+    assert.equal(saved.length,1)
+    assert.equal(saved[0].mobile.auto,true)
+    assert.equal(saved[0].mobile.orientation,'portrait')
+    await act(async()=>document.getElementById('mock-mobile-auto').click())
+    await click('Mobile')
+    assert.equal(document.getElementById('mock-mobile-orientation').value,'portrait')
+    await act(async()=>{
+      const select=document.getElementById('mock-mobile-orientation')
+      select.value='landscape'
+      select.dispatchEvent(new window.Event('change',{bubbles:true}))
+    })
+    assert.equal(saved.at(-1).mobile.auto,false)
+    assert.equal(saved.at(-1).mobile.orientation,'landscape')
+    await act(async()=>root.unmount())
+  }
+}
+;(async()=>{const root=createRoot(document.getElementById('root'));await act(async()=>root.render(React.createElement(Host)));assert.equal(writes.length,0);await click('XXL (16)',0);assert.equal(writes.length,1);assert.ok(!document.body.textContent.includes('Slide changed'));await click('XXL (16)',1);assert.equal(writes.length,1);assert.ok(document.body.textContent.includes('Layout exceeds max column size (24).'));await click('S (8)',0);assert.equal(writes.length,2);await act(async()=>remote());assert.ok(document.body.textContent.includes('Slide changed'));await click('XS (6)',0);assert.equal(writes.length,2);await act(async()=>root.unmount());await verifyRecovery();await verifyAutoRetention();await verifyXXXL();await verifyAutoOrientation();console.log('PASS: no write on open, valid writes echo cleanly, invalid edits stay local, recovery saves, remote changes block overwrite; invalid V2 sizes and Justify recover without legacy fallback.')})().catch(e=>{console.error(e);process.exitCode=1})

@@ -1,10 +1,12 @@
 import * as changeCase from 'change-case'
+import { useContext } from 'react'
 
 import type { AssetRef, MediaData } from '../types/media'
 
 import { MediaType } from '../../constants/enum'
 import { PreviewProps } from 'sanity'
 import { PreviewTemplate } from './previewTemplate'
+import { ProjectSlideJustifyContext } from '../projectSlide/projectSlidePreviewContext'
 
 type ProjectSlidePreviewProps = PreviewProps & {
   title?: string
@@ -17,6 +19,7 @@ type ProjectSlidePreviewProps = PreviewProps & {
 }
 
 export const ProjectSlidePreview = (props: PreviewProps) => {
+  const justified = useContext(ProjectSlideJustifyContext)
   const {
     mediaType,
     image,
@@ -33,7 +36,7 @@ export const ProjectSlidePreview = (props: PreviewProps) => {
     video,
   }
 
-  const subtitle = desktopSpan ? `${desktopSpan} columns` : desktopStart && desktopEnd ? `Column ${desktopStart} - ${desktopEnd}` : undefined
+  const subtitle = justified ? 'Justified' : desktopSpan ? `${desktopSpan} columns` : desktopStart && desktopEnd ? `Column ${desktopStart} - ${desktopEnd}` : undefined
 
   return (
     <PreviewTemplate data={mediaData} title={title} subtitle={subtitle} />

@@ -8,7 +8,7 @@ import { useClient } from 'sanity'
 import { SANITY_CLIENT_OPTIONS } from '../../constants/configs'
 import { MediaType } from '../../constants/enum'
 import {
-  initialMockLayout, initialMobileLayout, MOBILE_SIZES, autoMobileSpan,
+  initialMockLayout, initialMobileLayout, MOBILE_SIZES, autoMobileSpan, autoMobileSpans,
   MOCK_COLUMN_LIMIT,
   MOCK_SIZES,
   mockBudget,
@@ -28,9 +28,13 @@ function desktopInitial(value?: ProjectSlideFormValue) {
   return { mode: value.layoutV2.desktop?.mode ?? 'center', sizes: Object.fromEntries((value.media ?? []).map(m => [m._key, String(MOCK_SIZES.indexOf(m.desktopSpan as typeof MOCK_SIZES[number]) + 1)])) }
 }
 function mobileInitial(value?: ProjectSlideFormValue) {
-  if (value?.layoutV2?.version !== 2) return initialMobileLayout(value?.media ?? [], value?.mobileOrientation)
+  if (value?.layoutV2?.version !== 2) {
+    const mobile = initialMobileLayout(value?.media ?? [], value?.mobileOrientation)
+    return { ...mobile, orientation: mobile.auto ? 'portrait' : mobile.orientation }
+  }
   const v = value.layoutV2.mobile
-  return { auto: v?.auto ?? true, orientation: v?.orientation ?? '', manual: { mode: v?.mode ?? 'center', spans: Object.fromEntries((value.media ?? []).map(m => [m._key, m.mobileSpan])) } }
+  const auto = v?.auto ?? true
+  return { auto, orientation: auto ? 'portrait' : v?.orientation ?? '', manual: { mode: v?.mode ?? 'center', spans: Object.fromEntries((value.media ?? []).map(m => [m._key, m.mobileSpan])) } }
 }
 const signatureFor = (media: ProjectSlideGridValue[], value?: ProjectSlideFormValue) => JSON.stringify([media, value?.mobileOrientation, value?.layoutV2], (_, entry) => entry && typeof entry === 'object' && !Array.isArray(entry) ? Object.fromEntries(Object.keys(entry).sort().map(key => [key, entry[key]])) : entry)
 
@@ -124,7 +128,9 @@ export const ProjectSlideMockDialog = ({ value, onClose, onLayoutChange }: Props
   const mobileAssets = resolveAssets(true)
   const budget = mockBudget(snapshot.media, layout.sizes)
   const desktopValid = (layout.mode === 'justify' ? snapshot.media.length === 1 : budget.valid)
-  const autoSpans = budget.columns.map(span => span === undefined ? undefined : autoMobileSpan(span))
+  const autoSpans = budget.columns.every((span): span is number => span !== undefined)
+    ? layout.mode === 'center' ? autoMobileSpans(budget.columns) : budget.columns.map(autoMobileSpan)
+    : budget.columns.map(span => span === undefined ? undefined : autoMobileSpan(span))
   const mobileMode = mobile.auto ? layout.mode : mobile.manual?.mode ?? 'center'
   const mobileColumns = mobile.auto ? autoSpans : snapshot.media.map(item => mobile.manual?.spans[item._key])
   const mobileTotal = mobileColumns.reduce<number>((sum, span) => sum + (span ?? 0), 0)
@@ -216,7 +222,7 @@ export const ProjectSlideMockDialog = ({ value, onClose, onLayoutChange }: Props
               <Switch id="mock-mobile-auto" checked={mobile.auto} onChange={() => {
                 edited.current = true
                 if (!mobile.auto) setPreview('desktop')
-                setMobile(previous => ({ ...previous, auto: !previous.auto, manual: previous.manual ?? { mode: layout.mode, spans: Object.fromEntries(snapshot.media.map((item, i) => [item._key, layout.mode === 'justify' ? 8 : autoSpans[i]])) } }))
+                setMobile(previous => ({ ...previous, auto: !previous.auto, orientation: !previous.auto ? 'portrait' : previous.orientation, manual: previous.manual ?? { mode: layout.mode, spans: Object.fromEntries(snapshot.media.map((item, i) => [item._key, layout.mode === 'justify' ? 8 : autoSpans[i]])) } }))
               }} />
               <label htmlFor="mock-mobile-auto" style={{ cursor: 'pointer' }}><Text size={1}>Auto layout for mobile</Text></label>
             </Flex>

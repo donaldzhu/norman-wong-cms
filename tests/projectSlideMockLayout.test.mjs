@@ -28,6 +28,9 @@ assert.deepEqual(frontend.resolveDesktopLayout([item(18)],1280,720,20).spans,[16
 assert.equal(cms.columnsForSize('7'),18)
 assert.equal(cms.columnsForSize('8'),undefined)
 assert.equal(cms.autoMobileSpan(18),8)
+for (const [desktop,mobile] of [[6,5],[8,6],[10,7],[12,8],[14,8],[16,8],[18,8]]) {
+  assert.equal(cms.autoMobileSpans([desktop])[0],mobile)
+}
 const v2 = {version:2,desktop:{mode:'center'},mobile:{auto:true,mode:'center',orientation:'landscape'}}
 let cases=0
 function check(spans) {
@@ -37,7 +40,7 @@ function check(spans) {
   const budget=cms.mockBudget(media,Object.fromEntries(media.map(m=>[m._key,String(cms.MOCK_SIZES.indexOf(m.desktopSpan)+1)])))
   assert.equal(budget.valid,total<=24)
   if(total<=24) for(const mobile of [false,true]) for(const stacked of mobile?[false,true]:[false]) {
-    const columns=mobile?spans.map(cms.autoMobileSpan):spans
+    const columns=mobile?cms.autoMobileSpans(spans):spans
     const dimensions=mobile?cms.MOBILE_VIEWPORT:cms.MOCK_VIEWPORT
     const actual=cms.mockGeometry(columns,spans.map(()=>1.5),mobile,stacked)
     const expected=mobile?frontend.resolveMobileLayout(media,dimensions.width,dimensions.height,20,stacked,v2):frontend.resolveDesktopLayout(media,dimensions.width,dimensions.height,20,v2)
