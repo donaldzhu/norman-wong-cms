@@ -1,4 +1,4 @@
-import { Button, Spinner, Stack } from '@sanity/ui'
+import { Box, Button, Dialog, Spinner, Stack } from '@sanity/ui'
 import {
   useContext,
   useMemo,
@@ -45,7 +45,8 @@ const RefMediaPickerButton = ({
   value,
   onChange,
   mediaType,
-  RefContext
+  RefContext,
+  ...inputProps
 }: RefMediaPickerButtonProps & ObjectInputProps) => {
   const source = useFormValue([SLIDE_FIELD_ID])
   const project = useContext(RefContext ?? DummyContext)
@@ -64,6 +65,7 @@ const RefMediaPickerButton = ({
   const assetRef = value?.asset?._ref as string | undefined
 
   const [open, setOpen] = useState(false)
+  const [editorOpen, setEditorOpen] = useState(false)
 
   const handlePick = (selectedRef: string) => {
     const _type = mediaType === MediaType.IMAGE ? 'image' : 'mux.video'
@@ -90,6 +92,16 @@ const RefMediaPickerButton = ({
           onClick={() => setOpen(true)}
           style={{ width: '100%' }}
         />
+      )}
+      {assetRef && mediaType === MediaType.IMAGE && (
+        <Button text="Edit image / hotspot" mode="ghost" disabled={inputProps.readOnly} onClick={() => setEditorOpen(true)} />
+      )}
+      {editorOpen && (
+        <Dialog id={`${inputProps.id}-hotspot`} header="Edit image" onClose={() => setEditorOpen(false)} width={2}>
+          <Box padding={4}>
+            {inputProps.renderDefault({ ...inputProps, value, onChange })}
+          </Box>
+        </Dialog>
       )}
       {open && (
         <RefMediaPickerDialog

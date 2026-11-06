@@ -81,3 +81,15 @@ test('Auto ignores retained manual composition; manual mode and audit enforce th
     assert.equal(slideV2Error(value),mode === 'center' ? 'Layout exceeds max column size (12).' : 'Justify requires one media item. Choose Center.')
   }
 })
+
+ test('XXXL is accepted by CMS and audit, while the desktop limit remains 24', () => {
+  const value = slide()
+  value.layoutV2.desktop.mode = 'center'
+  value.media = [media('a',18,8),media('b',6,3)]
+  assert.equal(validSlideV2(value),true)
+  assert.equal(auditValidV2(value),true)
+  assert.equal(convertSlide(value,0).status,'already-migrated')
+  value.media[1].desktopSpan = 8
+  assert.equal(slideV2Error(value),'Layout exceeds max column size (24).')
+  assert.equal(auditValidV2(value),false)
+})

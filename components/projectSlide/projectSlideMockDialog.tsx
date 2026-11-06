@@ -1,3 +1,4 @@
+import { croppedRatio } from '../../utils/imageFraming'
 import { slideV2Error, validSlideV2, type SlideLayoutV2 } from '../../utils/projectSlideV2'
 import { createImageUrlBuilder } from '@sanity/image-url'
 import { Box, Button, Card, Dialog, Flex, Stack, Text, Tooltip, Switch, Select } from '@sanity/ui'
@@ -7,7 +8,7 @@ import { useClient } from 'sanity'
 import { SANITY_CLIENT_OPTIONS } from '../../constants/configs'
 import { MediaType } from '../../constants/enum'
 import {
-  initialMockLayout, initialMobileLayout, MOBILE_SIZES,
+  initialMockLayout, initialMobileLayout, MOBILE_SIZES, autoMobileSpan,
   MOCK_COLUMN_LIMIT,
   MOCK_SIZES,
   mockBudget,
@@ -105,23 +106,25 @@ export const ProjectSlideMockDialog = ({ value, onClose, onLayoutChange }: Props
     const document = ref ? documents[ref] : undefined
     if (requestStatus === 'loading' && ref) return { status: 'loading' }
     if (!ref || !document || requestStatus === 'error') return { status: 'missing' }
-    const ratio = parseRatio(document)
+    let ratio = parseRatio(document)
+    const image = item.mediaType === MediaType.IMAGE ? (isMobile ? item.mobileImage ?? item.image : item.image) : undefined
     let url: string | undefined
     if (item.mediaType === MediaType.IMAGE) {
       try {
-        url = builder.image({ asset: { _type: 'reference', _ref: ref } }).width(1280).url()
+        url = builder.image({ ...image, asset: { _type: 'reference', _ref: ref } }).width(1280).url()
+        if (ratio) ratio = croppedRatio(ratio, image)
       } catch { /* The missing-asset state below covers invalid references. */ }
     } else if (item.mediaType === MediaType.VIDEO && document.playbackId) {
       url = `https://image.mux.com/${encodeURIComponent(document.playbackId)}/thumbnail.jpg?time=0&width=1280`
     }
-    return ratio && url ? { status: 'ready', ratio, url } : { status: 'missing' }
+    return ratio && url ? { status: 'ready', ratio, url, image } : { status: 'missing' }
   })
 
   const assets = resolveAssets()
   const mobileAssets = resolveAssets(true)
   const budget = mockBudget(snapshot.media, layout.sizes)
   const desktopValid = (layout.mode === 'justify' ? snapshot.media.length === 1 : budget.valid)
-  const autoSpans = budget.columns.map(span => span === undefined ? undefined : span / 2)
+  const autoSpans = budget.columns.map(span => span === undefined ? undefined : autoMobileSpan(span))
   const mobileMode = mobile.auto ? layout.mode : mobile.manual?.mode ?? 'center'
   const mobileColumns = mobile.auto ? autoSpans : snapshot.media.map(item => mobile.manual?.spans[item._key])
   const mobileTotal = mobileColumns.reduce<number>((sum, span) => sum + (span ?? 0), 0)
@@ -266,7 +269,7 @@ export const ProjectSlideMockDialog = ({ value, onClose, onLayoutChange }: Props
                       return <Button
                         key={columns}
                         type="button"
-                        text={`${['XS', 'S', 'M', 'L', 'XL', 'XXL'][sizeIndex]} (${columns})`}
+                        text={`${['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'][sizeIndex]} (${columns})`}
                         aria-pressed={selected}
                         tone={selected ? 'primary' : 'default'}
                         mode={selected ? 'default' : 'ghost'}

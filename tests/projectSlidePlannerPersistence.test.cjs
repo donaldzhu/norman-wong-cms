@@ -74,4 +74,31 @@ async function verifyAutoRetention() {
     await act(async()=>root.unmount())
   }
 }
-;(async()=>{const root=createRoot(document.getElementById('root'));await act(async()=>root.render(React.createElement(Host)));assert.equal(writes.length,0);await click('XXL (16)',0);assert.equal(writes.length,1);assert.ok(!document.body.textContent.includes('Slide changed'));await click('XXL (16)',1);assert.equal(writes.length,1);assert.ok(document.body.textContent.includes('Layout exceeds max column size (24).'));await click('S (8)',0);assert.equal(writes.length,2);await act(async()=>remote());assert.ok(document.body.textContent.includes('Slide changed'));await click('XS (6)',0);assert.equal(writes.length,2);await act(async()=>root.unmount());await verifyRecovery();await verifyAutoRetention();console.log('PASS: no write on open, valid writes echo cleanly, invalid edits stay local, recovery saves, remote changes block overwrite; invalid V2 sizes and Justify recover without legacy fallback.')})().catch(e=>{console.error(e);process.exitCode=1})
+async function verifyXXXL() {
+  const saved = []
+  let current = {layoutV2:{version:2,desktop:{mode:'center'},mobile:{auto:true,mode:'center',orientation:'portrait'}},media:['a','b'].map(_key=>({_key,desktopSpan:8,mobileSpan:4}))}
+  function SizeHost() {
+    const [value,setValue] = React.useState(current)
+    return React.createElement(ProjectSlideMockDialog,{value,onClose:()=>{},onLayoutChange:(layoutV2,spans)=>{
+      saved.push(spans)
+      current = {...value,layoutV2,media:value.media.map(m=>({...m,...spans.find(s=>s._key===m._key)}))}
+      setValue(current)
+    }})
+  }
+  let root = createRoot(document.getElementById('root'))
+  await act(async()=>root.render(React.createElement(SizeHost)))
+  await click('XXXL (18)',0)
+  assert.equal(saved.length,0,'18 + 8 must not save')
+  assert.ok(document.body.textContent.includes('Layout exceeds max column size (24).'))
+  await click('XS (6)',1)
+  assert.equal(saved.length,1)
+  assert.deepEqual(saved[0].map(m=>m.desktopSpan),[18,6])
+  assert.deepEqual(saved[0].map(m=>m.mobileSpan),[4,4],'retain manual mobile sizes')
+  await act(async()=>root.unmount())
+  root = createRoot(document.getElementById('root'))
+  await act(async()=>root.render(React.createElement(SizeHost)))
+  assert.equal(saved.length,1,'reopening must not save')
+  assert.equal([...document.querySelectorAll('button')].find(b=>b.textContent==='XXXL (18)').getAttribute('aria-pressed'),'true')
+  await act(async()=>root.unmount())
+}
+;(async()=>{const root=createRoot(document.getElementById('root'));await act(async()=>root.render(React.createElement(Host)));assert.equal(writes.length,0);await click('XXL (16)',0);assert.equal(writes.length,1);assert.ok(!document.body.textContent.includes('Slide changed'));await click('XXL (16)',1);assert.equal(writes.length,1);assert.ok(document.body.textContent.includes('Layout exceeds max column size (24).'));await click('S (8)',0);assert.equal(writes.length,2);await act(async()=>remote());assert.ok(document.body.textContent.includes('Slide changed'));await click('XS (6)',0);assert.equal(writes.length,2);await act(async()=>root.unmount());await verifyRecovery();await verifyAutoRetention();await verifyXXXL();console.log('PASS: no write on open, valid writes echo cleanly, invalid edits stay local, recovery saves, remote changes block overwrite; invalid V2 sizes and Justify recover without legacy fallback.')})().catch(e=>{console.error(e);process.exitCode=1})

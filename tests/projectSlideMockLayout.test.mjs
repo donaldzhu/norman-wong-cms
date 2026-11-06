@@ -2,7 +2,9 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import ts from 'typescript'
 function load(path) {
-  const source = ts.transpileModule(readFileSync(new URL(path, import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText
+  let input = readFileSync(new URL(path, import.meta.url), 'utf8')
+  if (input.includes("from './imageFraming'")) input = readFileSync(new URL('../utils/imageFraming.ts', import.meta.url), 'utf8') + '\n' + input.replace(/import .* from '\.\/imageFraming'\n/, '')
+  const source = ts.transpileModule(input, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText
   const module = {exports: {}}
   new Function('exports', 'module', source)(module.exports, module)
   return module.exports
@@ -21,18 +23,24 @@ assert.equal(cms.initialMobileLayout([item(8,6),item(8,undefined,'b')]).auto,fal
 assert.equal(cms.initialMobileLayout([{...item(8),mobileStart:1}]).auto,false)
 assert.equal(cms.initialMobileLayout([item(8)]).orientation,'landscape')
 assert.equal(cms.initialMobileLayout([item(8)],'portrait').orientation,'portrait')
+assert.equal(cms.initialMockLayout([item(18)]).sizes.a, '6')
+assert.deepEqual(frontend.resolveDesktopLayout([item(18)],1280,720,20).spans,[16])
+assert.equal(cms.columnsForSize('7'),18)
+assert.equal(cms.columnsForSize('8'),undefined)
+assert.equal(cms.autoMobileSpan(18),8)
+const v2 = {version:2,desktop:{mode:'center'},mobile:{auto:true,mode:'center',orientation:'landscape'}}
 let cases=0
 function check(spans) {
   const total=spans.reduce((a,b)=>a+b,0)
-  if(total<=24) assert.ok(spans.reduce((sum,s)=>sum+s/2,0)<=12)
-  const media=spans.map((s,i)=>item(s,undefined,String(i)))
-  const budget=cms.mockBudget(media,cms.initialMockLayout(media).sizes)
+  if(total<=24) assert.ok(spans.reduce((sum,s)=>sum+cms.autoMobileSpan(s),0)<=12)
+  const media=spans.map((s,i)=>({...item(s,undefined,String(i)),desktopSpan:s,mobileSpan:8}))
+  const budget=cms.mockBudget(media,Object.fromEntries(media.map(m=>[m._key,String(cms.MOCK_SIZES.indexOf(m.desktopSpan)+1)])))
   assert.equal(budget.valid,total<=24)
   if(total<=24) for(const mobile of [false,true]) for(const stacked of mobile?[false,true]:[false]) {
-    const columns=mobile?spans.map(s=>s/2):spans
+    const columns=mobile?spans.map(cms.autoMobileSpan):spans
     const dimensions=mobile?cms.MOBILE_VIEWPORT:cms.MOCK_VIEWPORT
     const actual=cms.mockGeometry(columns,spans.map(()=>1.5),mobile,stacked)
-    const expected=mobile?frontend.resolveMobileLayout(media,dimensions.width,dimensions.height,20,stacked):frontend.resolveDesktopLayout(media,dimensions.width,dimensions.height,20)
+    const expected=mobile?frontend.resolveMobileLayout(media,dimensions.width,dimensions.height,20,stacked,v2):frontend.resolveDesktopLayout(media,dimensions.width,dimensions.height,20,v2)
     actual.forEach((value,i)=>{assert.ok(Math.abs(value.width-expected.items[i].width)<1e-8);assert.ok(Math.abs(value.height-expected.items[i].height)<1e-8)})
   }
   cases++

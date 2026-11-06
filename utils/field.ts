@@ -61,6 +61,7 @@ export const createToggleMediaFields = ({
     defineField({
       name: MediaType.IMAGE,
       type: 'image',
+      options: { hotspot: true },
       components: {
         input: limitToProject ? createAssetPickerButton({
           mediaType: MediaType.IMAGE,

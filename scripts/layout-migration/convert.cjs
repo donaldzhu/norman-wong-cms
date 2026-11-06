@@ -1,5 +1,5 @@
 const {createHash} = require('node:crypto')
-const DESKTOP = [6,8,10,12,14,16]
+const DESKTOP = [6,8,10,12,14,16,18]
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex')
 const span = (start,end,limit) => Number.isInteger(start) && Number.isInteger(end) && start >= 1 && end <= limit+1 && end > start ? end-start : undefined
 const keysValid = items => items.every(item=>typeof item?._key==='string' && item._key.length) && new Set(items.map(item=>item._key)).size===items.length

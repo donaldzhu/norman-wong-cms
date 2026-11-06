@@ -1,6 +1,6 @@
 import type { ProjectSlideGridValue } from '../components/types/media'
 
-export const MOCK_SIZES = [6, 8, 10, 12, 14, 16] as const
+export const MOCK_SIZES = [6, 8, 10, 12, 14, 16, 18] as const
 export const MOCK_COLUMN_LIMIT = 24
 export const MOCK_VIEWPORT = { width: 1280, height: 720, gap: 20, gridBuffer: 8 } as const
 
@@ -26,7 +26,7 @@ export function initialMockLayout(media: ProjectSlideGridValue[]): { mode: MockM
 }
 
 export function columnsForSize(value: string): number | undefined {
-  if (!/^[1-6]$/.test(value)) return undefined
+  if (!/^[1-7]$/.test(value)) return undefined
   return MOCK_SIZES[Number(value) - 1]
 }
 
@@ -43,6 +43,7 @@ export function maxAvailableColumns(media: ProjectSlideGridValue[], sizes: MockS
 }
 
 export const MOBILE_SIZES = [3, 4, 5, 6, 7, 8] as const
+export const autoMobileSpan = (desktopSpan: number): number => desktopSpan === 18 ? 8 : desktopSpan / 2
 export const MOBILE_VIEWPORT = { width: 390, height: 844, gap: 20, gridBuffer: 8 } as const
 export interface MobileLayout {
   auto: boolean

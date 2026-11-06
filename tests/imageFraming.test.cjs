@@ -1,0 +1,13 @@
+const fs=require('fs'),ts=require('typescript'),assert=require('node:assert/strict');
+const source=fs.readFileSync('utils/imageFraming.ts','utf8');
+assert.equal(source,fs.readFileSync('../norman-wong-svelte/src/lib/utils/imageFraming.ts','utf8'));
+const exportsValue={};new Function('exports',ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText)(exportsValue);
+const {croppedRatio,hotspotPosition}=exportsValue;
+assert.equal(croppedRatio(2,{crop:{left:0.25,right:0.25}}),1);
+assert.equal(croppedRatio(2,{crop:{top:0.25,bottom:0.25}}),4);
+assert.equal(hotspotPosition(undefined,2,100,100),'50% 50%');
+assert.equal(hotspotPosition({hotspot:{x:0.8,y:0.5}},2,100,100),'100% 50%');
+assert.equal(hotspotPosition({hotspot:{x:0.2,y:0.5}},2,100,100),'0% 50%');
+assert.equal(hotspotPosition({hotspot:{x:0.5,y:0.8}},0.5,100,100),'50% 100%');
+assert.equal(hotspotPosition({crop:{left:0.25},hotspot:{x:0.625,y:0.5}},1.5,100,100),'50% 50%');
+console.log('PASS: CMS/frontend crop ratios, focal positions, edge clamping, mobile framing and default centering');

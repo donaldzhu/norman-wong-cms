@@ -30,6 +30,7 @@ export const projectSlideMedia = defineType({
       type: 'image',
       options: {
         sources: [mediaAssetSource],
+        hotspot: true,
       },
       hidden: ({ parent }) =>
         isDesktopMediaUnset(parent) || parent?.mobileMediaType !== MediaType.IMAGE,

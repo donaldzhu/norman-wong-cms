@@ -1,3 +1,4 @@
+import type { ImageFraming } from '../../utils/imageFraming'
 import type { SlideLayoutV2 } from '../../utils/projectSlideV2'
 import { MediaType } from '../../constants/enum'
 
@@ -5,7 +6,7 @@ export interface Ref {
   _ref?: string
 }
 
-export interface AssetRef {
+export interface AssetRef extends ImageFraming {
   asset?: Ref
 }
 

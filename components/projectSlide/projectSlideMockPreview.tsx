@@ -1,9 +1,11 @@
+import { hotspotPosition, type ImageFraming } from '../../utils/imageFraming'
 import { Card, Flex, Text } from '@sanity/ui'
 import { useEffect, useRef, useState, type ReactElement } from 'react'
 
 import { mockGeometry, MOCK_VIEWPORT, MOBILE_VIEWPORT, type MockMode } from '../../utils/projectSlideMockLayout'
 
 export interface MockAsset {
+  image?: ImageFraming
   url?: string
   ratio?: number
   status: 'loading' | 'ready' | 'missing'
@@ -70,6 +72,7 @@ export const ProjectSlideMockPreview = ({ mode, columns, assets, mobile = false,
                 width: mode === 'justify' ? viewport.width : geometry[index].width,
                 height: mode === 'justify' ? viewport.height : geometry[index].height,
                 objectFit: mode === 'justify' ? 'cover' : 'contain',
+                objectPosition: mode === 'justify' ? hotspotPosition(asset.image, asset.ratio!, viewport.width, viewport.height) : 'center',
               }}
             />)}
           </div>
