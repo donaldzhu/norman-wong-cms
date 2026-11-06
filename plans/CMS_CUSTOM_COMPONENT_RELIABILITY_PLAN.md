@@ -3,7 +3,7 @@
 Date: 2026-11-05  
 Status: Proposed; implementation has not started.
 
-This plan covers the 17 audit findings and three additional UX risks. Work is ordered so that data integrity and error handling are addressed before interface polish. Creating this plan does not authorize application-code changes or production-content changes.
+This plan covers the 17 audit findings and three additional UX risks. Work is grouped by migration impact. Within each group, address data integrity and error handling before interface polish. Creating this plan does not authorize application-code changes or production-content changes.
 
 Implement this in small, reviewable stages. Preserve existing content and layout choices unless a change is explicitly required to correct a defect. Proposed behavior choices below must be resolved before implementing the affected step.
 
@@ -14,7 +14,20 @@ Each step includes a small, commented example and an explanation of its effect. 
 
 Keep the existing persisted field names, document IDs, array item `_key` values, media objects, and `rowSettings: number[]` representation. UI-only props such as `device` or `variant` do not need to become stored fields. The migration assessment at the end identifies the exceptions and rollout order.
 
-## 1. Establish the baseline and review existing content
+## Plan sections
+
+- [A. Changes that do not require migration](#a-changes-that-do-not-require-migration): application, validation, and UI fixes that preserve stored data shapes.
+- [B. Changes that require migration if adopted](#b-changes-that-require-migration-if-adopted): converting existing weak project references to strong references.
+- [C. Existing-content cleanup that may be needed](#c-existing-content-cleanup-that-may-be-needed): editorial corrections and targeted backfills, kept separate from structural migrations.
+- [D. Verification and rollout](#d-verification-and-rollout): acceptance checks and the procedure for any authorized content writes.
+
+Original step numbers are retained for traceability. Step 5 is split into **5A (validation only)** and **5B (reference conversion)**. Section A can proceed independently of choosing strong references. “No migration” means no required bulk rewrite of existing content; normal editor actions can still save changes. Creating or reorganizing this document does not authorize implementation.
+
+## A. Changes that do not require migration
+
+Preserve current document IDs, field names, array item keys, asset references, and numeric row arrays. This section does not include bulk content repair or removal of stored `_weak` markers. Use advisory membership warnings while the 13 existing selections are reviewed; do not silently introduce a publication blocker.
+
+### 1. Establish the baseline and review existing content
 
 - [ ] Record the current TypeScript and lint results.
 - [ ] Create representative test fixtures covering image-only and video-only projects, repeated assets, published projects with drafts, missing references, processing videos, and media hidden on mobile.
@@ -41,8 +54,7 @@ This produces a review list, not a migration. Inspect target existence separatel
 
 **Data impact:** none; read-only inspection.
 
-
-## 2. Make project media loading reliable
+### 2. Make project media loading reliable
 
 Primary file: `components/hooks/useProjectSlides.ts`.
 
@@ -104,8 +116,7 @@ Model `state` as a typed union during implementation. The request guard prevents
 
 **Data impact:** none; local component state only.
 
-
-## 3. Define which project version supplies media, and keep it current
+### 3. Define which project version supplies media, and keep it current
 
 Primary files: `components/hooks/useProjectSlides.ts`, `utils/refs.ts`, and `components/assetPicker/refMediaPickerButton.tsx`.
 
@@ -154,14 +165,13 @@ This is the open/refresh portion. A shared project subscription should also trig
 
 **Data impact:** none; changes which version is read, not how content is stored.
 
-
-## 4. Keep selected media consistent with the selected project
+### 4. Keep selected media consistent with the selected project
 
 Primary files: `components/allProjects/allProjectsContextProvider.tsx`, `utils/field.ts`, and `schemaTypes/objects/allProjects/allProjectsMedia.ts`.
 
-- [ ] Add membership validation for All Projects media.
+- [ ] Add membership warnings for All Projects media while the editorial policy is reviewed. Do not introduce hard membership enforcement yet; see section C and the dry-run report.
 - [ ] Check existing selections when the project reference changes and when the source project’s slides change.
-- [ ] Preserve an existing selection visibly, mark it as no longer belonging to the selected project, and require replacement or removal. Do not silently erase selections or rearrange the media array.
+- [ ] Preserve an existing selection visibly, mark it as no longer belonging to the selected project, and offer replacement or removal. Require a correction only if strict membership is later chosen. Do not silently erase selections or rearrange the media array.
 - [ ] Keep “unable to load the project” separate from “this asset does not belong to the project.” A failed request must not invalidate otherwise valid content by pretending the project has no media.
 
 **Complete when:** changing A to B cannot leave A’s media silently valid, and removing an asset from a project identifies affected selections with a clear correction path.
@@ -189,21 +199,20 @@ validation: rule => rule.custom(async (row, context) => {
     })
 
     return invalid.length ? {
-      message: 'Replace or remove media that no longer belongs to this project.',
+      message: 'Review media that is not in this project’s current slides.',
       paths: invalid.map(item => ['media', {_key: item._key}]),
     } : true
   } catch {
-    return 'Could not verify project media. Retry before publishing.'
+    return 'Could not verify project media. Retry the check.'
   }
-})
+}).warning() // Advisory until the 13 existing selections are reviewed.
 ```
 
 The existing reference helpers supply identity conversion; the project-loading helper is proposed in step 3. The form should use the same membership calculation for immediate feedback. Arrange revalidation when the referenced project changes; validation does not automatically subscribe to every external document it reads. Coalesce repeated lookups during validation rather than fetching once per asset.
 
-**Data impact:** no format change. Existing mismatches may need editorial correction before the containing document can be republished.
+**Data impact:** no migration for advisory validation. The 13 existing membership mismatches require an editorial decision, not automatic deletion or migration. Any later content correction belongs to section C; only promote the rule to an error after that decision.
 
-
-## 5. Strengthen asset and project-reference validation
+### 5A. Strengthen validation without changing reference strength
 
 Primary files: `utils/field.ts`, `schemaTypes/objects/projectSlide/projectSlideMedia.ts`, and `schemaTypes/objects/allProjects/allProjectsProject.ts`.
 
@@ -211,8 +220,7 @@ Primary files: `utils/field.ts`, `schemaTypes/objects/projectSlide/projectSlideM
 - [ ] Preserve the intended desktop fallback when an optional mobile override is absent.
 - [ ] Validate missing video assets explicitly where the plugin’s weak reference does not provide that protection.
 - [ ] Distinguish missing, failed, and still-processing assets in the interface.
-- [ ] Resolve the proposed default of a strong All Projects project reference: editors may select a draft during preparation, but publication must wait until its destination exists publicly.
-- [ ] Review existing weak references before changing them; changing the schema alone does not repair stored references.
+- [ ] If weak project references are retained, add explicit publish-time target-existence validation. This does not provide backend protection against a later deletion. Strong-reference conversion is isolated in section B, step 5B.
 
 **Complete when:** empty media objects and deleted destinations fail actual Sanity document validation, valid content still passes, and every error points to an editable field with an actionable message.
 
@@ -230,23 +238,10 @@ return Boolean(media?.asset?._ref?.trim()) ||
 
 This is the first validation layer. It preserves conditional validation of the active type. It does not establish that an asset exists or a video has finished processing; those checks remain separate. Optional mobile overrides retain their fallback behavior.
 
-```ts
-// Proposed schema change, only if strong project references are chosen.
-defineField({
-  name: 'project',
-  type: 'reference',
-  to: [{type: 'project'}],
-  // Omit weak: true; strong references are the default.
-  validation: rule => rule.required(),
-})
-```
-
-The stored reference still has the same `_type` and `_ref`. Existing `_weak: true` values need a targeted conversion to gain backend integrity protection. Do not remove `_weak` blindly from missing or draft-only targets. Keep the plugin's Mux reference schema outside the scope of this project-reference conversion.
-
-**Data impact:** validation may require content repairs. Converting existing weak project references is a data migration, although it does not redesign the document structure. See the migration assessment below.
+**Data impact:** no stored format change or reference conversion. The dry run found no missing-asset or missing-project failures. If future checks find invalid entries, handle their repairs separately in section C.
 
 
-## 6. Correct picker choices and state messaging
+### 6. Correct picker choices and state messaging
 
 Primary files: `components/assetPicker/refMediaPickerButton.tsx`, `components/assetPicker/refMediaPickerGrid.tsx`, and `utils/refs.ts`.
 
@@ -278,8 +273,7 @@ Use the same type-and-ID key for each rendered choice. A video-only project now 
 
 **Data impact:** none; deduplicates the derived options only.
 
-
-## 7. Give media previews explicit loading, processing, and failure states
+### 7. Give media previews explicit loading, processing, and failure states
 
 Primary file: `components/previews/mediaRefPreview.tsx`.
 
@@ -326,8 +320,7 @@ return <img
 
 **Data impact:** none; no asset documents are modified by preview recovery.
 
-
-## 8. Preserve media proportions in layout previews
+### 8. Preserve media proportions in layout previews
 
 Primary files: `components/previews/mediaRefPreview.tsx` and `components/projectSlide/projectSlideGridMedia.tsx`.
 
@@ -361,8 +354,7 @@ Keep the existing orientation-aware sizing for mobile portrait layouts, where he
 
 **Data impact:** none; existing references and layout coordinates remain unchanged.
 
-
-## 9. Honor read-only state throughout custom controls
+### 9. Honor read-only state throughout custom controls
 
 Primary areas: `components/assetPicker/`, `components/allProjects/`, and `components/projectSlide/`.
 
@@ -396,8 +388,7 @@ useEffect(() => {
 
 **Data impact:** no migration; prevents unintended writes.
 
-
-## 10. Unify All Projects row calculation and make edits collaboration-safe
+### 10. Unify All Projects row calculation and make edits collaboration-safe
 
 Primary files: `components/allProjects/allProjectsGridButton.tsx`, `components/allProjects/allProjectsGridPlanner.tsx`, and `schemaTypes/objects/allProjects/allProjectsLayout.ts`.
 
@@ -430,10 +421,9 @@ function changeExistingRow(rowIndex: number, requested: number) {
 
 Both the writer and dialog must consume `visible` and the same effective-row calculation. Preserve `rowSettings` as an array of numbers. The targeted patch avoids overwriting another existing row, but it does not by itself solve simultaneous array resizing; test that separately. The current normalization helper also needs range/invalid-number handling.
 
-**Data impact:** no structural migration. Incorrect stored row settings may need a reviewed recalculation. Do not convert rows to objects or add stored device fields as part of this fix.
+**Data impact:** no migration for the calculation and patching fixes. Any batch correction of existing values belongs to section C. Incorrect stored row settings may need a reviewed recalculation. Do not convert rows to objects or add stored device fields as part of this fix.
 
-
-## 11. Fix slide-grid interaction state and clarify Auto Layout
+### 11. Fix slide-grid interaction state and clarify Auto Layout
 
 Primary files: `components/projectSlide/projectSlideGridInteraction.tsx`, `components/projectSlide/projectSlideGridDialog.tsx`, `components/projectSlide/projectSlideGridPreview.tsx`, `utils/projectSlide.ts`, and `utils/projectSlideAutoLayout.ts`.
 
@@ -477,8 +467,7 @@ The second sketch reuses the existing preset tables and helpers; add their TypeS
 
 **Data impact:** no migration; do not reapply presets to existing content automatically.
 
-
-## 12. Make the asset tools’ “Read-Only” promise accurate
+### 12. Make the asset tools’ “Read-Only” promise accurate
 
 Primary file: `sanity.config.ts`.
 
@@ -507,8 +496,7 @@ This fixes the misleading label only; it does not make the tools read-only. If b
 
 **Data impact:** none; configuration/UI changes only.
 
-
-## 13. Finish singleton creation protection
+### 13. Finish singleton creation protection
 
 Primary files: `sanity.config.ts` and `structure/`.
 
@@ -535,10 +523,9 @@ schema: {
 
 Keep the existing fixed-ID structure and document action filters. This prevents new duplicates through these templates; it does not rename, merge, or delete any existing document. Inspect alternate creation routes in the locked Studio version during acceptance testing.
 
-**Data impact:** no migration for prevention. Existing duplicate cleanup is a separate content decision, especially if another document references a duplicate.
+**Data impact:** no migration for prevention. Existing duplicate cleanup belongs to section C as a separate content decision, especially if another document references a duplicate.
 
-
-## 14. Repair accessibility and Studio focus integration
+### 14. Repair accessibility and Studio focus integration
 
 Primary areas: `components/assetPicker/`, `components/common/buttonToggleInput.tsx`, and both grid planners.
 
@@ -583,8 +570,7 @@ const {value: _domValue, ...focusProps} = props.elementProps
 
 **Data impact:** none.
 
-
-## 15. Check responsive layouts and replace fragile styling
+### 15. Check responsive layouts and replace fragile styling
 
 Primary files: `components/projectSlide/projectSlideGridDialog.tsx`, `components/projectSlide/projectSlideMediaInput.tsx`, `components/allProjects/allProjectsGridPlanner.tsx`, and `components/assetPicker/refMediaPickerDialog.tsx`.
 
@@ -616,8 +602,128 @@ The exact breakpoint needs visual verification in the dialog. Where narrow dialo
 
 **Data impact:** none.
 
+## B. Changes that require migration if adopted
 
-## 16. Run end-to-end acceptance checks and prepare delivery
+There is one identified migration candidate. It is optional: keeping weak references with explicit validation remains an alternative, with less backend protection.
+
+### 5B. Convert existing All Projects project references from weak to strong
+
+Primary file: `schemaTypes/objects/allProjects/allProjectsProject.ts`. Stored path: `allProjects.projects[].project`.
+
+**Observed scope:** the November 5 dry run found five weak project references in the published All Projects document, all resolving to published projects. No conversion has been performed. Recheck drafts and current revisions before any migration.
+
+- [ ] Resolve the proposed default of a strong All Projects project reference: editors may select a draft during preparation, but publication must wait until its destination exists publicly.
+- [ ] Review existing weak references before changing them; changing the schema alone does not repair stored references.
+- [ ] Produce a dry-run list of exact reference-field patches, preserving `_ref`, array `_key`, media, and layout values.
+- [ ] Coordinate the schema change and stored-reference conversion so old Studio sessions do not recreate permanent weak references.
+- [ ] Revalidate and verify target deletion protection after any authorized conversion.
+
+**Complete when:** the agreed references are strong in stored content, valid workflows still publish successfully, and the original values and revisions are retained for a scoped rollback.
+
+**Example: schema configuration for new strong references.**
+
+```ts
+// Proposed schema change, only if strong project references are chosen.
+defineField({
+  name: 'project',
+  type: 'reference',
+  to: [{type: 'project'}],
+  // Omit weak: true; strong references are the default.
+  validation: rule => rule.required(),
+})
+```
+
+The stored reference still has the same `_type` and `_ref`. Existing `_weak: true` values need a targeted conversion to gain backend integrity protection. Do not remove `_weak` blindly from missing or draft-only targets. Keep the plugin's Mux reference schema outside the scope of this project-reference conversion.
+
+Setting a schema reference to strong affects Studio's handling and validation, but existing stored `_weak: true` markers must be addressed to gain backend deletion protection. Sanity describes this distinction in its [reference schema documentation](https://www.sanity.io/docs/studio/reference-type) and [connected-content documentation](https://www.sanity.io/docs/studio/connected-content).
+
+```ts
+// Stored entry before conversion:
+{
+  _key: 'entry-a',
+  project: {_type: 'reference', _ref: 'project-a', _weak: true},
+  media: [/* unchanged */],
+}
+
+// Stored entry after conversion, once project-a exists publicly:
+{
+  _key: 'entry-a',
+  project: {_type: 'reference', _ref: 'project-a'},
+  media: [/* unchanged */],
+}
+```
+
+The `_ref`, item `_key`, media, and layout fields are preserved. Strong references prevent deletion of a referenced target until the relationship is removed. That is a deliberate workflow change even though the frontend's reference shape is unchanged. Studio also uses temporary weak references with `_strengthenOnPublish` for draft targets; exclude those pending relationships from a blanket conversion and let the supported publishing workflow handle them.
+
+A dry-run proposal can record the exact field to remove without performing a write:
+
+```ts
+// proposal is a review artifact, NOT a call to client.patch().commit().
+const proposal = {
+  documentId: document._id,
+  expectedRevision: document._rev,
+  targetId: entry.project._ref,
+  operation: {
+    type: 'unset',
+    path: ['projects', {_key: entry._key}, 'project', '_weak'],
+  },
+}
+```
+
+Only propose this operation after confirming a normal, published `project` target exists, the reference is actually weak, and it is not awaiting `_strengthenOnPublish`. Skip missing, draft-only, malformed, and ambiguous targets for editorial review. Never guess a replacement target or mass-publish projects to satisfy a migration.
+
+If strong references are not desired, retain weak references and add explicit publish-time existence validation instead. That requires no reference conversion, but it does not provide backend deletion protection after publication; a later deletion can still break the relationship. Decide which behavior is wanted before executing step 5B. The validation-only option belongs to step 5A.
+
+**Data impact:** a targeted data migration of existing references if this option is chosen. No field renaming or document redesign is required. This changes deletion/publishing constraints, so it must remain separate from section A.
+
+## C. Existing-content cleanup that may be needed
+
+These are conditional content writes, not prerequisites for every code fix and not proof that a structural migration is necessary. A few entries may be corrected manually; a larger batch would need reviewed patches and a dry run. Do not combine them with routine UI changes.
+
+### C1. Review the 13 All Projects media-membership mismatches — related to step 4
+
+The [dry-run report](VALIDATION_DRY_RUN_REPORT.md) identifies 9million (2), Hablot (1), Charlotte Cardin (1), and SSENSE (9). Every asset and destination exists. The question is whether overview media must also appear in the selected project's slides.
+
+- [ ] Review the selections for editorial intent.
+- [ ] If independent overview media is intended, adjust the policy and keep those selections; no content repair is required.
+- [ ] If strict membership is intended, choose the correct replacements or deliberately add the intended media to the project's slides. Do not infer which choice is correct from the asset IDs.
+- [ ] Re-run validation before promoting membership warnings to errors.
+
+**Complete when:** the policy and each affected selection are resolved. This is editorial cleanup if changes are needed, not an automatic migration.
+
+### C2. Repair missing assets or destinations if later found — related to step 5A
+
+The current dry run found none. No cleanup is presently indicated for these checks.
+
+- [ ] Recheck immediately before enforcement because content may have changed.
+- [ ] If failures appear, repair or remove only the affected selections with a known intended replacement.
+- [ ] Revalidate the containing documents before publication.
+
+**Complete when:** affected entries, if any, are valid. Keep these corrections independent of the weak-to-strong migration in section B.
+
+### C3. Recalculate stored row settings only where necessary — related to step 10
+
+The dry run did not audit row-setting consistency. The shared calculation and granular-patching fix belongs to section A; rewriting already-saved settings is separate.
+
+- [ ] Compare saved settings with the intended desktop/mobile visible-media lists.
+- [ ] Preserve valid authored row widths; do not reset every layout to defaults.
+- [ ] Preview exact before/after settings for affected documents and check the frontend result before a backfill.
+
+**Complete when:** any approved backfill changes only inconsistent values and retains the `number[]` representation. No structural migration is needed.
+
+### C4. Resolve existing duplicate singleton documents only if found — related to step 13
+
+Creation-menu protection belongs to section A. Existing duplicates were not audited by the validation dry run.
+
+- [ ] Inventory duplicates and references to them.
+- [ ] Identify the authoritative content and retain the canonical fixed IDs.
+- [ ] Prepare any necessary merge, reference remapping, or deletion as a separately reviewed content change.
+
+**Complete when:** any approved cleanup preserves intended content and references. Do not delete duplicates solely because their IDs differ from the canonical IDs.
+
+## D. Verification and rollout
+
+### 16. Run end-to-end acceptance checks and prepare delivery
 
 - [ ] Run TypeScript, lint, and the production build.
 - [ ] Add focused regression checks for the actual failures: request races, retry behavior, schema validation, media membership, read-only patch suppression, mobile row consistency, and independent concurrent edits.
@@ -658,67 +764,6 @@ No test script currently exists in package.json; configure and document the chos
 
 **Data impact:** tests use controlled fixtures or a non-production dataset, not production edits.
 
-
-## Migration and compatibility assessment
-
-**The proposed fixes do not require a broad content-structure migration.** No field rename, document-type rename, reference-to-embedded-object conversion, new required stored field, or change from numeric row arrays to object arrays is planned. Preserve the shapes consumed by the website. Because the frontend has not been reviewed in this audit, verify its reference resolution and layout fallbacks before claiming full compatibility.
-
-A migration changes existing stored documents. A validation change can block future publishing without changing stored data. A UI change can affect future edits without requiring old documents to be rewritten. Those are different kinds of impact.
-
-| Steps | Structure or workflow impact | Migration or cleanup needed? |
-| --- | --- | --- |
-| 1–3: audit, loading, draft-first reads | No stored shape change; editors see the current draft | No |
-| 4: project/media membership | Existing mismatches become validation errors | Editorial repairs if found; no mandatory structural migration |
-| 5: require real assets | Existing empty wrappers or missing assets become invalid | Repair affected entries; no format conversion |
-| 5: weak → strong project references | Same `_ref` shape; different referential-integrity and publishing/deletion rules | **Targeted migration of existing `_weak: true` references if this option is chosen** |
-| 6–9: picker options, previews, aspect ratios, read-only | Component behavior only | No; deduplicate options, never stored slides |
-| 10: mobile row calculation and granular patches | Keep `rowSettings: number[]`; saved values may be inconsistent | Optional reviewed recalculation/backfill for affected documents |
-| 11: grid anchors and preset scope | Saved layout shape unchanged; future preset actions may change behavior | No; do not rewrite existing layouts |
-| 12: standalone tools | UI capabilities or labels change | No |
-| 13: singleton creation | New duplicates prevented; canonical IDs retained | No for prevention; existing duplicates may need reviewed merge/remap/delete work |
-| 14–16: accessibility, responsive CSS, verification | No content shape changes | No |
-
-### Weak references: the one planned migration candidate
-
-Setting a schema reference to strong affects Studio's handling and validation, but existing stored `_weak: true` markers must be addressed to gain backend deletion protection. Sanity describes this distinction in its [reference schema documentation](https://www.sanity.io/docs/studio/reference-type) and [connected-content documentation](https://www.sanity.io/docs/studio/connected-content).
-
-```ts
-// Stored entry before conversion:
-{
-  _key: 'entry-a',
-  project: {_type: 'reference', _ref: 'project-a', _weak: true},
-  media: [/* unchanged */],
-}
-
-// Stored entry after conversion, once project-a exists publicly:
-{
-  _key: 'entry-a',
-  project: {_type: 'reference', _ref: 'project-a'},
-  media: [/* unchanged */],
-}
-```
-
-The `_ref`, item `_key`, media, and layout fields are preserved. Strong references prevent deletion of a referenced target until the relationship is removed. That is a deliberate workflow change even though the frontend's reference shape is unchanged. Studio also uses temporary weak references with `_strengthenOnPublish` for draft targets; exclude those pending relationships from a blanket conversion and let the supported publishing workflow handle them.
-
-A dry-run proposal can record the exact field to remove without performing a write:
-
-```ts
-// proposal is a review artifact, NOT a call to client.patch().commit().
-const proposal = {
-  documentId: document._id,
-  expectedRevision: document._rev,
-  targetId: entry.project._ref,
-  operation: {
-    type: 'unset',
-    path: ['projects', {_key: entry._key}, 'project', '_weak'],
-  },
-}
-```
-
-Only propose this operation after confirming a normal, published `project` target exists, the reference is actually weak, and it is not awaiting `_strengthenOnPublish`. Skip missing, draft-only, malformed, and ambiguous targets for editorial review. Never guess a replacement target or mass-publish projects to satisfy a migration.
-
-If strong references are not desired, retain weak references and add explicit publish-time existence validation instead. That requires no reference conversion, but it does not provide backend deletion protection after publication; a later deletion can still break the relationship. Decide which behavior is wanted before executing step 5.
-
 ### Order for deploying validation or repairing existing content
 
 1. Run the read-only inventory against both draft and published documents. Do not infer that production contains invalid data merely because test fixtures reproduce the bug.
@@ -732,14 +777,33 @@ If strong references are not desired, retain weak references and add explicit pu
 
 Stricter Studio validation does not automatically unpublish or rewrite existing published documents. It can stop the next publication until the problem is corrected. This is why the inventory and repair plan precede enforcing new rules.
 
+## Migration and compatibility assessment
+
+**The proposed fixes do not require a broad content-structure migration.** No field rename, document-type rename, reference-to-embedded-object conversion, new required stored field, or change from numeric row arrays to object arrays is planned. Preserve the shapes consumed by the website. Because the frontend has not been reviewed in this audit, verify its reference resolution and layout fallbacks before claiming full compatibility.
+
+A migration changes existing stored documents. A validation change can block future publishing without changing stored data. A UI change can affect future edits without requiring old documents to be rewritten. Those are different kinds of impact.
+
+| Steps | Structure or workflow impact | Migration or cleanup needed? |
+| --- | --- | --- |
+| 1–3: audit, loading, draft-first reads | No stored shape change; editors see the current draft | No |
+| 4: project/media membership | Advisory warnings first; hard enforcement awaits the editorial decision | No migration for the warning; possible content correction in section C |
+| 5A: require real assets | Existing empty wrappers or missing assets become invalid | Repair affected entries; no format conversion |
+| 5B: weak → strong project references | Same `_ref` shape; different referential-integrity and publishing/deletion rules | **Targeted migration of existing `_weak: true` references if this option is chosen** |
+| 6–9: picker options, previews, aspect ratios, read-only | Component behavior only | No; deduplicate options, never stored slides |
+| 10: mobile row calculation and granular patches | Keep `rowSettings: number[]`; saved values may be inconsistent | Optional reviewed recalculation/backfill for affected documents |
+| 11: grid anchors and preset scope | Saved layout shape unchanged; future preset actions may change behavior | No; do not rewrite existing layouts |
+| 12: standalone tools | UI capabilities or labels change | No |
+| 13: singleton creation | New duplicates prevented; canonical IDs retained | No for prevention; existing duplicates may need reviewed merge/remap/delete work |
+| 14–16: accessibility, responsive CSS, verification | No content shape changes | No |
+
 ## Audit coverage
 
 | Audit finding or follow-up risk | Plan steps |
 | --- | --- |
 | 1. Project-switch request race and stale state after clearing | 2 |
 | 2. Existing media remains associated with a newly selected project | 4 |
-| 3. Empty image/video objects pass validation | 5 |
-| 4. Deleted project references pass validation | 5 |
+| 3. Empty image/video objects pass validation | 5A |
+| 4. Deleted project references pass validation | 5A; optional 5B |
 | 5. Draft selection is unreliable and project media goes stale | 3 |
 | 6. Project-fetch errors are unhandled and loading appears empty | 2, 6 |
 | 7. Preview failures are swallowed and old thumbnails remain visible | 7 |
@@ -756,6 +820,14 @@ Stricter Studio validation does not automatically unpublish or rewrite existing 
 | Auto Layout changes both devices and forces landscape without clear disclosure | 11 |
 | Fixed slide-planner sidebar may fail at narrow widths | 15 |
 | Media-input CSS depends on fragile positional selectors | 15 |
+
+## Initial production validation dry run — 2026-11-05
+
+A read-only comparison has now been completed: [detailed report](VALIDATION_DRY_RUN_REPORT.md). Across 15 project/All Projects documents (including two drafts), current validation produced no markers. Candidate validation identified 13 media-membership failures in the published All Projects document: 9million (2), Hablot (1), Charlotte Cardin (1), and SSENSE (9). The assets exist, and missing-asset/missing-project checks found no affected content.
+
+**Step 4 decision update:** do not introduce hard membership enforcement until those selections are reviewed for editorial intent. Prefer a visible warning during that review. If independent overview media is intentional, revise the membership policy rather than automatically deleting or replacing content. This is a proposed rollout adjustment based on observed data, not an applied schema change.
+
+The dry run used candidate schemas in memory and Studio-equivalent validation against a frozen content/reference snapshot. It did not apply code changes, publish content, or convert references. See the report for exact field paths, version-specific CLI severity behavior, and limits. The historical audit baseline below describes the earlier source-only review; this subsequent read-only check did inspect production content.
 
 ## Verification baseline from the audit
 

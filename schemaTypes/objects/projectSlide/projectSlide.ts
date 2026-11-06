@@ -1,3 +1,4 @@
+import { slideV2Error } from '../../../utils/projectSlideV2'
 import { GRID_SETTINGS_INCOMPLETE_MESSAGE, validateSlideGrid } from '../../../utils/projectSlide'
 import { defineField, defineType } from 'sanity'
 
@@ -16,12 +17,14 @@ export const projectSlide = defineType({
   validation: rule =>
     rule.custom(value => {
       const slide = value as ProjectSlideFormValue | undefined
+      if (slide?.layoutV2) return slideV2Error(slide) ?? true
       const orientation = (slide?.mobileOrientation ?? Orientation.PORTRAIT) as Orientation
       return validateSlideGrid(slide?.media, orientation)
         ? GRID_SETTINGS_INCOMPLETE_MESSAGE
         : true
     }),
   fields: [
+    defineField({ name: 'layoutV2', type: 'projectSlideLayoutV2', hidden: true, initialValue: { _type: 'projectSlideLayoutV2', version: 2, desktop: { _type: 'projectSlideDesktopLayout', mode: 'center' }, mobile: { _type: 'projectSlideMobileLayout', auto: true, orientation: 'portrait', mode: 'center' } } }),
     defineField({
       name: 'mobileOrientation',
       title: 'Mobile grid orientation',
@@ -34,7 +37,7 @@ export const projectSlide = defineType({
           { title: 'Landscape', value: Orientation.LANDSCAPE },
         ],
       },
-      validation: rule => rule.required(),
+      validation: rule => rule.custom((value, context) => (context.parent as ProjectSlideFormValue)?.layoutV2 || value ? true : 'Required'),
       hidden: () => true,
     }),
     defineField({

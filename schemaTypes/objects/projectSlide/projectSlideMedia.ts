@@ -18,6 +18,8 @@ export const projectSlideMedia = defineType({
     preview: ProjectSlidePreview,
   },
   fields: [
+    defineField({ name: 'desktopSpan', type: 'number', initialValue: 6, hidden: true }),
+    defineField({ name: 'mobileSpan', type: 'number', initialValue: 3, hidden: true }),
     ...createToggleMediaFields({ limitToProject: false }),
     createToggleButtonField({
       name: 'mobileMediaType',
@@ -75,6 +77,7 @@ export const projectSlideMedia = defineType({
       mediaType: 'mediaType',
       image: 'image',
       video: 'video',
+      desktopSpan: 'desktopSpan',
       desktopStart: 'desktopStart',
       desktopEnd: 'desktopEnd',
     },

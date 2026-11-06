@@ -1,3 +1,4 @@
+import type { SlideLayoutV2 } from '../../utils/projectSlideV2'
 import { MediaType } from '../../constants/enum'
 
 export interface Ref {
@@ -34,6 +35,8 @@ export interface ProjectSlideGridValue {
   mobileMediaType?: MediaType
   mobileImage?: AssetRef
   mobileVideo?: AssetRef
+  desktopSpan?: number
+  mobileSpan?: number
   desktopStart?: number
   desktopEnd?: number
   mobileStart?: number
@@ -41,6 +44,7 @@ export interface ProjectSlideGridValue {
 }
 
 export interface ProjectSlideFormValue {
+  layoutV2?: SlideLayoutV2
   mobileOrientation?: string
   media?: ProjectSlideGridValue[]
 }

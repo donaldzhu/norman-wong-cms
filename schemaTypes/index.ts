@@ -1,3 +1,4 @@
+import { projectSlideLayoutV2, projectSlideDesktopLayout, projectSlideMobileLayout } from './objects/projectSlide/projectSlideLayoutV2'
 import {
   allProjectsLayout,
   allProjectsMedia,
@@ -16,6 +17,7 @@ import { project } from './documents/project'
 import { selectedWorks } from './singletons/selectedWorks'
 
 export const schemaTypes = [
+  projectSlideLayoutV2, projectSlideDesktopLayout, projectSlideMobileLayout,
   contact,
   imageObject,
   videoObject,

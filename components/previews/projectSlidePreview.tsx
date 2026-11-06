@@ -11,6 +11,7 @@ type ProjectSlidePreviewProps = PreviewProps & {
   mediaType?: MediaType
   image?: AssetRef
   video?: AssetRef
+  desktopSpan?: number
   desktopStart?: number
   desktopEnd?: number
 }
@@ -20,6 +21,7 @@ export const ProjectSlidePreview = (props: PreviewProps) => {
     mediaType,
     image,
     video,
+    desktopSpan,
     desktopStart,
     desktopEnd,
   } = props as ProjectSlidePreviewProps
@@ -31,7 +33,7 @@ export const ProjectSlidePreview = (props: PreviewProps) => {
     video,
   }
 
-  const subtitle = desktopStart && desktopEnd ? `Column ${desktopStart} - ${desktopEnd}` : undefined
+  const subtitle = desktopSpan ? `${desktopSpan} columns` : desktopStart && desktopEnd ? `Column ${desktopStart} - ${desktopEnd}` : undefined
 
   return (
     <PreviewTemplate data={mediaData} title={title} subtitle={subtitle} />
